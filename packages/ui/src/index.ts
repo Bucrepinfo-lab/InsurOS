@@ -4,6 +4,7 @@ export * from './navigation';
 export * from './workspace';
 export * from './platform';
 export * from './data';
+export * from './domain';
 export * from './utils/cn';
 export * from './theme';
 export * from './layouts';
