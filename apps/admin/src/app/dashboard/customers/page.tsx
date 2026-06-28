@@ -72,3 +72,4 @@ export default function CustomersPage() {
     </>
   );
 }
+apps/admin/src/app/dashboard/customers/page.tsx

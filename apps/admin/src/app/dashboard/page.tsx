@@ -1,4 +1,5 @@
 import { WorkspaceHeader, KPICard, Card, CardContent, Badge } from '@insuros/ui';
+import page from '../page';
 
 export default function AdminDashboardPage() {
   return (
@@ -42,3 +43,5 @@ export default function AdminDashboardPage() {
     </>
   );
 }
+apps/admin/src/app/dashboard/marketplace/page.tsx
+apps/admin/src/app/dashboard/policies/page.tsx
