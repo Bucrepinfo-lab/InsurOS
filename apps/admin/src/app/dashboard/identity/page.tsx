@@ -1,13 +1,8 @@
 import {
   Badge,
   Button,
-  DataTable,
-  EmptyState,
-  FilterBar,
-  Pagination,
-  SearchInput,
-  TableToolbar,
-  WorkspaceHeader,
+  DomainEntityList,
+  DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
 
@@ -40,35 +35,22 @@ const columns: DataTableColumn<UserRow>[] = [
 
 export default function IdentityPage() {
   return (
-    <>
-      <WorkspaceHeader
-        title='Identity & Access Management'
-        description='Manage users, roles, permissions, memberships, and secure access across InsurOS tenants.'
-        actions={<Button>Invite User</Button>}
-      />
-
-      <TableToolbar
+    <DomainModulePage
+      title='Identity & Access Management'
+      description='Manage users, roles, permissions, memberships, and secure access across InsurOS tenants.'
+      actions={<Button>Invite User</Button>}
+    >
+      <DomainEntityList
         title='Users'
         description='People with access to this tenant and their assigned roles.'
-      />
-
-      <FilterBar
-        search={<SearchInput placeholder='Search users...' />}
-        actions={<Button variant='secondary'>Export</Button>}
-      />
-
-      <DataTable
+        searchPlaceholder='Search users...'
         columns={columns}
         data={users}
-        empty={
-          <EmptyState
-            title='No users yet'
-            description='Invite the first administrator or operator to begin managing this tenant.'
-            action={<Button>Invite User</Button>}
-          />
-        }
-        footer={<Pagination page={1} totalPages={1} totalItems={users.length} />}
+        emptyTitle='No users yet'
+        emptyDescription='Invite the first administrator or operator to begin managing this tenant.'
+        emptyAction={<Button>Invite User</Button>}
+        actions={<Button variant='secondary'>Export</Button>}
       />
-    </>
+    </DomainModulePage>
   );
 }

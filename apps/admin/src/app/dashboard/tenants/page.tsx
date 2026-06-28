@@ -1,13 +1,8 @@
 import {
   Badge,
   Button,
-  DataTable,
-  EmptyState,
-  FilterBar,
-  Pagination,
-  SearchInput,
-  TableToolbar,
-  WorkspaceHeader,
+  DomainEntityList,
+  DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
 
@@ -40,35 +35,22 @@ const columns: DataTableColumn<TenantRow>[] = [
 
 export default function TenantsPage() {
   return (
-    <>
-      <WorkspaceHeader
-        title='Tenant Management'
-        description='Manage insurers, brokerages, partners, employers, government programs, and internal platform organizations.'
-        actions={<Button>Add Tenant</Button>}
-      />
-
-      <TableToolbar
+    <DomainModulePage
+      title='Tenant Management'
+      description='Manage insurers, brokerages, partners, employers, government programs, and internal platform organizations.'
+      actions={<Button>Add Tenant</Button>}
+    >
+      <DomainEntityList
         title='Organizations'
         description='Tenant organizations currently configured in the platform.'
-      />
-
-      <FilterBar
-        search={<SearchInput placeholder='Search tenants...' />}
-        actions={<Button variant='secondary'>Export</Button>}
-      />
-
-      <DataTable
+        searchPlaceholder='Search tenants...'
         columns={columns}
         data={tenants}
-        empty={
-          <EmptyState
-            title='No tenants yet'
-            description='Create the first tenant organization to begin operating the InsurOS platform.'
-            action={<Button>Add Tenant</Button>}
-          />
-        }
-        footer={<Pagination page={1} totalPages={1} totalItems={tenants.length} />}
+        emptyTitle='No tenants yet'
+        emptyDescription='Create the first tenant organization to begin operating the InsurOS platform.'
+        emptyAction={<Button>Add Tenant</Button>}
+        actions={<Button variant='secondary'>Export</Button>}
       />
-    </>
+    </DomainModulePage>
   );
 }
