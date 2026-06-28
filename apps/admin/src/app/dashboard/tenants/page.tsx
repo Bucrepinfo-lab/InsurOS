@@ -4,6 +4,7 @@ import {
   DataTable,
   EmptyState,
   FilterBar,
+  Pagination,
   SearchInput,
   TableToolbar,
   WorkspaceHeader,
@@ -66,6 +67,7 @@ export default function TenantsPage() {
             action={<Button>Add Tenant</Button>}
           />
         }
+        footer={<Pagination page={1} totalPages={1} totalItems={tenants.length} />}
       />
     </>
   );
