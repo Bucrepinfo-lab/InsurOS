@@ -43,5 +43,4 @@ export default function AdminDashboardPage() {
     </>
   );
 }
-apps/admin/src/app/dashboard/marketplace/page.tsx
-apps/admin/src/app/dashboard/policies/page.tsx
+
