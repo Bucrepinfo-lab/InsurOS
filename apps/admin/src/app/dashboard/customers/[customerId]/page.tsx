@@ -6,67 +6,49 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 
-type ContactRow = {
-  type: string;
-  value: string;
-  primary: string;
-  verified: string;
+type CustomerPolicyRow = {
+  policyNumber: string;
+  product: string;
+  status: string;
+  premium: string;
 };
 
-const contacts: ContactRow[] = [
+const policies: CustomerPolicyRow[] = [
   {
-    type: 'Email',
-    value: 'customer@insuros.local',
-    primary: 'Yes',
-    verified: 'No'
-  },
-  {
-    type: 'Phone',
-    value: '+254700000000',
-    primary: 'No',
-    verified: 'No'
+    policyNumber: 'POL-2026-0001',
+    product: 'Motor Comprehensive',
+    status: 'Active',
+    premium: 'KES 42,000'
   }
 ];
 
-const columns: DataTableColumn<ContactRow>[] = [
-  { key: 'type', header: 'Type' },
-  { key: 'value', header: 'Value' },
+const columns: DataTableColumn<CustomerPolicyRow>[] = [
+  { key: 'policyNumber', header: 'Policy No.' },
+  { key: 'product', header: 'Product' },
+  { key: 'premium', header: 'Premium' },
   {
-    key: 'primary',
-    header: 'Primary',
-    render: (row) => (
-      <Badge tone={row.primary === 'Yes' ? 'success' : 'neutral'}>
-        {row.primary}
-      </Badge>
-    )
-  },
-  {
-    key: 'verified',
-    header: 'Verified',
-    render: (row) => (
-      <Badge tone={row.verified === 'Yes' ? 'success' : 'warning'}>
-        {row.verified}
-      </Badge>
-    )
+    key: 'status',
+    header: 'Status',
+    render: (row) => <Badge tone='success'>{row.status}</Badge>
   }
 ];
 
-export default function CustomerContactsPage() {
+export default function CustomerPoliciesPage() {
   return (
     <DomainModulePage
-      title='Customer Contacts'
-      description='Manage customer contact points, verification status, and primary communication preferences.'
-      actions={<Button>Add Contact</Button>}
+      title='Customer Policies'
+      description='View all policies associated with this customer across product lines and lifecycle states.'
+      actions={<Button>Issue Policy</Button>}
     >
       <DomainEntityList
-        title='Contact Points'
-        description='Email, phone, WhatsApp, and other communication channels for this customer.'
-        searchPlaceholder='Search contacts...'
+        title='Policies'
+        description='Insurance policies owned by this customer.'
+        searchPlaceholder='Search customer policies...'
         columns={columns}
-        data={contacts}
-        emptyTitle='No contacts'
-        emptyDescription='Add the first contact point for this customer.'
-        emptyAction={<Button>Add Contact</Button>}
+        data={policies}
+        emptyTitle='No policies'
+        emptyDescription='Issue the first policy for this customer.'
+        emptyAction={<Button>Issue Policy</Button>}
         actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
