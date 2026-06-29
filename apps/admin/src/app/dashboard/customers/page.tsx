@@ -1,75 +1,78 @@
 import {
   Badge,
-  Button,
-  DataTable,
-  EmptyState,
-  FilterBar,
-  Pagination,
-  SearchInput,
-  TableToolbar,
-  WorkspaceHeader,
-  type DataTableColumn
+  Card,
+  CardContent,
+  KPICard,
+  WorkspaceHeader
 } from '@insuros/ui';
 
-type CustomerRow = {
-  name: string;
-  type: string;
-  email: string;
-  status: string;
-};
-
-const customers: CustomerRow[] = [
-  {
-    name: 'Demo Customer',
-    type: 'Individual',
-    email: 'customer@insuros.local',
-    status: 'Active'
-  }
-];
-
-const columns: DataTableColumn<CustomerRow>[] = [
-  { key: 'name', header: 'Customer' },
-  { key: 'type', header: 'Type' },
-  { key: 'email', header: 'Email' },
-  {
-    key: 'status',
-    header: 'Status',
-    render: (row) => <Badge tone='success'>{row.status}</Badge>
-  }
-];
-
-export default function CustomersPage() {
+export default function AdminDashboardPage() {
   return (
     <>
       <WorkspaceHeader
-        title='Customer Administration'
-        description='Manage customers, profiles, contact data, KYC status, preferences, and customer lifecycle.'
-        actions={<Button>Add Customer</Button>}
+        title="Enterprise Control Plane"
+        description="Operate tenants, marketplace, customers, policies, claims, finance and platform services."
       />
 
-      <TableToolbar
-        title='Customers'
-        description='Customer profiles currently registered in the platform.'
-      />
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <KPICard
+          title="Active Tenants"
+          value="1"
+          change="Platform foundation"
+        />
 
-      <FilterBar
-        search={<SearchInput placeholder='Search customers...' />}
-        actions={<Button variant='secondary'>Export</Button>}
-      />
+        <KPICard
+          title="Marketplace Products"
+          value="1"
+          change="Sprint 1"
+        />
 
-      <DataTable
-        columns={columns}
-        data={customers}
-        empty={
-          <EmptyState
-            title='No customers'
-            description='Create the first customer profile to begin quoting and policy operations.'
-            action={<Button>Add Customer</Button>}
-          />
-        }
-        footer={<Pagination page={1} totalPages={1} totalItems={customers.length} />}
-      />
+        <KPICard
+          title="Customers"
+          value="1"
+          change="Customer module"
+        />
+
+        <KPICard
+          title="Policies"
+          value="1"
+          change="Policy module"
+        />
+      </div>
+
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold">
+                  Platform Status
+                </h2>
+
+                <p className="mt-2 text-sm text-slate-500">
+                  Enterprise foundation operational.
+                </p>
+              </div>
+
+              <Badge tone="success">
+                Healthy
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent>
+            <h2 className="text-lg font-semibold">
+              Current Sprint
+            </h2>
+
+            <p className="mt-2 text-sm text-slate-500">
+              Marketplace Administration Module
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     </>
   );
 }
-

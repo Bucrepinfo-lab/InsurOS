@@ -1,41 +1,40 @@
-import { WorkspaceHeader, KPICard, Card, CardContent, Badge } from '@insuros/ui';
-import page from '../page';
+﻿import { Badge, Card, CardContent, KPICard, WorkspaceHeader } from '@insuros/ui';
 
 export default function AdminDashboardPage() {
   return (
     <>
       <WorkspaceHeader
-        title='Enterprise Control Plane'
-        description='Operate tenants, products, workflows, AI governance, events, and platform health from one place.'
+        title="Enterprise Control Plane"
+        description="Operate tenants, marketplace, customers, policies, claims, finance and platform services."
       />
 
-      <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-4'>
-        <KPICard title='Active Tenants' value='0' change='Identity foundation ready' />
-        <KPICard title='Products' value='0' change='Marketplace pending' />
-        <KPICard title='Open Claims' value='0' change='Claims pending' />
-        <KPICard title='Events Today' value='0' change='Event Mesh ready' />
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <KPICard title="Active Tenants" value="1" change="Platform foundation" />
+        <KPICard title="Marketplace Products" value="1" change="Sprint 1" />
+        <KPICard title="Customers" value="1" change="Customer module" />
+        <KPICard title="Policies" value="1" change="Policy module" />
       </div>
 
-      <div className='mt-6 grid gap-4 lg:grid-cols-2'>
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <Card>
           <CardContent>
-            <div className='flex items-center justify-between'>
+            <div className="flex items-center justify-between">
               <div>
-                <h2 className='text-lg font-semibold text-slate-950'>Platform Status</h2>
-                <p className='mt-1 text-sm text-slate-500'>
-                  Core platform foundations are being assembled.
+                <h2 className="text-lg font-semibold">Platform Status</h2>
+                <p className="mt-2 text-sm text-slate-500">
+                  Enterprise foundation operational.
                 </p>
               </div>
-              <Badge tone='success'>Operational</Badge>
+              <Badge tone="success">Healthy</Badge>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent>
-            <h2 className='text-lg font-semibold text-slate-950'>Next Build Target</h2>
-            <p className='mt-1 text-sm text-slate-500'>
-              Tenant management and identity administration.
+            <h2 className="text-lg font-semibold">Current Sprint</h2>
+            <p className="mt-2 text-sm text-slate-500">
+              Marketplace Administration Module
             </p>
           </CardContent>
         </Card>
@@ -43,5 +42,3 @@ export default function AdminDashboardPage() {
     </>
   );
 }
-apps/admin/src/app/dashboard/marketplace/new/page.tsx
-
