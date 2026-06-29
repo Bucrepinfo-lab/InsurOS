@@ -1,7 +1,7 @@
 ﻿import { Badge, Card, CardContent, KPICard, WorkspaceHeader } from '@insuros/ui';
-import { mockPolicies } from '@insuros/mocks';
 
-const policies = mockPolicies;
+
+
 export default function AdminDashboardPage() {
   return (
     <>

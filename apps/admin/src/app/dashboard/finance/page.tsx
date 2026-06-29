@@ -1,4 +1,4 @@
-import {
+﻿import {
   Badge,
   Button,
   DomainEntityList,
@@ -9,30 +9,7 @@ import { mockFinanceTransactions } from '@insuros/mocks';
 
 const transactions = mockFinanceTransactions;
 
-type FinanceTransactionRow = {
-  reference: string;
-  type: string;
-  party: string;
-  amount: string;
-  status: string;
-};
-
-const transactions: FinanceTransactionRow[] = [
-  {
-    reference: 'INV-2026-0001',
-    type: 'Premium Invoice',
-    party: 'Demo Customer',
-    amount: 'KES 42,000',
-    status: 'Paid'
-  },
-  {
-    reference: 'CLM-PAY-2026-0001',
-    type: 'Claim Payout',
-    party: 'Demo Customer',
-    amount: 'KES 100,000',
-    status: 'Pending'
-  }
-];
+type FinanceTransactionRow = (typeof transactions)[number];
 
 const columns: DataTableColumn<FinanceTransactionRow>[] = [
   { key: 'reference', header: 'Reference' },
@@ -43,7 +20,7 @@ const columns: DataTableColumn<FinanceTransactionRow>[] = [
     key: 'status',
     header: 'Status',
     render: (row) => (
-      <Badge tone={row.status === 'Paid' ? 'success' : 'warning'}>
+      <Badge tone={row.status === 'Paid' || row.status === 'Matched' ? 'success' : 'warning'}>
         {row.status}
       </Badge>
     )

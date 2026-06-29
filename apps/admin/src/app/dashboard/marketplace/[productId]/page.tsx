@@ -1,6 +1,4 @@
-import { mockProducts } from '@insuros/mocks';
 
-const products = mockProducts;
 
 const tabs = [
   { id: 'overview', label: 'Overview' },

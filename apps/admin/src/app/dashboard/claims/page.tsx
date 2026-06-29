@@ -1,4 +1,4 @@
-import {
+﻿import {
   Badge,
   Button,
   DomainEntityList,
@@ -9,23 +9,7 @@ import { mockClaims } from '@insuros/mocks';
 
 const claims = mockClaims;
 
-type ClaimRow = {
-  claimNumber: string;
-  policyNumber: string;
-  customer: string;
-  status: string;
-  amount: string;
-};
-
-const claims: ClaimRow[] = [
-  {
-    claimNumber: 'CLM-2026-0001',
-    policyNumber: 'POL-2026-0001',
-    customer: 'Demo Customer',
-    status: 'Open',
-    amount: 'KES 120,000'
-  }
-];
+type ClaimRow = (typeof claims)[number];
 
 const columns: DataTableColumn<ClaimRow>[] = [
   { key: 'claimNumber', header: 'Claim No.' },
