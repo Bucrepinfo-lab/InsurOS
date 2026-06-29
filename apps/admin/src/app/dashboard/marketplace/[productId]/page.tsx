@@ -1,11 +1,6 @@
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  DomainModulePage,
-  Tabs
-} from '@insuros/ui';
+import { mockProducts } from '@insuros/mocks';
+
+const products = mockProducts;
 
 const tabs = [
   { id: 'overview', label: 'Overview' },

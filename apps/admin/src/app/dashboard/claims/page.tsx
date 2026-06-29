@@ -5,6 +5,9 @@ import {
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
+import { mockClaims } from '@insuros/mocks';
+
+const claims = mockClaims;
 
 type ClaimRow = {
   claimNumber: string;

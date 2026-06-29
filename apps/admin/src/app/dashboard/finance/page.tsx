@@ -5,6 +5,9 @@ import {
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
+import { mockFinanceTransactions } from '@insuros/mocks';
+
+const transactions = mockFinanceTransactions;
 
 type FinanceTransactionRow = {
   reference: string;

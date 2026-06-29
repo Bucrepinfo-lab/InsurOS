@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { Badge, Button, Card, CardContent, DomainModulePage, Tabs } from '@insuros/ui';
+import { mockCustomers } from '@insuros/mocks';
 
+const customers = mockCustomers;
 const customerId = 'demo-customer';
 
 const tabs = [
