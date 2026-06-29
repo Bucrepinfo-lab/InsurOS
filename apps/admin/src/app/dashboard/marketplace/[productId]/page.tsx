@@ -1,4 +1,12 @@
-
+import Link from 'next/link';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  DomainModulePage,
+  Tabs
+} from '@insuros/ui';
 
 const tabs = [
   { id: 'overview', label: 'Overview' },

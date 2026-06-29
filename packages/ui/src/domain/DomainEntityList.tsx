@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { DataTable, FilterBar, Pagination, SearchInput, TableToolbar, type DataTableColumn } from '../data';
 import { EmptyState } from '../enterprise/EmptyState';
 
-export interface DomainEntityListProps<TData extends Record<string, unknown>> {
+export interface DomainEntityListProps<TData> {
   title: string;
   description?: string;
   searchPlaceholder?: string;
@@ -14,7 +14,7 @@ export interface DomainEntityListProps<TData extends Record<string, unknown>> {
   actions?: ReactNode;
 }
 
-export function DomainEntityList<TData extends Record<string, unknown>>({
+export function DomainEntityList<TData>({
   title,
   description,
   searchPlaceholder = 'Search...',

@@ -14,7 +14,7 @@ export interface DataTableProps<TData> {
   footer?: ReactNode;
 }
 
-export function DataTable<TData extends Record<string, unknown>>({
+export function DataTable<TData>({
   columns,
   data,
   empty,
@@ -43,7 +43,9 @@ export function DataTable<TData extends Record<string, unknown>>({
                 <tr key={rowIndex} className='border-b last:border-0'>
                   {columns.map((column) => (
                     <td key={String(column.key)} className='py-4 text-slate-600'>
-                      {column.render ? column.render(row) : String(row[column.key] ?? '')}
+                     {column.render
+  ? column.render(row)
+  : String((row as Record<string, unknown>)[String(column.key)] ?? '')}
                     </td>
                   ))}
                 </tr>
