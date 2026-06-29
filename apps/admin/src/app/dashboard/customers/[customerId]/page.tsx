@@ -6,26 +6,26 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 
-type CustomerPolicyRow = {
-  policyNumber: string;
-  product: string;
+type CustomerPaymentRow = {
+  reference: string;
+  type: string;
+  amount: string;
   status: string;
-  premium: string;
 };
 
-const policies: CustomerPolicyRow[] = [
+const payments: CustomerPaymentRow[] = [
   {
-    policyNumber: 'POL-2026-0001',
-    product: 'Motor Comprehensive',
-    status: 'Active',
-    premium: 'KES 42,000'
+    reference: 'PAY-2026-0001',
+    type: 'Premium Payment',
+    amount: 'KES 42,000',
+    status: 'Paid'
   }
 ];
 
-const columns: DataTableColumn<CustomerPolicyRow>[] = [
-  { key: 'policyNumber', header: 'Policy No.' },
-  { key: 'product', header: 'Product' },
-  { key: 'premium', header: 'Premium' },
+const columns: DataTableColumn<CustomerPaymentRow>[] = [
+  { key: 'reference', header: 'Reference' },
+  { key: 'type', header: 'Type' },
+  { key: 'amount', header: 'Amount' },
   {
     key: 'status',
     header: 'Status',
@@ -33,22 +33,22 @@ const columns: DataTableColumn<CustomerPolicyRow>[] = [
   }
 ];
 
-export default function CustomerPoliciesPage() {
+export default function CustomerPaymentsPage() {
   return (
     <DomainModulePage
-      title='Customer Policies'
-      description='View all policies associated with this customer across product lines and lifecycle states.'
-      actions={<Button>Issue Policy</Button>}
+      title='Customer Payments'
+      description='View premium payments, invoices, receipts, balances, refunds, and failed payment attempts.'
+      actions={<Button>Record Payment</Button>}
     >
       <DomainEntityList
-        title='Policies'
-        description='Insurance policies owned by this customer.'
-        searchPlaceholder='Search customer policies...'
+        title='Payments'
+        description='Financial transactions associated with this customer.'
+        searchPlaceholder='Search customer payments...'
         columns={columns}
-        data={policies}
-        emptyTitle='No policies'
-        emptyDescription='Issue the first policy for this customer.'
-        emptyAction={<Button>Issue Policy</Button>}
+        data={payments}
+        emptyTitle='No payments'
+        emptyDescription='Record the first payment for this customer.'
+        emptyAction={<Button>Record Payment</Button>}
         actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
