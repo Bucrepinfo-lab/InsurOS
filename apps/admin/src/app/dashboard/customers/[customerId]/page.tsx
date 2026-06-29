@@ -1,53 +1,55 @@
 import { Badge, Button, Card, CardContent, DomainModulePage } from '@insuros/ui';
 
-export default function CustomerDetailPage() {
+export default function CustomerProfilePage() {
   return (
     <DomainModulePage
-      title='Demo Customer'
-      description='Customer 360 profile, policies, claims, payments, KYC, contacts, and lifecycle history.'
-      actions={<Button>Edit Customer</Button>}
+      title='Customer Profile'
+      description='View and manage customer identity, demographics, KYC, and lifecycle attributes.'
+      actions={<Button>Edit Profile</Button>}
     >
-      <div className='grid gap-4 lg:grid-cols-3'>
+      <div className='grid gap-4 lg:grid-cols-2'>
         <Card>
           <CardContent>
-            <p className='text-sm text-slate-500'>Status</p>
-            <div className='mt-2'>
-              <Badge tone='success'>Active</Badge>
+            <h2 className='text-lg font-semibold text-slate-950'>Personal Information</h2>
+
+            <dl className='mt-4 grid gap-3 text-sm'>
+              <div className='flex justify-between gap-4'>
+                <dt className='text-slate-500'>Full Name</dt>
+                <dd className='font-medium text-slate-950'>Demo Customer</dd>
+              </div>
+
+              <div className='flex justify-between gap-4'>
+                <dt className='text-slate-500'>Customer Type</dt>
+                <dd className='font-medium text-slate-950'>Individual</dd>
+              </div>
+
+              <div className='flex justify-between gap-4'>
+                <dt className='text-slate-500'>Nationality</dt>
+                <dd className='font-medium text-slate-950'>Kenyan</dd>
+              </div>
+
+              <div className='flex justify-between gap-4'>
+                <dt className='text-slate-500'>Date of Birth</dt>
+                <dd className='font-medium text-slate-950'>Not provided</dd>
+              </div>
+            </dl>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent>
+            <h2 className='text-lg font-semibold text-slate-950'>KYC Status</h2>
+
+            <div className='mt-4 flex items-center justify-between rounded-lg border p-4'>
+              <div>
+                <p className='font-medium text-slate-950'>Identity Verification</p>
+                <p className='mt-1 text-sm text-slate-500'>
+                  KYC verification workflow has not yet been completed.
+                </p>
+              </div>
+
+              <Badge tone='warning'>Pending</Badge>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent>
-            <p className='text-sm text-slate-500'>Customer Type</p>
-            <p className='mt-2 font-medium text-slate-950'>Individual</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent>
-            <p className='text-sm text-slate-500'>Primary Email</p>
-            <p className='mt-2 font-medium text-slate-950'>customer@insuros.local</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className='mt-6 grid gap-4 lg:grid-cols-2'>
-        <Card>
-          <CardContent>
-            <h2 className='text-lg font-semibold text-slate-950'>Policies</h2>
-            <p className='mt-2 text-sm text-slate-500'>
-              View active, expired, renewed, and cancelled policies for this customer.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent>
-            <h2 className='text-lg font-semibold text-slate-950'>Customer Timeline</h2>
-            <p className='mt-2 text-sm text-slate-500'>
-              Track customer events, changes, notes, documents, and service activity.
-            </p>
           </CardContent>
         </Card>
       </div>
