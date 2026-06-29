@@ -26,6 +26,9 @@ importers:
       '@insuros/mocks':
         specifier: workspace:*
         version: link:../../packages/mocks
+      '@insuros/services':
+        specifier: workspace:*
+        version: link:../../packages/services
       '@insuros/ui':
         specifier: workspace:*
         version: link:../../packages/ui
