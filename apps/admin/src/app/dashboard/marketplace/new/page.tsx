@@ -1,42 +1,67 @@
-import { Button, Card, CardContent, DomainModulePage, Input } from '@insuros/ui';
+import Link from 'next/link';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  DomainModulePage,
+  Tabs
+} from '@insuros/ui';
 
-export default function NewMarketplaceProductPage() {
+const productId = 'motor-comprehensive';
+
+const tabs = [
+  { id: 'overview', label: 'Overview', href: `/dashboard/marketplace/${productId}` },
+  { id: 'coverages', label: 'Coverages', href: `/dashboard/marketplace/${productId}/coverages` },
+  { id: 'pricing', label: 'Pricing Rules', href: `/dashboard/marketplace/${productId}/pricing` },
+  { id: 'publishing', label: 'Publishing', href: `/dashboard/marketplace/${productId}/publishing` }
+];
+
+export default function MarketplaceProductDetailPage() {
   return (
     <DomainModulePage
-      title='Create Insurance Product'
-      description='Define a new insurance product for catalog, quoting, underwriting, and policy issuance.'
-      actions={<Button variant='secondary'>Save Draft</Button>}
+      title='Motor Comprehensive'
+      description='Product detail, configuration, pricing, coverages, riders, and publishing status.'
+      actions={<Button>Edit Product</Button>}
     >
-      <Card>
-        <CardContent>
-          <form className='grid gap-5'>
-            <div>
-              <label className='text-sm font-medium text-slate-700'>Product Name</label>
-              <Input className='mt-2' placeholder='Motor Comprehensive' />
-            </div>
+      <div className='mb-6 flex flex-wrap gap-3'>
+        {tabs.map((tab) => (
+          <Link
+            key={tab.id}
+            href={tab.href}
+            className='rounded-md border bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50'
+          >
+            {tab.label}
+          </Link>
+        ))}
+      </div>
 
-            <div>
-              <label className='text-sm font-medium text-slate-700'>Product Code</label>
-              <Input className='mt-2' placeholder='MOTOR-COMP' />
-            </div>
+      <Tabs items={tabs} activeId='overview'>
+        <div className='grid gap-4 lg:grid-cols-3'>
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Status</p>
+              <div className='mt-2'>
+                <Badge tone='warning'>Draft</Badge>
+              </div>
+            </CardContent>
+          </Card>
 
-            <div>
-              <label className='text-sm font-medium text-slate-700'>Category</label>
-              <Input className='mt-2' placeholder='Motor' />
-            </div>
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Category</p>
+              <p className='mt-2 font-medium text-slate-950'>Motor</p>
+            </CardContent>
+          </Card>
 
-            <div>
-              <label className='text-sm font-medium text-slate-700'>Carrier</label>
-              <Input className='mt-2' placeholder='InsurOS Demo' />
-            </div>
-
-            <div className='flex justify-end gap-3'>
-              <Button variant='secondary'>Cancel</Button>
-              <Button>Create Product</Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Carrier</p>
+              <p className='mt-2 font-medium text-slate-950'>InsurOS Demo</p>
+            </CardContent>
+          </Card>
+        </div>
+      </Tabs>
     </DomainModulePage>
   );
 }
