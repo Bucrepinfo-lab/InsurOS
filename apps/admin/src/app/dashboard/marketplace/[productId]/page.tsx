@@ -8,12 +8,13 @@ import {
   Tabs
 } from '@insuros/ui';
 
+const productId = 'motor-comprehensive';
+
 const tabs = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'coverages', label: 'Coverages' },
-  { id: 'pricing', label: 'Pricing Rules' },
-  { id: 'eligibility', label: 'Eligibility' },
-  { id: 'publishing', label: 'Publishing' }
+  { id: 'overview', label: 'Overview', href: `/dashboard/marketplace/${productId}` },
+  { id: 'coverages', label: 'Coverages', href: `/dashboard/marketplace/${productId}/coverages` },
+  { id: 'pricing', label: 'Pricing Rules', href: `/dashboard/marketplace/${productId}/pricing` },
+  { id: 'publishing', label: 'Publishing', href: `/dashboard/marketplace/${productId}/publishing` }
 ];
 
 export default function MarketplaceProductDetailPage() {
@@ -23,6 +24,18 @@ export default function MarketplaceProductDetailPage() {
       description='Product detail, configuration, pricing, coverages, riders, and publishing status.'
       actions={<Button>Edit Product</Button>}
     >
+      <div className='mb-6 flex flex-wrap gap-3'>
+        {tabs.map((tab) => (
+          <Link
+            key={tab.id}
+            href={tab.href}
+            className='rounded-md border bg-white px-3 py-2 text-sm font-medium hover:bg-slate-50'
+          >
+            {tab.label}
+          </Link>
+        ))}
+      </div>
+
       <Tabs items={tabs} activeId='overview'>
         <div className='grid gap-4 lg:grid-cols-3'>
           <Card>
@@ -45,26 +58,6 @@ export default function MarketplaceProductDetailPage() {
             <CardContent>
               <p className='text-sm text-slate-500'>Carrier</p>
               <p className='mt-2 font-medium text-slate-950'>InsurOS Demo</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className='mt-6 grid gap-4 lg:grid-cols-2'>
-          <Card>
-            <CardContent>
-              <h2 className='text-lg font-semibold text-slate-950'>Coverages</h2>
-              <p className='mt-2 text-sm text-slate-500'>
-                Configure mandatory and optional product coverages.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent>
-              <h2 className='text-lg font-semibold text-slate-950'>Pricing Rules</h2>
-              <p className='mt-2 text-sm text-slate-500'>
-                Define premiums, loadings, discounts, taxes, and rating logic.
-              </p>
             </CardContent>
           </Card>
         </div>
