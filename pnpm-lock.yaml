@@ -67,6 +67,16 @@ importers:
         specifier: ^5.7.0
         version: 5.9.3
 
+  packages/mocks:
+    dependencies:
+      '@insuros/domain':
+        specifier: workspace:*
+        version: link:../domain
+    devDependencies:
+      typescript:
+        specifier: ^5.7.0
+        version: 5.9.3
+
   packages/ui:
     dependencies:
       clsx:
