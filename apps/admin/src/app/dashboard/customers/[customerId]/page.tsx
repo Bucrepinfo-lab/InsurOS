@@ -1,51 +1,108 @@
-import { Badge, Card, CardContent, DomainModulePage } from '@insuros/ui';
+import Link from 'next/link';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  DomainModulePage,
+  Tabs
+} from '@insuros/ui';
 
-const events = [
+const policyId = 'POL-2026-0001';
+
+const tabs = [
   {
-    title: 'Customer profile created',
-    description: 'Initial customer record was created in InsurOS.',
-    type: 'Customer',
-    date: '2026-06-28'
+    id: 'overview',
+    label: 'Overview',
+    href: `/dashboard/policies/${policyId}`
   },
   {
-    title: 'Policy issued',
-    description: 'Motor Comprehensive policy POL-2026-0001 was issued.',
-    type: 'Policy',
-    date: '2026-06-28'
+    id: 'holder',
+    label: 'Policy Holder',
+    href: `/dashboard/policies/${policyId}/holder`
   },
   {
-    title: 'Payment received',
-    description: 'Premium payment PAY-2026-0001 was recorded.',
-    type: 'Payment',
-    date: '2026-06-28'
+    id: 'coverages',
+    label: 'Coverages',
+    href: `/dashboard/policies/${policyId}/coverages`
+  },
+  {
+    id: 'premium',
+    label: 'Premium',
+    href: `/dashboard/policies/${policyId}/premium`
+  },
+  {
+    id: 'documents',
+    label: 'Documents',
+    href: `/dashboard/policies/${policyId}/documents`
+  },
+  {
+    id: 'timeline',
+    label: 'Timeline',
+    href: `/dashboard/policies/${policyId}/timeline`
   }
 ];
 
-export default function CustomerTimelinePage() {
+export default function PolicyDetailPage() {
   return (
     <DomainModulePage
-      title='Customer Timeline'
-      description='View customer lifecycle events, notes, policy changes, claims activity, payments, and audit history.'
+      title="Policy POL-2026-0001"
+      description="Complete policy workspace covering issuance, servicing, endorsements, renewals, claims, and audit history."
+      actions={<Button>Endorse Policy</Button>}
     >
-      <Card>
-        <CardContent>
-          <div className='grid gap-4'>
-            {events.map((event) => (
-              <div key={event.title} className='rounded-lg border p-4'>
-                <div className='flex items-start justify-between gap-4'>
-                  <div>
-                    <p className='font-medium text-slate-950'>{event.title}</p>
-                    <p className='mt-1 text-sm text-slate-500'>{event.description}</p>
-                    <p className='mt-2 text-xs text-slate-400'>{event.date}</p>
-                  </div>
+      <div className="mb-6 flex flex-wrap gap-3">
+        {tabs.map((tab) => (
+          <Link
+            key={tab.id}
+            href={tab.href}
+            className="rounded-md border bg-white px-3 py-2 text-sm font-medium hover:bg-slate-50"
+          >
+            {tab.label}
+          </Link>
+        ))}
+      </div>
 
-                  <Badge tone='neutral'>{event.type}</Badge>
-                </div>
+      <Tabs items={tabs} activeId="overview">
+        <div className="grid gap-4 lg:grid-cols-4">
+
+          <Card>
+            <CardContent>
+              <p className="text-sm text-slate-500">Status</p>
+              <div className="mt-2">
+                <Badge tone="success">Active</Badge>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <p className="text-sm text-slate-500">Product</p>
+              <p className="mt-2 font-medium">
+                Motor Comprehensive
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <p className="text-sm text-slate-500">Premium</p>
+              <p className="mt-2 font-medium">
+                KES 42,000
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <p className="text-sm text-slate-500">Expiry</p>
+              <p className="mt-2 font-medium">
+                28 Jun 2027
+              </p>
+            </CardContent>
+          </Card>
+
+        </div>
+      </Tabs>
     </DomainModulePage>
   );
 }
