@@ -80,6 +80,19 @@ importers:
         specifier: ^5.7.0
         version: 5.9.3
 
+  packages/services:
+    dependencies:
+      '@insuros/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@insuros/mocks':
+        specifier: workspace:*
+        version: link:../mocks
+    devDependencies:
+      typescript:
+        specifier: ^5.7.0
+        version: 5.9.3
+
   packages/ui:
     dependencies:
       clsx:
