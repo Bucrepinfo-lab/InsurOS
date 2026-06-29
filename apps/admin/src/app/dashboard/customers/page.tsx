@@ -1,78 +1,63 @@
-import {
-  Badge,
-  Card,
-  CardContent,
-  KPICard,
-  WorkspaceHeader
-} from '@insuros/ui';
+import Link from 'next/link';
+import { Badge, Button, Card, CardContent, DomainModulePage, Tabs } from '@insuros/ui';
 
-export default function AdminDashboardPage() {
+const customerId = 'demo-customer';
+
+const tabs = [
+  { id: 'overview', label: 'Overview', href: `/dashboard/customers/${customerId}` },
+  { id: 'profile', label: 'Profile', href: `/dashboard/customers/${customerId}/profile` },
+  { id: 'contacts', label: 'Contacts', href: `/dashboard/customers/${customerId}/contacts` },
+  { id: 'policies', label: 'Policies', href: `/dashboard/customers/${customerId}/policies` },
+  { id: 'claims', label: 'Claims', href: `/dashboard/customers/${customerId}/claims` },
+  { id: 'payments', label: 'Payments', href: `/dashboard/customers/${customerId}/payments` },
+  { id: 'timeline', label: 'Timeline', href: `/dashboard/customers/${customerId}/timeline` }
+];
+
+export default function CustomerDetailPage() {
   return (
-    <>
-      <WorkspaceHeader
-        title="Enterprise Control Plane"
-        description="Operate tenants, marketplace, customers, policies, claims, finance and platform services."
-      />
-
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <KPICard
-          title="Active Tenants"
-          value="1"
-          change="Platform foundation"
-        />
-
-        <KPICard
-          title="Marketplace Products"
-          value="1"
-          change="Sprint 1"
-        />
-
-        <KPICard
-          title="Customers"
-          value="1"
-          change="Customer module"
-        />
-
-        <KPICard
-          title="Policies"
-          value="1"
-          change="Policy module"
-        />
+    <DomainModulePage
+      title='Demo Customer'
+      description='Customer 360 profile, policies, claims, payments, KYC, contacts, and lifecycle history.'
+      actions={<Button>Edit Customer</Button>}
+    >
+      <div className='mb-6 flex flex-wrap gap-3'>
+        {tabs.map((tab) => (
+          <Link
+            key={tab.id}
+            href={tab.href}
+            className='rounded-md border bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50'
+          >
+            {tab.label}
+          </Link>
+        ))}
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">
-                  Platform Status
-                </h2>
-
-                <p className="mt-2 text-sm text-slate-500">
-                  Enterprise foundation operational.
-                </p>
+      <Tabs items={tabs} activeId='overview'>
+        <div className='grid gap-4 lg:grid-cols-3'>
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Status</p>
+              <div className='mt-2'>
+                <Badge tone='success'>Active</Badge>
               </div>
+            </CardContent>
+          </Card>
 
-              <Badge tone="success">
-                Healthy
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Customer Type</p>
+              <p className='mt-2 font-medium text-slate-950'>Individual</p>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardContent>
-            <h2 className="text-lg font-semibold">
-              Current Sprint
-            </h2>
-
-            <p className="mt-2 text-sm text-slate-500">
-              Marketplace Administration Module
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    </>
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Primary Email</p>
+              <p className='mt-2 font-medium text-slate-950'>customer@insuros.local</p>
+            </CardContent>
+          </Card>
+        </div>
+      </Tabs>
+    </DomainModulePage>
   );
 }
