@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { Badge, Button, Card, CardContent, DomainModulePage, Tabs } from '@insuros/ui';
+import { CustomerService } from '@insuros/services';
 
 const customerId = 'demo-customer';
-
+const customerService = new CustomerService();
 const tabs = [
   { id: 'overview', label: 'Overview', href: `/dashboard/customers/${customerId}` },
   { id: 'profile', label: 'Profile', href: `/dashboard/customers/${customerId}/profile` },
@@ -13,7 +14,7 @@ const tabs = [
   { id: 'timeline', label: 'Timeline', href: `/dashboard/customers/${customerId}/timeline` }
 ];
 
-export default function CustomerDetailPage() {
+export default async function CustomersPage() {
   return (
     <DomainModulePage
       title='Demo Customer'
