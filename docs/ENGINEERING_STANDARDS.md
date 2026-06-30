@@ -34,3 +34,8 @@ pnpm --filter @insuros/domain typecheck
 pnpm --filter @insuros/mocks typecheck
 pnpm --filter @insuros/services typecheck
 pnpm --filter @insuros/admin build
+
+docs/architecture/ADR-001-monorepo.md
+docs/architecture/ADR-002-domain-models.md
+docs/architecture/ADR-003-service-layer.md
+docs/architecture/ADR-004-routing.md
