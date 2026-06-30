@@ -10,3 +10,9 @@ Each ADR documents:
 - Consequences
 
 ADRs are immutable historical records. New decisions should create new ADRs rather than rewriting existing ones.
+
+docs/architecture/
+├── ADR-001-monorepo.md
+├── ADR-002-domain-models.md
+├── ADR-003-service-layer.md
+└── ADR-004-routing.md
