@@ -10,6 +10,7 @@ export const routes = {
   operationsTemplates: '/dashboard/operations/templates',
   activity: '/dashboard/activity',
   notifications: '/dashboard/notifications',
+  comments: '/dashboard/comments',
 
   marketplace: {
     index: '/dashboard/marketplace',
