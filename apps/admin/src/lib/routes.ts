@@ -6,6 +6,7 @@ export const routes = {
   operations: '/dashboard/operations',
   operationsTasks: '/dashboard/operations/tasks',
   operationsApprovals: '/dashboard/operations/approvals',
+  operationsEscalations: '/dashboard/operations/escalations',
 
   marketplace: {
     index: '/dashboard/marketplace',
