@@ -6,3 +6,4 @@ export * from './finance';
 export * from './workflows';
 export * from './platform';
 export * from './notifications';
+export * from './comments';
