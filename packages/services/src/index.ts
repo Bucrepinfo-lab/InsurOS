@@ -7,3 +7,4 @@ export * from "./workflows/service";
 export * from './platform';
 export * from './notifications';
 export * from './notifications';
+export * from './comments';
