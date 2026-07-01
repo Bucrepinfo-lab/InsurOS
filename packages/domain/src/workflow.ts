@@ -19,3 +19,21 @@ export interface WorkflowInstance {
   assignee: string;
   dueAt: string;
 }
+
+export type WorkflowTaskStatus =
+  | 'Open'
+  | 'In Progress'
+  | 'Blocked'
+  | 'Completed'
+  | 'Cancelled';
+
+export interface WorkflowTask {
+  id: string;
+  workflowId: string;
+  title: string;
+  module: WorkflowInstance['module'];
+  status: WorkflowTaskStatus;
+  priority: WorkflowPriority;
+  assignee: string;
+  dueAt: string;
+}
