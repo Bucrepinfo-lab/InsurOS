@@ -5,3 +5,4 @@ export * from "./claims/service";
 export * from "./finance/service";
 export * from "./workflows/service";
 export * from './platform';
+export * from './notifications';
