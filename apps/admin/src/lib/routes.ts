@@ -3,6 +3,7 @@ export const routes = {
 
   tenants: '/dashboard/tenants',
   identity: '/dashboard/identity',
+  operations: '/dashboard/operations',
 
   marketplace: {
     index: '/dashboard/marketplace',
