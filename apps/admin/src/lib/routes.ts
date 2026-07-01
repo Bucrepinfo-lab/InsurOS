@@ -11,6 +11,7 @@ export const routes = {
   activity: '/dashboard/activity',
   notifications: '/dashboard/notifications',
   comments: '/dashboard/comments',
+  attachments: '/dashboard/attachments',
 
   marketplace: {
     index: '/dashboard/marketplace',
