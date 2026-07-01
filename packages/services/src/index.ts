@@ -8,3 +8,4 @@ export * from './platform';
 export * from './notifications';
 export * from './notifications';
 export * from './comments';
+export * from './attachments';
