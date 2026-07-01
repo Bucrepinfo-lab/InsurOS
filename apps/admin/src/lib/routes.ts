@@ -8,7 +8,7 @@ export const routes = {
   operationsApprovals: '/dashboard/operations/approvals',
   operationsEscalations: '/dashboard/operations/escalations',
   operationsTemplates: '/dashboard/operations/templates',
-  
+  activity: '/dashboard/activity',
 
   marketplace: {
     index: '/dashboard/marketplace',
