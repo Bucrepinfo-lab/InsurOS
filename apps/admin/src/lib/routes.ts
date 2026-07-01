@@ -4,6 +4,7 @@ export const routes = {
   tenants: '/dashboard/tenants',
   identity: '/dashboard/identity',
   operations: '/dashboard/operations',
+  operationsTasks: '/dashboard/operations/tasks',
 
   marketplace: {
     index: '/dashboard/marketplace',
