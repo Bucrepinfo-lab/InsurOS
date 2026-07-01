@@ -6,3 +6,4 @@ export * from "./finance/service";
 export * from "./workflows/service";
 export * from './platform';
 export * from './notifications';
+export * from './notifications';
