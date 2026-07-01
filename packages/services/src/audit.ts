@@ -6,14 +6,10 @@ export class AuditService {
   }
 
   async getAuditRecordsByEntity(entityId: string) {
-    return mockAuditRecords.filter(
-      (record) => record.entityId === entityId
-    );
+    return mockAuditRecords.filter((record) => record.entityId === entityId);
   }
 
   async getAuditRecordsByModule(module: string) {
-    return mockAuditRecords.filter(
-      (record) => record.module === module
-    );
+    return mockAuditRecords.filter((record) => record.module === module);
   }
 }
