@@ -5,3 +5,4 @@ export * from './claim';
 export * from './finance';
 export * from './workflow';export * from './platform';
 export * from './notification';
+export * from './comment';
