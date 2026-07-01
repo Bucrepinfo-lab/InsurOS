@@ -1,4 +1,3 @@
-
 import {
   Badge,
   Button,
@@ -11,14 +10,15 @@ import { WorkflowService } from '@insuros/services';
 
 const workflowService = new WorkflowService();
 
-export default async function OperationsTaskQueuePage() {
-  const tasks = await workflowService.getTasks();
-  const blocked = await workflowService.getBlockedTasks();
+export default async function OperationsPage() {
+  const workflows = await workflowService.getWorkflows();
+  const escalated = await workflowService.getEscalatedWorkflows();
 
-  type WorkflowTaskRow = (typeof tasks)[number];
+  type WorkflowRow = (typeof workflows)[number];
 
-  const columns: DataTableColumn<WorkflowTaskRow>[] = [
-    { key: 'title', header: 'Task' },
+  const columns: DataTableColumn<WorkflowRow>[] = [
+    { key: 'reference', header: 'Reference' },
+    { key: 'name', header: 'Workflow' },
     { key: 'module', header: 'Module' },
     { key: 'assignee', header: 'Assignee' },
     { key: 'dueAt', header: 'Due' },
@@ -35,7 +35,7 @@ export default async function OperationsTaskQueuePage() {
       key: 'status',
       header: 'Status',
       render: (row) => (
-        <Badge tone={row.status === 'Blocked' ? 'danger' : row.status === 'Completed' ? 'success' : 'warning'}>
+        <Badge tone={row.status === 'Escalated' ? 'danger' : row.status === 'Approved' ? 'success' : 'warning'}>
           {row.status}
         </Badge>
       )
@@ -44,25 +44,25 @@ export default async function OperationsTaskQueuePage() {
 
   return (
     <DomainModulePage
-      title='Task Queue'
-      description='Manage workflow tasks, assignments, blocked work, and operational follow-up.'
-      actions={<Button>Create Task</Button>}
+      title='Workflow & Operations'
+      description='Track operational work, approvals, assignments, escalations, and SLA-sensitive workflows.'
+      actions={<Button>Create Workflow</Button>}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
-        <KPICard title='Open Tasks' value={String(tasks.length)} change='Across workflows' />
-        <KPICard title='Blocked Tasks' value={String(blocked.length)} change='Needs intervention' />
-        <KPICard title='SLA Watch' value='2' change='Due soon' />
+        <KPICard title='Active Workflows' value={String(workflows.length)} change='Across modules' />
+        <KPICard title='Escalations' value={String(escalated.length)} change='Requires attention' />
+        <KPICard title='SLA Watch' value='3' change='Due soon' />
       </div>
 
       <DomainEntityList
-        title='Workflow Tasks'
-        description='Operational tasks assigned across Claims, Policies, Finance, Marketplace, and Customers.'
-        searchPlaceholder='Search tasks...'
+        title='Operational Workflows'
+        description='Current workflows requiring operational tracking or action.'
+        searchPlaceholder='Search workflows...'
         columns={columns}
-        data={tasks}
-        emptyTitle='No workflow tasks'
-        emptyDescription='No workflow tasks are currently active.'
-        emptyAction={<Button>Create Task</Button>}
+        data={workflows}
+        emptyTitle='No workflows'
+        emptyDescription='No operational workflows are currently active.'
+        emptyAction={<Button>Create Workflow</Button>}
         actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
