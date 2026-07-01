@@ -9,6 +9,7 @@ export const routes = {
   operationsEscalations: '/dashboard/operations/escalations',
   operationsTemplates: '/dashboard/operations/templates',
   activity: '/dashboard/activity',
+  notifications: '/dashboard/notifications',
 
   marketplace: {
     index: '/dashboard/marketplace',
