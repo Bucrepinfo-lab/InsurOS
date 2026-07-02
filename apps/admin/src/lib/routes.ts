@@ -14,6 +14,7 @@ export const routes = {
   attachments: '/dashboard/attachments',
   audit: '/dashboard/audit',
   operationsTransitions: '/dashboard/operations/transitions',
+  operationsPolicies: "/dashboard/operations/policies",
 
   marketplace: {
     index: '/dashboard/marketplace',
