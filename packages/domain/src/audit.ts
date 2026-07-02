@@ -1,13 +1,5 @@
 import type { ActorStamped, IsoDateTime, ModuleScoped, ReferencedEntity } from './base';
-
-export type AuditModule =
-  | 'Marketplace'
-  | 'Customers'
-  | 'Policies'
-  | 'Claims'
-  | 'Finance'
-  | 'Operations'
-  | 'Identity';
+import type { PlatformModule } from './modules';
 
 export type AuditAction =
   | 'Create'
@@ -23,7 +15,7 @@ export type AuditAction =
 
 export interface AuditRecord
   extends ReferencedEntity,
-    ModuleScoped<AuditModule>,
+    ModuleScoped<PlatformModule>,
     ActorStamped {
   action: AuditAction;
   timestamp: IsoDateTime;
