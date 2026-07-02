@@ -1,4 +1,5 @@
 import {
+  mockWorkflowPolicies,
   mockWorkflowTasks,
   mockWorkflowTransitions,
   mockWorkflowTransitionRules,
@@ -48,5 +49,13 @@ export class WorkflowService {
 
   async getTransitionRulesByWorkflowType(workflowType: string) {
     return mockWorkflowTransitionRules.filter((rule) => rule.workflowType === workflowType);
+  }
+
+  async getWorkflowPolicies() {
+    return mockWorkflowPolicies;
+  }
+
+  async getWorkflowPoliciesByType(workflowType: string) {
+    return mockWorkflowPolicies.filter((policy) => policy.workflowType === workflowType);
   }
 }
