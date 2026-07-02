@@ -12,4 +12,5 @@ export * from './base';
 export * from './modules';
 export * from './workflow-transition';
 export * from './workflow-rule';
+export * from './workflow-state-machine';
 
