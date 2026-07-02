@@ -1,4 +1,9 @@
-import { mockWorkflowTasks, mockWorkflowTransitions, mockWorkflows } from "@insuros/mocks";
+import {
+  mockWorkflowTasks,
+  mockWorkflowTransitions,
+  mockWorkflowTransitionRules,
+  mockWorkflows
+} from "@insuros/mocks";
 
 export class WorkflowService {
   async getWorkflows() {
@@ -35,5 +40,13 @@ export class WorkflowService {
 
   async getTransitionsByWorkflow(workflowId: string) {
     return mockWorkflowTransitions.filter((transition) => transition.workflowId === workflowId);
+  }
+
+  async getTransitionRules() {
+    return mockWorkflowTransitionRules;
+  }
+
+  async getTransitionRulesByWorkflowType(workflowType: string) {
+    return mockWorkflowTransitionRules.filter((rule) => rule.workflowType === workflowType);
   }
 }
