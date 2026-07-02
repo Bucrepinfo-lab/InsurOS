@@ -10,3 +10,4 @@ export * from './comments';
 export * from './attachments';
 export * from './audit';
 export * from './workflow-transitions';
+export * from './workflow-rules';
