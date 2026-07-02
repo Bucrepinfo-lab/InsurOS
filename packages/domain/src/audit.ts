@@ -1,3 +1,5 @@
+import type { ActorStamped, IsoDateTime, ModuleScoped, ReferencedEntity } from './base';
+
 export type AuditModule =
   | 'Marketplace'
   | 'Customers'
@@ -19,13 +21,11 @@ export type AuditAction =
   | 'Login'
   | 'Logout';
 
-export interface AuditRecord {
-  id: string;
-  module: AuditModule;
-  entityId: string;
-  entityReference: string;
+export interface AuditRecord
+  extends ReferencedEntity,
+    ModuleScoped<AuditModule>,
+    ActorStamped {
   action: AuditAction;
-  actor: string;
-  timestamp: string;
+  timestamp: IsoDateTime;
   details: string;
 }
