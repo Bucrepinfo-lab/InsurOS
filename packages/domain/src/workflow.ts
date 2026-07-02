@@ -1,19 +1,12 @@
-export type WorkflowStatus =
-  | 'Draft'
-  | 'Submitted'
-  | 'In Review'
-  | 'Approved'
-  | 'Rejected'
-  | 'Escalated'
-  | 'Closed';
+import type { WorkflowStatus } from "./workflow-status";
 
-export type WorkflowPriority = 'Low' | 'Normal' | 'High' | 'Critical';
+export type WorkflowPriority = "Low" | "Normal" | "High" | "Critical";
 
 export interface WorkflowInstance {
   id: string;
   reference: string;
   name: string;
-  module: 'Marketplace' | 'Customers' | 'Policies' | 'Claims' | 'Finance';
+  module: "Marketplace" | "Customers" | "Policies" | "Claims" | "Finance";
   status: WorkflowStatus;
   priority: WorkflowPriority;
   assignee: string;
@@ -21,17 +14,17 @@ export interface WorkflowInstance {
 }
 
 export type WorkflowTaskStatus =
-  | 'Open'
-  | 'In Progress'
-  | 'Blocked'
-  | 'Completed'
-  | 'Cancelled';
+  | "Open"
+  | "In Progress"
+  | "Blocked"
+  | "Completed"
+  | "Cancelled";
 
 export interface WorkflowTask {
   id: string;
   workflowId: string;
   title: string;
-  module: WorkflowInstance['module'];
+  module: WorkflowInstance["module"];
   status: WorkflowTaskStatus;
   priority: WorkflowPriority;
   assignee: string;
