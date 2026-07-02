@@ -8,3 +8,5 @@ export * from './notification';
 export * from './comment';
 export * from './attachment';
 export * from './audit';
+export * from './base';
+
