@@ -1,12 +1,13 @@
+import type { WorkflowStatus } from "./workflow-status";
 import type { WorkflowTransitionAction } from "./workflow-transition";
 import type { WorkflowType } from "./workflow-type";
 
 export interface WorkflowTransitionRule {
   id: string;
   workflowType: WorkflowType;
-  fromStatus: string;
+  fromStatus: WorkflowStatus;
   action: WorkflowTransitionAction;
-  toStatus: string;
+  toStatus: WorkflowStatus;
   requiresReason?: boolean;
   requiresApproval?: boolean;
 }
