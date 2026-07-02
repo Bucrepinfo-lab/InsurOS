@@ -11,9 +11,7 @@ export class WorkflowAuthorizationService {
     action: WorkflowTransitionAction,
     requiredRoles: string[]
   ): WorkflowAuthorizationResult {
-    const authorized = requiredRoles.some((role) =>
-      userRoles.includes(role)
-    );
+    const authorized = requiredRoles.some((role) => userRoles.includes(role));
 
     if (!authorized) {
       return {
