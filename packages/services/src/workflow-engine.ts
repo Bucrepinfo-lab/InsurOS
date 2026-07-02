@@ -3,6 +3,7 @@ import type {
   WorkflowTransitionRule
 } from "@insuros/domain";
 
+import { WorkflowAuthorizationService } from "./workflow-authorization";
 import { WorkflowValidator } from "./workflow-validator";
 
 export interface WorkflowExecutionResult {
@@ -13,12 +14,15 @@ export interface WorkflowExecutionResult {
 
 export class WorkflowEngine {
   private readonly validator = new WorkflowValidator();
+  private readonly authorization = new WorkflowAuthorizationService();
 
   execute(
     workflowType: string,
     currentStatus: string,
     action: WorkflowTransitionAction,
-    rules: WorkflowTransitionRule[]
+    rules: WorkflowTransitionRule[],
+    userRoles: string[] = [],
+    requiredRoles: string[] = []
   ): WorkflowExecutionResult {
     const validation = this.validator.validate(
       workflowType,
@@ -32,6 +36,21 @@ export class WorkflowEngine {
         success: false,
         reason: validation.reason
       };
+    }
+
+    if (requiredRoles.length > 0) {
+      const authorization = this.authorization.authorize(
+        userRoles,
+        action,
+        requiredRoles
+      );
+
+      if (!authorization.authorized) {
+        return {
+          success: false,
+          reason: authorization.reason
+        };
+      }
     }
 
     const rule = rules.find(
