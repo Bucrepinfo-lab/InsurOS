@@ -1,19 +1,19 @@
-import type { ActorStamped, IsoDateTime } from './base';
+import type { ActorStamped, IsoDateTime } from "./base";
+import type { WorkflowStatus } from "./workflow-status";
 
 export type WorkflowTransitionAction =
-  | 'Submit'
-  | 'Approve'
-  | 'Reject'
-  | 'Escalate'
-  | 'Reopen'
-  | 'Close';
+  | "Submit"
+  | "Approve"
+  | "Reject"
+  | "Escalate"
+  | "Reopen"
+  | "Close";
 
-export interface WorkflowTransition
-  extends ActorStamped {
+export interface WorkflowTransition extends ActorStamped {
   id: string;
   workflowId: string;
-  fromStatus: string;
-  toStatus: string;
+  fromStatus: WorkflowStatus;
+  toStatus: WorkflowStatus;
   action: WorkflowTransitionAction;
   reason?: string;
   occurredAt: IsoDateTime;
