@@ -15,4 +15,5 @@ export * from './workflow-rule';
 export * from './workflow-state-machine';
 export * from "./workflow-policy";
 export * from "./workflow-type";
+export * from "./workflow-type";
 
