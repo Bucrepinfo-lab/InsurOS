@@ -1,17 +1,9 @@
 import type { IsoDateTime, ModuleScoped, ReferencedEntity } from './base';
-
-export type CommentModule =
-  | 'Marketplace'
-  | 'Customers'
-  | 'Policies'
-  | 'Claims'
-  | 'Finance'
-  | 'Operations'
-  | 'Identity';
+import type { PlatformModule } from './modules';
 
 export interface PlatformComment
   extends ReferencedEntity,
-    ModuleScoped<CommentModule> {
+    ModuleScoped<PlatformModule> {
   body: string;
   author: string;
   createdAt: IsoDateTime;

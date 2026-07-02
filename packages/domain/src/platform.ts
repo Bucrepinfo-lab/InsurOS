@@ -1,13 +1,5 @@
 import type { ActorStamped, IsoDateTime, ModuleScoped, ReferencedEntity } from './base';
-
-export type ActivityModule =
-  | 'Marketplace'
-  | 'Customers'
-  | 'Policies'
-  | 'Claims'
-  | 'Finance'
-  | 'Operations'
-  | 'Identity';
+import type { PlatformModule } from './modules';
 
 export type ActivityType =
   | 'Created'
@@ -23,7 +15,7 @@ export type ActivityType =
 
 export interface ActivityEvent
   extends ReferencedEntity,
-    ModuleScoped<ActivityModule>,
+    ModuleScoped<PlatformModule>,
     ActorStamped {
   type: ActivityType;
   title: string;
