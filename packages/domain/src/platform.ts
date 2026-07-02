@@ -1,3 +1,5 @@
+import type { ActorStamped, IsoDateTime, ModuleScoped, ReferencedEntity } from './base';
+
 export type ActivityModule =
   | 'Marketplace'
   | 'Customers'
@@ -19,14 +21,12 @@ export type ActivityType =
   | 'DocumentUploaded'
   | 'StatusChanged';
 
-export interface ActivityEvent {
-  id: string;
-  module: ActivityModule;
-  entityId: string;
-  entityReference: string;
+export interface ActivityEvent
+  extends ReferencedEntity,
+    ModuleScoped<ActivityModule>,
+    ActorStamped {
   type: ActivityType;
   title: string;
   description: string;
-  actor: string;
-  occurredAt: string;
+  occurredAt: IsoDateTime;
 }
