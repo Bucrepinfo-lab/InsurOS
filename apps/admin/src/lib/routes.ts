@@ -13,6 +13,7 @@ export const routes = {
   comments: '/dashboard/comments',
   attachments: '/dashboard/attachments',
   audit: '/dashboard/audit',
+  operationsTransitions: '/dashboard/operations/transitions',
 
   marketplace: {
     index: '/dashboard/marketplace',
