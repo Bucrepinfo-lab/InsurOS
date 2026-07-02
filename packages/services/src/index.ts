@@ -11,3 +11,5 @@ export * from './comments';
 export * from './attachments';
 export * from './audit';
 export * from './audit';
+export * from './workflow-state-machine';
+export * from "./workflow-state-machine";
