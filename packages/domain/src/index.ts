@@ -11,4 +11,5 @@ export * from './audit';
 export * from './base';
 export * from './modules';
 export * from './workflow-transition';
+export * from './workflow-rule';
 
