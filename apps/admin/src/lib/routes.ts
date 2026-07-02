@@ -12,6 +12,7 @@ export const routes = {
   notifications: '/dashboard/notifications',
   comments: '/dashboard/comments',
   attachments: '/dashboard/attachments',
+  audit: '/dashboard/audit',
 
   marketplace: {
     index: '/dashboard/marketplace',
