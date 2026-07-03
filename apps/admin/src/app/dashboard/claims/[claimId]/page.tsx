@@ -7,10 +7,16 @@ import {
   DomainModulePage,
   Tabs
 } from '@insuros/ui';
-import { ClaimService } from '@insuros/services';
+import {
+  ClaimService,
+  WorkflowService,
+  WorkflowStateMachineService
+} from '@insuros/services';
 
 const claimId = 'CLM-2026-0001';
 const claimService = new ClaimService();
+const workflowService = new WorkflowService();
+const stateMachineService = new WorkflowStateMachineService();
 
 const tabs = [
   { id: 'overview', label: 'Overview', href: `/dashboard/claims/${claimId}` },
@@ -23,6 +29,11 @@ const tabs = [
 
 export default async function ClaimDetailPage() {
   const workflow = await claimService.getClaimWorkflow(claimId);
+  const rules = await workflowService.getTransitionRulesByWorkflowType('Claim Assessment');
+
+  const stateMachine = workflow
+    ? stateMachineService.build('Claim Assessment', workflow.workflowStatus, rules)
+    : null;
 
   return (
     <DomainModulePage
@@ -96,8 +107,18 @@ export default async function ClaimDetailPage() {
 
           <Card>
             <CardContent>
-              <p className='text-sm text-slate-500'>Workflow Claim</p>
-              <p className='mt-2 font-medium'>{workflow?.claimId ?? claimId}</p>
+              <p className='text-sm text-slate-500'>Allowed Actions</p>
+              <div className='mt-2 flex flex-wrap gap-2'>
+                {stateMachine && stateMachine.allowedActions.length > 0 ? (
+                  stateMachine.allowedActions.map((action) => (
+                    <Badge key={action} tone='neutral'>
+                      {action}
+                    </Badge>
+                  ))
+                ) : (
+                  <span className='text-sm text-slate-500'>No actions available</span>
+                )}
+              </div>
             </CardContent>
           </Card>
         </div>
