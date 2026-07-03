@@ -1,8 +1,8 @@
-﻿import { mockFinance, mockFinanceWorkflows } from "@insuros/mocks";
+﻿import { mockFinanceTransactions, mockFinanceWorkflows } from "@insuros/mocks";
 
 export class FinanceService {
-  async getFinanceOverview() {
-    return mockFinance;
+  async getFinanceTransactions() {
+    return mockFinanceTransactions;
   }
 
   async getFinanceWorkflows() {
