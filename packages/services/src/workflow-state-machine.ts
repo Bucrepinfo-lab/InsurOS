@@ -1,12 +1,14 @@
 import type {
   WorkflowStateMachine,
-  WorkflowTransitionRule
+  WorkflowTransitionRule,
+  WorkflowType,
+  WorkflowStatus
 } from "@insuros/domain";
 
 export class WorkflowStateMachineService {
   build(
-    workflowType: string,
-    currentStatus: string,
+    workflowType: WorkflowType,
+    currentStatus: WorkflowStatus,
     rules: WorkflowTransitionRule[]
   ): WorkflowStateMachine {
     const allowedActions = rules
