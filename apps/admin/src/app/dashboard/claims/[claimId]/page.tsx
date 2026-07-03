@@ -7,8 +7,10 @@ import {
   DomainModulePage,
   Tabs
 } from '@insuros/ui';
+import { ClaimService } from '@insuros/services';
 
 const claimId = 'CLM-2026-0001';
+const claimService = new ClaimService();
 
 const tabs = [
   { id: 'overview', label: 'Overview', href: `/dashboard/claims/${claimId}` },
@@ -19,11 +21,13 @@ const tabs = [
   { id: 'timeline', label: 'Timeline', href: `/dashboard/claims/${claimId}/timeline` }
 ];
 
-export default function ClaimDetailPage() {
+export default async function ClaimDetailPage() {
+  const workflow = await claimService.getClaimWorkflow(claimId);
+
   return (
     <DomainModulePage
       title='Claim CLM-2026-0001'
-      description='Complete claim workspace for FNOL, assessment, reserves, settlement, documents, and audit history.'
+      description='Complete claim workspace for FNOL, assessment, reserves, settlement, documents, workflow, and audit history.'
       actions={<Button>Assign Adjuster</Button>}
     >
       <div className='mb-6 flex flex-wrap gap-3'>
@@ -67,6 +71,33 @@ export default function ClaimDetailPage() {
             <CardContent>
               <p className='text-sm text-slate-500'>Assigned To</p>
               <p className='mt-2 font-medium'>Unassigned</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className='mt-6 grid gap-4 lg:grid-cols-3'>
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Workflow Stage</p>
+              <p className='mt-2 font-medium'>{workflow?.stage ?? 'Not started'}</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Workflow Status</p>
+              <div className='mt-2'>
+                <Badge tone={workflow?.workflowStatus === 'Approved' ? 'success' : 'warning'}>
+                  {workflow?.workflowStatus ?? 'Unavailable'}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Workflow Claim</p>
+              <p className='mt-2 font-medium'>{workflow?.claimId ?? claimId}</p>
             </CardContent>
           </Card>
         </div>
