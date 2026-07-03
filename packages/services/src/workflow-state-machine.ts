@@ -1,8 +1,8 @@
 import type {
   WorkflowStateMachine,
+  WorkflowStatus,
   WorkflowTransitionRule,
-  WorkflowType,
-  WorkflowStatus
+  WorkflowType
 } from "@insuros/domain";
 
 export class WorkflowStateMachineService {
