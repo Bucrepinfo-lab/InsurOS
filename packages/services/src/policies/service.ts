@@ -1,4 +1,4 @@
-﻿import { mockPolicies } from "@insuros/mocks";
+﻿import { mockPolicies, mockPolicyWorkflows } from "@insuros/mocks";
 
 export class PolicyService {
   async getPolicies() {
@@ -7,5 +7,13 @@ export class PolicyService {
 
   async getPolicy(id: string) {
     return mockPolicies.find((policy) => policy.id === id);
+  }
+
+  async getPolicyWorkflows() {
+    return mockPolicyWorkflows;
+  }
+
+  async getPolicyWorkflow(policyId: string) {
+    return mockPolicyWorkflows.find((workflow) => workflow.policyId === policyId);
   }
 }
