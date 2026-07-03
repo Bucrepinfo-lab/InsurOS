@@ -13,3 +13,4 @@ export * from './workflow-transitions';
 export * from './workflow-rules';
 export * from "./claim-workflows";
 export * from "./claim-workflows";
+export * from "./claim-workflows";
