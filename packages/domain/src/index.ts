@@ -19,4 +19,5 @@ export * from "./workflow-type";
 export * from "./workflow-status";
 export * from "./claim-workflow";
 export * from "./claim-workflow";
+export * from "./claim-workflows";
 

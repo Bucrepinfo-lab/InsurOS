@@ -1,14 +1,19 @@
-import type { WorkflowStatus } from "./workflow-status";
+import type { ClaimWorkflow } from "@insuros/domain";
 
-export type ClaimWorkflowStage =
-  | "FNOL"
-  | "Assessment"
-  | "Investigation"
-  | "Settlement"
-  | "Closed";
-
-export interface ClaimWorkflow {
-  claimId: string;
-  stage: ClaimWorkflowStage;
-  workflowStatus: WorkflowStatus;
-}
+export const mockClaimWorkflows: ClaimWorkflow[] = [
+  {
+    claimId: "CLM-2026-0001",
+    stage: "FNOL",
+    workflowStatus: "Submitted"
+  },
+  {
+    claimId: "CLM-2026-0002",
+    stage: "Assessment",
+    workflowStatus: "In Review"
+  },
+  {
+    claimId: "CLM-2026-0003",
+    stage: "Settlement",
+    workflowStatus: "Approved"
+  }
+];
