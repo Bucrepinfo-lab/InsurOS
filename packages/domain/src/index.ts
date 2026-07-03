@@ -18,3 +18,4 @@ export * from "./workflow-state-machine";
 export * from "./workflow-status";
 export * from "./workflow-transition";
 export * from "./workflow-type";
+export * from "./policy-workflow";
