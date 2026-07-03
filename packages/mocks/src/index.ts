@@ -16,3 +16,4 @@ export * from "./workflows";
 export * from "./policy-workflows";
 export * from "./finance-workflows";
 export * from "./marketplace-workflows";
+export * from "./customer-workflows";
