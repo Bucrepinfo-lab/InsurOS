@@ -1,11 +1,15 @@
-﻿import { mockFinanceTransactions } from "@insuros/mocks";
+﻿import { mockFinance, mockFinanceWorkflows } from "@insuros/mocks";
 
 export class FinanceService {
-  async getTransactions() {
-    return mockFinanceTransactions;
+  async getFinanceOverview() {
+    return mockFinance;
   }
 
-  async getTransaction(id: string) {
-    return mockFinanceTransactions.find((transaction) => transaction.id === id);
+  async getFinanceWorkflows() {
+    return mockFinanceWorkflows;
+  }
+
+  async getFinanceWorkflow(financeId: string) {
+    return mockFinanceWorkflows.find((workflow) => workflow.financeId === financeId);
   }
 }
