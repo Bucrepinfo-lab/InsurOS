@@ -13,3 +13,4 @@ export * from "./workflow-policies";
 export * from "./workflow-rules";
 export * from "./workflow-transitions";
 export * from "./workflows";
+export * from "./policy-workflows";
