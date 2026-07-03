@@ -2,8 +2,9 @@ import Link from 'next/link';
 import { Badge, Button, Card, CardContent, DomainModulePage, Tabs } from '@insuros/ui';
 import { CustomerService } from '@insuros/services';
 
-const customerId = 'demo-customer';
+const customerId = 'CUS-2026-0001';
 const customerService = new CustomerService();
+
 const tabs = [
   { id: 'overview', label: 'Overview', href: `/dashboard/customers/${customerId}` },
   { id: 'profile', label: 'Profile', href: `/dashboard/customers/${customerId}/profile` },
@@ -15,10 +16,12 @@ const tabs = [
 ];
 
 export default async function CustomersPage() {
+  const workflow = await customerService.getCustomerWorkflow(customerId);
+
   return (
     <DomainModulePage
       title='Demo Customer'
-      description='Customer 360 profile, policies, claims, payments, KYC, contacts, and lifecycle history.'
+      description='Customer 360 profile, policies, claims, payments, KYC, contacts, workflow, and lifecycle history.'
       actions={<Button>Edit Customer</Button>}
     >
       <div className='mb-6 flex flex-wrap gap-3'>
@@ -55,6 +58,33 @@ export default async function CustomersPage() {
             <CardContent>
               <p className='text-sm text-slate-500'>Primary Email</p>
               <p className='mt-2 font-medium text-slate-950'>customer@insuros.local</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className='mt-6 grid gap-4 lg:grid-cols-3'>
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Workflow Stage</p>
+              <p className='mt-2 font-medium text-slate-950'>{workflow?.stage ?? 'Not started'}</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Workflow Status</p>
+              <div className='mt-2'>
+                <Badge tone={workflow?.workflowStatus === 'Approved' ? 'success' : 'warning'}>
+                  {workflow?.workflowStatus ?? 'Unavailable'}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Workflow Customer</p>
+              <p className='mt-2 font-medium text-slate-950'>{workflow?.customerId ?? customerId}</p>
             </CardContent>
           </Card>
         </div>
