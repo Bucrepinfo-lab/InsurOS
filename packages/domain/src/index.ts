@@ -17,4 +17,5 @@ export * from "./workflow-policy";
 export * from "./workflow-type";
 export * from "./workflow-type";
 export * from "./workflow-status";
+export * from "./claim-workflow";
 
