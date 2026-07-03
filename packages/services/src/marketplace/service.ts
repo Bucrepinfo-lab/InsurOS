@@ -1,12 +1,12 @@
-import { mockMarketplaceProducts, mockMarketplaceWorkflows } from "@insuros/mocks";
+import { mockMarketplaceWorkflows, mockProducts } from "@insuros/mocks";
 
 export class MarketplaceService {
   async getProducts() {
-    return mockMarketplaceProducts;
+    return mockProducts;
   }
 
   async getProduct(id: string) {
-    return mockMarketplaceProducts.find((product) => product.id === id);
+    return mockProducts.find((product) => product.id === id);
   }
 
   async getMarketplaceWorkflows() {
