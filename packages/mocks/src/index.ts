@@ -14,3 +14,4 @@ export * from "./workflow-rules";
 export * from "./workflow-transitions";
 export * from "./workflows";
 export * from "./policy-workflows";
+export * from "./finance-workflows";
