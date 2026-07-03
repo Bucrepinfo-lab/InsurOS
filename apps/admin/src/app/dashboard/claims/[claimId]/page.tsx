@@ -9,6 +9,7 @@ import {
 } from '@insuros/ui';
 import {
   ClaimService,
+  WorkflowEngine,
   WorkflowService,
   WorkflowStateMachineService
 } from '@insuros/services';
@@ -17,6 +18,7 @@ const claimId = 'CLM-2026-0001';
 const claimService = new ClaimService();
 const workflowService = new WorkflowService();
 const stateMachineService = new WorkflowStateMachineService();
+const workflowEngine = new WorkflowEngine();
 
 const tabs = [
   { id: 'overview', label: 'Overview', href: `/dashboard/claims/${claimId}` },
@@ -34,6 +36,18 @@ export default async function ClaimDetailPage() {
   const stateMachine = workflow
     ? stateMachineService.build('Claim Assessment', workflow.workflowStatus, rules)
     : null;
+
+  const previewAction = stateMachine?.allowedActions[0];
+
+  const executionPreview =
+    workflow && previewAction
+      ? workflowEngine.execute(
+          'Claim Assessment',
+          workflow.workflowStatus,
+          previewAction,
+          rules
+        )
+      : null;
 
   return (
     <DomainModulePage
@@ -119,6 +133,43 @@ export default async function ClaimDetailPage() {
                   <span className='text-sm text-slate-500'>No actions available</span>
                 )}
               </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className='mt-6'>
+          <Card>
+            <CardContent>
+              <p className='text-sm text-slate-500'>Execution Preview</p>
+
+              {executionPreview ? (
+                <div className='mt-2 space-y-2'>
+                  <p className='text-sm'>
+                    Action:{' '}
+                    <span className='font-medium text-slate-950'>
+                      {previewAction}
+                    </span>
+                  </p>
+
+                  <p className='text-sm'>
+                    Result:{' '}
+                    <Badge tone={executionPreview.success ? 'success' : 'danger'}>
+                      {executionPreview.success ? 'Allowed' : 'Blocked'}
+                    </Badge>
+                  </p>
+
+                  <p className='text-sm'>
+                    Next Status:{' '}
+                    <span className='font-medium text-slate-950'>
+                      {executionPreview.nextStatus ?? 'N/A'}
+                    </span>
+                  </p>
+                </div>
+              ) : (
+                <p className='mt-2 text-sm text-slate-500'>
+                  No workflow execution preview is currently available.
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>
