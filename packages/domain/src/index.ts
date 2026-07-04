@@ -28,3 +28,4 @@ export * from "./notification-event";
 export * from "./platform-event";
 export * from "./platform-event";
 export * from "./platform-event-types";
+export * from "./permission";
