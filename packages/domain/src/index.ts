@@ -22,3 +22,4 @@ export * from "./policy-workflow";
 export * from "./finance-workflow";
 export * from "./marketplace-workflow";
 export * from "./customer-workflow";
+export * from "./identity-workflow";
