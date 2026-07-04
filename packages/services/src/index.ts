@@ -18,3 +18,4 @@ export * from "./workflow-engine";
 export * from "./workflow-authorization";
 export * from "./workflow-authorization";
 export * from "./identity/service";
+export * from "./audit-events";
