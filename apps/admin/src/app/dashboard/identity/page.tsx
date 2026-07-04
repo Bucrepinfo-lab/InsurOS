@@ -8,7 +8,7 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
-import { IdentityService } from '@insuros/services';
+import { IdentityService, PermissionService } from '@insuros/services';
 
 type UserRow = {
   name: string;
@@ -18,6 +18,7 @@ type UserRow = {
 };
 
 const identityService = new IdentityService();
+const permissionService = new PermissionService();
 
 const users: UserRow[] = [
   {
@@ -28,7 +29,7 @@ const users: UserRow[] = [
   }
 ];
 
-const columns: DataTableColumn<UserRow>[] = [
+const userColumns: DataTableColumn<UserRow>[] = [
   { key: 'name', header: 'Name' },
   { key: 'email', header: 'Email' },
   { key: 'role', header: 'Role' },
@@ -41,6 +42,24 @@ const columns: DataTableColumn<UserRow>[] = [
 
 export default async function IdentityPage() {
   const workflows = await identityService.getIdentityWorkflows();
+  const permissions = await permissionService.getPermissions();
+
+  type PermissionRow = (typeof permissions)[number];
+
+  const permissionColumns: DataTableColumn<PermissionRow>[] = [
+    { key: 'scope', header: 'Scope' },
+    { key: 'action', header: 'Action' },
+    { key: 'description', header: 'Description' },
+    {
+      key: 'action',
+      header: 'Permission',
+      render: (permission) => (
+        <Badge tone={permission.action === 'Approve' || permission.action === 'Execute' ? 'success' : 'neutral'}>
+          {permission.action}
+        </Badge>
+      )
+    }
+  ];
 
   return (
     <DomainModulePage
@@ -51,7 +70,7 @@ export default async function IdentityPage() {
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Identity Workflows' value={String(workflows.length)} change='Tracked identities' />
         <KPICard title='In Review' value={String(workflows.filter((item) => item.workflowStatus === 'In Review').length)} change='Needs verification' />
-        <KPICard title='Approved' value={String(workflows.filter((item) => item.workflowStatus === 'Approved').length)} change='Verified identities' />
+        <KPICard title='Permissions' value={String(permissions.length)} change='Platform access rules' />
       </div>
 
       <div className='mb-6 grid gap-4 lg:grid-cols-3'>
@@ -74,17 +93,31 @@ export default async function IdentityPage() {
         ))}
       </div>
 
-      <DomainEntityList
-        title='Users'
-        description='People with access to this tenant and their assigned roles.'
-        searchPlaceholder='Search users...'
-        columns={columns}
-        data={users}
-        emptyTitle='No users yet'
-        emptyDescription='Invite the first administrator or operator to begin managing this tenant.'
-        emptyAction={<Button>Invite User</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
-      />
+      <div className='space-y-6'>
+        <DomainEntityList
+          title='Permissions'
+          description='Platform permissions used to govern access to workflows, modules, exports, and operational actions.'
+          searchPlaceholder='Search permissions...'
+          columns={permissionColumns}
+          data={permissions}
+          emptyTitle='No permissions'
+          emptyDescription='No platform permissions are currently configured.'
+          emptyAction={<Button>Create Permission</Button>}
+          actions={<Button variant='secondary'>Export</Button>}
+        />
+
+        <DomainEntityList
+          title='Users'
+          description='People with access to this tenant and their assigned roles.'
+          searchPlaceholder='Search users...'
+          columns={userColumns}
+          data={users}
+          emptyTitle='No users yet'
+          emptyDescription='Invite the first administrator or operator to begin managing this tenant.'
+          emptyAction={<Button>Invite User</Button>}
+          actions={<Button variant='secondary'>Export</Button>}
+        />
+      </div>
     </DomainModulePage>
   );
 }
