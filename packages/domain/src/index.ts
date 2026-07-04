@@ -31,3 +31,4 @@ export * from "./platform-event-types";
 export * from "./permission";
 export * from "./role";
 export * from "./role-assignment";
+export * from "./platform-setting";
