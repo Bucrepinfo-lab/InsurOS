@@ -17,3 +17,4 @@ export * from "./workflow-validator";
 export * from "./workflow-engine";
 export * from "./workflow-authorization";
 export * from "./workflow-authorization";
+export * from "./identity/service";
