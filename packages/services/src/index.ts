@@ -25,3 +25,4 @@ export * from "./platform-event-dispatcher";
 export * from "./permissions";
 export * from "./roles";
 export * from "./authorization";
+export * from "./role-assignments";
