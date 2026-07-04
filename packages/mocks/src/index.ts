@@ -18,3 +18,4 @@ export * from "./finance-workflows";
 export * from "./marketplace-workflows";
 export * from "./customer-workflows";
 export * from "./identity-workflows";
+export * from "./audit-events";
