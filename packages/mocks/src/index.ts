@@ -21,3 +21,4 @@ export * from "./identity-workflows";
 export * from "./audit-events";
 export * from "./notification-events";
 export * from "./platform-events";
+export * from "./permissions";
