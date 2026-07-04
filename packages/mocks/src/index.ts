@@ -20,3 +20,4 @@ export * from "./customer-workflows";
 export * from "./identity-workflows";
 export * from "./audit-events";
 export * from "./notification-events";
+export * from "./platform-events";

@@ -4,7 +4,7 @@ export type NotificationChannel =
   | "SMS"
   | "Webhook";
 
-export type NotificationStatus =
+export type NotificationEventStatus =
   | "Pending"
   | "Queued"
   | "Sent"
@@ -17,6 +17,6 @@ export interface NotificationEvent {
   title: string;
   message: string;
   channel: NotificationChannel;
-  status: NotificationStatus;
+  status: NotificationEventStatus;
   createdAt: string;
 }
