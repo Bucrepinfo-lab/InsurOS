@@ -19,3 +19,4 @@ export * from "./workflow-authorization";
 export * from "./workflow-authorization";
 export * from "./identity/service";
 export * from "./audit-events";
+export * from "./notification-events";
