@@ -23,3 +23,4 @@ export * from "./notification-events";
 export * from "./platform-events";
 export * from "./platform-event-dispatcher";
 export * from "./permissions";
+export * from "./roles";
