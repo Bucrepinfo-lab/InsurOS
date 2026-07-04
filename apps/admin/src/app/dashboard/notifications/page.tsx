@@ -6,15 +6,18 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
-import { NotificationService } from '@insuros/services';
+import { NotificationEventService, NotificationService } from '@insuros/services';
 
 const notificationService = new NotificationService();
+const notificationEventService = new NotificationEventService();
 
 export default async function NotificationsPage() {
   const notifications = await notificationService.getNotifications();
   const unread = await notificationService.getUnreadNotifications();
+  const events = await notificationEventService.getNotificationEvents();
 
   type NotificationRow = (typeof notifications)[number];
+  type NotificationEventRow = (typeof events)[number];
 
   const columns: DataTableColumn<NotificationRow>[] = [
     { key: 'title', header: 'Notification' },
@@ -51,29 +54,70 @@ export default async function NotificationsPage() {
     }
   ];
 
+  const eventColumns: DataTableColumn<NotificationEventRow>[] = [
+    { key: 'title', header: 'Event' },
+    { key: 'entityType', header: 'Entity Type' },
+    { key: 'entityId', header: 'Entity ID' },
+    { key: 'channel', header: 'Channel' },
+    { key: 'createdAt', header: 'Created At' },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (row) => (
+        <Badge
+          tone={
+            row.status === 'Sent'
+              ? 'success'
+              : row.status === 'Failed'
+                ? 'danger'
+                : row.status === 'Queued'
+                  ? 'warning'
+                  : 'neutral'
+          }
+        >
+          {row.status}
+        </Badge>
+      )
+    }
+  ];
+
   return (
     <DomainModulePage
       title='Notification Center'
-      description='Review platform notifications, alerts, warnings, approvals, and operational messages.'
+      description='Review platform notifications, notification events, alerts, warnings, approvals, and operational messages.'
       actions={<Button>Notification Rules</Button>}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Notifications' value={String(notifications.length)} change='Across platform' />
         <KPICard title='Unread' value={String(unread.length)} change='Needs review' />
-        <KPICard title='Critical' value={String(notifications.filter((item) => item.severity === 'Critical').length)} change='Immediate attention' />
+        <KPICard title='Notification Events' value={String(events.length)} change='Delivery pipeline' />
       </div>
 
-      <DomainEntityList
-        title='Notifications'
-        description='Platform notifications generated across modules and workflows.'
-        searchPlaceholder='Search notifications...'
-        columns={columns}
-        data={notifications}
-        emptyTitle='No notifications'
-        emptyDescription='No platform notifications are currently available.'
-        emptyAction={<Button>Notification Rules</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
-      />
+      <div className='space-y-6'>
+        <DomainEntityList
+          title='Notification Events'
+          description='Platform notification events prepared for in-app, email, SMS, and webhook delivery.'
+          searchPlaceholder='Search notification events...'
+          columns={eventColumns}
+          data={events}
+          emptyTitle='No notification events'
+          emptyDescription='No platform notification events are currently available.'
+          emptyAction={<Button>Notification Rules</Button>}
+          actions={<Button variant='secondary'>Export</Button>}
+        />
+
+        <DomainEntityList
+          title='Notifications'
+          description='Platform notifications generated across modules and workflows.'
+          searchPlaceholder='Search notifications...'
+          columns={columns}
+          data={notifications}
+          emptyTitle='No notifications'
+          emptyDescription='No platform notifications are currently available.'
+          emptyAction={<Button>Notification Rules</Button>}
+          actions={<Button variant='secondary'>Export</Button>}
+        />
+      </div>
     </DomainModulePage>
   );
 }
