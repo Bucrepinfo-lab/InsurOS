@@ -8,9 +8,16 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
-import { IdentityService, PermissionService, RoleService } from '@insuros/services';
+import {
+  AuthorizationService,
+  IdentityService,
+  PermissionService,
+  RoleAssignmentService,
+  RoleService
+} from '@insuros/services';
 
 type UserRow = {
+  id: string;
   name: string;
   email: string;
   role: string;
@@ -20,12 +27,15 @@ type UserRow = {
 const identityService = new IdentityService();
 const permissionService = new PermissionService();
 const roleService = new RoleService();
+const roleAssignmentService = new RoleAssignmentService();
+const authorizationService = new AuthorizationService();
 
 const users: UserRow[] = [
   {
+    id: 'user-platform-admin',
     name: 'Platform Admin',
     email: 'admin@insuros.local',
-    role: 'Super Admin',
+    role: 'Platform Admin',
     status: 'Active'
   }
 ];
@@ -45,9 +55,17 @@ export default async function IdentityPage() {
   const workflows = await identityService.getIdentityWorkflows();
   const permissions = await permissionService.getPermissions();
   const roles = await roleService.getRoles();
+  const assignments = await roleAssignmentService.getRoleAssignments();
+
+  const authorizationPreview = await authorizationService.authorize(
+    'role-platform-admin',
+    'Platform',
+    'Export'
+  );
 
   type PermissionRow = (typeof permissions)[number];
   type RoleRow = (typeof roles)[number];
+  type RoleAssignmentRow = (typeof assignments)[number];
 
   const permissionColumns: DataTableColumn<PermissionRow>[] = [
     { key: 'scope', header: 'Scope' },
@@ -65,16 +83,24 @@ export default async function IdentityPage() {
     }
   ];
 
+  const assignmentColumns: DataTableColumn<RoleAssignmentRow>[] = [
+    { key: 'userId', header: 'User' },
+    { key: 'roleId', header: 'Role' },
+    { key: 'assignedBy', header: 'Assigned By' },
+    { key: 'assignedAt', header: 'Assigned At' }
+  ];
+
   return (
     <DomainModulePage
       title='Identity & Access Management'
-      description='Manage users, roles, permissions, memberships, verification workflows, and secure access across InsurOS tenants.'
+      description='Manage users, roles, permissions, memberships, role assignments, verification workflows, and secure access across InsurOS tenants.'
       actions={<Button>Invite User</Button>}
     >
-      <div className='mb-6 grid gap-4 md:grid-cols-3'>
+      <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard title='Identity Workflows' value={String(workflows.length)} change='Tracked identities' />
         <KPICard title='Roles' value={String(roles.length)} change='Access groups' />
-        <KPICard title='Permissions' value={String(permissions.length)} change='Platform access rules' />
+        <KPICard title='Permissions' value={String(permissions.length)} change='Access rules' />
+        <KPICard title='Assignments' value={String(assignments.length)} change='User-role links' />
       </div>
 
       <div className='mb-6 grid gap-4 lg:grid-cols-3'>
@@ -97,7 +123,39 @@ export default async function IdentityPage() {
         ))}
       </div>
 
-      <div className='space-y-6'>
+      <Card>
+        <CardContent>
+          <p className='text-sm text-slate-500'>Authorization Preview</p>
+          <p className='mt-2 text-sm'>
+            Role <span className='font-medium'>Platform Admin</span> requesting{' '}
+            <span className='font-medium'>Platform / Export</span>
+          </p>
+
+          <div className='mt-3'>
+            <Badge tone={authorizationPreview.allowed ? 'success' : 'danger'}>
+              {authorizationPreview.allowed ? 'Allowed' : 'Denied'}
+            </Badge>
+          </div>
+
+          {authorizationPreview.reason ? (
+            <p className='mt-3 text-sm text-slate-500'>{authorizationPreview.reason}</p>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      <div className='mt-6 space-y-6'>
+        <DomainEntityList
+          title='Role Assignments'
+          description='Mappings between users and roles used by the authorization engine.'
+          searchPlaceholder='Search role assignments...'
+          columns={assignmentColumns}
+          data={assignments}
+          emptyTitle='No role assignments'
+          emptyDescription='No role assignments are currently configured.'
+          emptyAction={<Button>Assign Role</Button>}
+          actions={<Button variant='secondary'>Export</Button>}
+        />
+
         <DomainEntityList
           title='Roles'
           description='Role groups that bundle platform permissions for operators and administrators.'
