@@ -21,3 +21,4 @@ export * from "./identity/service";
 export * from "./audit-events";
 export * from "./notification-events";
 export * from "./platform-events";
+export * from "./platform-event-dispatcher";
