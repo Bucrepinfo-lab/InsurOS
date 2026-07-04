@@ -25,3 +25,4 @@ export * from "./customer-workflow";
 export * from "./identity-workflow";
 export * from "./audit-event";
 export * from "./notification-event";
+export * from "./platform-event";
