@@ -40,3 +40,4 @@ export * from "./terms";
 export * from "./sales-hierarchy";
 export * from "./commission";
 export * from "./jurisdiction-access";
+export * from "./clerk-integration";

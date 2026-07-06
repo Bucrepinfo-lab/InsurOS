@@ -19,7 +19,12 @@ export const adminNavigation: NavigationSection[] = [
     items: [
       { id: 'dashboard', label: 'Dashboard', href: '/dashboard' },
       { id: 'tenants', label: 'Tenants', href: '/dashboard/tenants' },
-      { id: 'identity', label: 'Identity', href: '/dashboard/identity' }
+      { id: 'identity', label: 'Identity', href: '/dashboard/identity' },
+      {
+        id: 'clerk-sync',
+        label: 'Clerk Sync',
+        href: '/dashboard/identity/clerk-sync'
+      }
     ]
   },
   {

@@ -34,3 +34,4 @@ export * from "./terms";
 export * from "./sales-hierarchy";
 export * from "./commissions";
 export * from "./jurisdiction-authorization";
+export * from "./principal";

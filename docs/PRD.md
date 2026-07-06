@@ -34,10 +34,10 @@ Versioned, audience-scoped terms documents with click-wrap acceptance records (u
 
 Sales ranks mirror the admin hierarchy: Global Sales Head → Continental Director → National Manager → County Manager → Constituency Agent. A superior names agents and issues target assignments only to strictly lower ranks within their own reporting line. UI: `/dashboard/sales` and `/dashboard/sales/assignments`.
 
+## Clerk Production Integration
+
+The dashboard layout resolves each signed-in Clerk user (by email) to a `SessionPrincipal` — jurisdiction assignments, effective permission keys, and accessible territory — replacing hardcoded permissions. `CLERK_ORG_ROLE_BY_LEVEL` maps admin levels to Clerk org roles (`org:super_admin` … `org:constituency_admin`), and the Clerk Sync plan (`/dashboard/identity/clerk-sync`) deterministically translates every assignment into Clerk organization-membership API calls. Executing the plan needs `CLERK_SECRET_KEY` (production config still deferred). Unmapped users keep dev access; production should route them to an access request.
+
 ## Jurisdiction-Scoped RBAC
 
-Roles are granted per jurisdiction (`JurisdictionAssignment`: user × role × region). The authorization engine allows an action only when an active assignment's role carries the permission AND the target region is the grant region or a descendant — so a County admin cannot touch another county, and suspended grants deny everything. `getAccessibleRegions` resolves a user's full territory. This model maps 1:1 onto Clerk organization roles for production. UI: `/dashboard/governance/access` with a live authorization-decision preview.
-
-## Commission Engine
-
-Rate cards per rank (direct + override percentages), automatic accrual on written premium up the supervisor chain, clawbacks for 
+Roles are granted pe
