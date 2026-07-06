@@ -54,7 +54,12 @@ export const adminNavigation: NavigationSection[] = [
       { id: 'policies', label: 'Policies', href: '/dashboard/policies' },
       { id: 'claims', label: 'Claims', href: '/dashboard/claims' },
       { id: 'finance', label: 'Finance', href: '/dashboard/finance' },
-      { id: 'tax', label: 'Tax Remittance', href: '/dashboard/finance/tax' }
+      { id: 'tax', label: 'Tax Remittance', href: '/dashboard/finance/tax' },
+      {
+        id: 'regional-tax',
+        label: 'Regional Tax',
+        href: '/dashboard/finance/tax/regional'
+      }
     ]
   },
   {

@@ -26,6 +26,8 @@ Each operating country is a `TaxJurisdiction` carrying its statutory components 
 
 Computed figures are informational; filers must re-verify rates with the authority. UI: `/dashboard/finance/tax`.
 
+Subnational layer: `SubnationalTaxRule` adds per-state/per-county rules (percentage or flat) on top of national components — US state premium taxes (CA 2.35%, NY 2.0%, TX 1.6%, FL 1.75%, IL 0.5%), Australian insurance duties (NSW 9%, VIC 10%, QLD 9%, ACT abolished), and Kenyan county business permits (flat, indicative). `RegionalTaxService.computeRegional` merges national + regional lines into one total. UI: `/dashboard/finance/tax/regional`.
+
 ## Terms & Conditions
 
 Versioned, audience-scoped terms documents with click-wrap acceptance records (user, version, timestamp, IP, method). Legal text lives in `docs/TERMS_AND_CONDITIONS.md`; registry and acceptance log at `/dashboard/legal`. New versions supersede with 30 days' notice.
@@ -36,8 +38,4 @@ Sales ranks mirror the admin hierarchy: Global Sales Head → Continental Direct
 
 ## Clerk Production Integration
 
-The dashboard layout resolves each signed-in Clerk user (by email) to a `SessionPrincipal` — jurisdiction assignments, effective permission keys, and accessible territory — replacing hardcoded permissions. `CLERK_ORG_ROLE_BY_LEVEL` maps admin levels to Clerk org roles (`org:super_admin` … `org:constituency_admin`), and the Clerk Sync plan (`/dashboard/identity/clerk-sync`) deterministically translates every assignment into Clerk organization-membership API calls. Executing the plan needs `CLERK_SECRET_KEY` (production config still deferred). Unmapped users keep dev access; production should route them to an access request.
-
-## Jurisdiction-Scoped RBAC
-
-Roles are granted pe
+The dashboard layout resolves each signed-in Clerk user (by email) to a `SessionPrincipal` — jurisdiction assignments, effective permission keys, and accessible territory — replacing hardcoded permissions. `CLERK_ORG_ROLE_BY_LEVEL` m
