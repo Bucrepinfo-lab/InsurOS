@@ -138,16 +138,10 @@ Current layers:
 
 ---
 
-## Future Platform Capabilities
+## Governance & Growth Capabilities (added 2026-07-06)
 
-Future cross-cutting capabilities may include:
+### Admin Hierarchy
 
-- Permissions and capabilities
-- Universal search
-- Reporting widgets
-- Document generation
-- Messaging
-- Webhooks
-- Integrations
-- Background jobs
-- API adapters
+Multi-continental jurisdiction tree (Super Admin → Continental → National → County → Constituency) with rank-enforced appointments.
+
+Current layers: Domain, Mo

@@ -18,37 +18,55 @@ export const adminNavigation: NavigationSection[] = [
     title: 'Platform',
     items: [
       { id: 'dashboard', label: 'Dashboard', href: '/dashboard' },
-      { id: 'organizations', label: 'Organizations', href: '/organizations' },
-      { id: 'identity', label: 'Identity', href: '/identity' }
+      { id: 'tenants', label: 'Tenants', href: '/dashboard/tenants' },
+      { id: 'identity', label: 'Identity', href: '/dashboard/identity' }
+    ]
+  },
+  {
+    id: 'governance',
+    title: 'Governance',
+    items: [
+      { id: 'governance', label: 'Regions', href: '/dashboard/governance' },
+      {
+        id: 'appointments',
+        label: 'Admin Appointments',
+        href: '/dashboard/governance/appointments'
+      },
+      { id: 'legal', label: 'Legal & Terms', href: '/dashboard/legal' }
     ]
   },
   {
     id: 'insurance',
     title: 'Insurance Operations',
     items: [
-      { id: 'marketplace', label: 'Marketplace', href: '/marketplace' },
-      { id: 'customers', label: 'Customers', href: '/customers' },
-      { id: 'policies', label: 'Policies', href: '/policies' },
-      { id: 'claims', label: 'Claims', href: '/claims' },
-      { id: 'finance', label: 'Finance', href: '/finance' }
+      { id: 'marketplace', label: 'Marketplace', href: '/dashboard/marketplace' },
+      { id: 'customers', label: 'Customers', href: '/dashboard/customers' },
+      { id: 'policies', label: 'Policies', href: '/dashboard/policies' },
+      { id: 'claims', label: 'Claims', href: '/dashboard/claims' },
+      { id: 'finance', label: 'Finance', href: '/dashboard/finance' },
+      { id: 'tax', label: 'Tax Remittance', href: '/dashboard/finance/tax' }
     ]
   },
   {
-    id: 'intelligence',
-    title: 'Intelligence',
+    id: 'sales',
+    title: 'Sales',
     items: [
-      { id: 'ai', label: 'AI Platform', href: '/ai' },
-      { id: 'knowledge', label: 'Knowledge Platform', href: '/knowledge' },
-      { id: 'workflow', label: 'Workflow', href: '/workflow' },
-      { id: 'events', label: 'Events', href: '/events' }
+      { id: 'sales', label: 'Sales Portal', href: '/dashboard/sales' },
+      {
+        id: 'sales-assignments',
+        label: 'Assignments',
+        href: '/dashboard/sales/assignments'
+      }
     ]
   },
   {
     id: 'operations',
     title: 'Operations',
     items: [
-      { id: 'observability', label: 'Observability', href: '/observability' },
-      { id: 'configuration', label: 'Configuration', href: '/configuration' }
+      { id: 'operations', label: 'Operations', href: '/dashboard/operations' },
+      { id: 'activity', label: 'Activity', href: '/dashboard/activity' },
+      { id: 'notifications', label: 'Notifications', href: '/dashboard/notifications' },
+      { id: 'audit', label: 'Audit', href: '/dashboard/audit' }
     ]
   }
 ];
