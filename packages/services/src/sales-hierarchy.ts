@@ -1,6 +1,6 @@
 import type { SalesAgent, SalesAssignment } from "@insuros/domain";
 import { canAssignSales } from "@insuros/domain";
-import { mockSalesAgents, mockSalesAssignments } from "@insuros/mocks";
+import { getPersistence } from "./persistence";
 
 export interface CreateAssignmentInput {
   agentId: string;
@@ -19,25 +19,31 @@ export interface AssignmentResult {
 }
 
 export class SalesHierarchyService {
+  private get db() {
+    return getPersistence();
+  }
+
   async getAgents(): Promise<SalesAgent[]> {
-    return mockSalesAgents;
+    return this.db.salesAgents.findAll();
   }
 
   async getAgent(id: string): Promise<SalesAgent | undefined> {
-    return mockSalesAgents.find((agent) => agent.id === id);
+    return this.db.salesAgents.findById(id);
   }
 
   /** Direct reports of a supervisor. */
   async getTeam(supervisorId: string): Promise<SalesAgent[]> {
-    return mockSalesAgents.filter((agent) => agent.supervisorId === supervisorId);
+    return this.db.salesAgents.findWhere(
+      (agent) => agent.supervisorId === supervisorId
+    );
   }
 
   async getAssignments(): Promise<SalesAssignment[]> {
-    return mockSalesAssignments;
+    return this.db.salesAssignments.findAll();
   }
 
   async getAssignmentsForAgent(agentId: string): Promise<SalesAssignment[]> {
-    return mockSalesAssignments.filter(
+    return this.db.salesAssignments.findWhere(
       (assignment) => assignment.agentId === agentId
     );
   }
@@ -47,12 +53,8 @@ export class SalesHierarchyService {
    * assignee must be in the assigner's reporting line.
    */
   async createAssignment(input: CreateAssignmentInput): Promise<AssignmentResult> {
-    const superior = mockSalesAgents.find(
-      (agent) => agent.id === input.assignedByAgentId
-    );
-    const subordinate = mockSalesAgents.find(
-      (agent) => agent.id === input.agentId
-    );
+    const superior = await this.db.salesAgents.findById(input.assignedByAgentId);
+    const subordinate = await this.db.salesAgents.findById(input.agentId);
 
     if (!superior || !subordinate) {
       return { ok: false, error: "Unknown superior or subordinate agent." };
@@ -65,14 +67,14 @@ export class SalesHierarchyService {
       };
     }
 
-    if (!this.isInReportingLine(subordinate, superior.id)) {
+    if (!(await this.isInReportingLine(subordinate, superior.id))) {
       return {
         ok: false,
         error: "Agent is not in the assigner's reporting line."
       };
     }
 
-    const assignment: SalesAssignment = {
+    const assignment = await this.db.salesAssignments.insert({
       id: `sales-assign-${Date.now()}`,
       agentId: subordinate.id,
       assignedBy: superior.id,
@@ -83,21 +85,22 @@ export class SalesHierarchyService {
       assignedAt: new Date().toISOString(),
       status: "Assigned",
       notes: input.notes
-    };
-
-    mockSalesAssignments.push(assignment);
+    });
 
     return { ok: true, assignment };
   }
 
-  private isInReportingLine(agent: SalesAgent, superiorId: string): boolean {
+  private async isInReportingLine(
+    agent: SalesAgent,
+    superiorId: string
+  ): Promise<boolean> {
     let current: SalesAgent | undefined = agent;
 
     while (current?.supervisorId) {
       if (current.supervisorId === superiorId) {
         return true;
       }
-      current = mockSalesAgents.find((item) => item.id === current?.supervisorId);
+      current = await this.db.salesAgents.findById(current.supervisorId);
     }
 
     return false;

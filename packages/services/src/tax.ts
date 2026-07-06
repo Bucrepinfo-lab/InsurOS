@@ -4,7 +4,7 @@ import type {
   TaxRemittance
 } from "@insuros/domain";
 import { computeTaxLines, totalTaxDue } from "@insuros/domain";
-import { mockTaxJurisdictions, mockTaxRemittances } from "@insuros/mocks";
+import { getPersistence } from "./persistence";
 
 export interface ComputeRemittanceInput {
   jurisdictionId: string;
@@ -15,28 +15,34 @@ export interface ComputeRemittanceInput {
 }
 
 export class TaxRemittanceService {
+  private get db() {
+    return getPersistence();
+  }
+
   async getJurisdictions(): Promise<TaxJurisdiction[]> {
-    return mockTaxJurisdictions;
+    return this.db.taxJurisdictions.findAll();
   }
 
   async getJurisdiction(id: string): Promise<TaxJurisdiction | undefined> {
-    return mockTaxJurisdictions.find((jurisdiction) => jurisdiction.id === id);
+    return this.db.taxJurisdictions.findById(id);
   }
 
   async getJurisdictionByCountry(
     countryCode: string
   ): Promise<TaxJurisdiction | undefined> {
-    return mockTaxJurisdictions.find(
-      (jurisdiction) => jurisdiction.countryCode === countryCode
+    const [jurisdiction] = await this.db.taxJurisdictions.findWhere(
+      (item) => item.countryCode === countryCode
     );
+
+    return jurisdiction;
   }
 
   async getRemittances(): Promise<TaxRemittance[]> {
-    return mockTaxRemittances;
+    return this.db.taxRemittances.findAll();
   }
 
   async getRemittancesForCountry(countryCode: string): Promise<TaxRemittance[]> {
-    return mockTaxRemittances.filter(
+    return this.db.taxRemittances.findWhere(
       (remittance) => remittance.countryCode === countryCode
     );
   }
@@ -44,13 +50,13 @@ export class TaxRemittanceService {
   /**
    * Compute a statutory remittance for a period. Uses the jurisdiction's
    * mandatory components (plus optional ones when requested) and returns a
-   * Draft remittance with a direct statutory payment link.
+   * Computed remittance with a direct statutory payment link.
    */
   async computeRemittance(
     input: ComputeRemittanceInput
   ): Promise<TaxRemittance> {
-    const jurisdiction = mockTaxJurisdictions.find(
-      (item) => item.id === input.jurisdictionId
+    const jurisdiction = await this.db.taxJurisdictions.findById(
+      input.jurisdictionId
     );
 
     if (!jurisdiction) {

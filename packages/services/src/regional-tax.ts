@@ -8,7 +8,7 @@ import {
   computeTaxLines,
   totalTaxDue
 } from "@insuros/domain";
-import { mockSubnationalTaxRules, mockTaxJurisdictions } from "@insuros/mocks";
+import { getPersistence } from "./persistence";
 
 export interface RegionalComputationResult {
   countryCode: string;
@@ -22,18 +22,22 @@ export interface RegionalComputationResult {
 }
 
 export class RegionalTaxService {
+  private get db() {
+    return getPersistence();
+  }
+
   async getRules(): Promise<SubnationalTaxRule[]> {
-    return mockSubnationalTaxRules;
+    return this.db.subnationalTaxRules.findAll();
   }
 
   async getRulesForCountry(countryCode: string): Promise<SubnationalTaxRule[]> {
-    return mockSubnationalTaxRules.filter(
+    return this.db.subnationalTaxRules.findWhere(
       (rule) => rule.countryCode === countryCode
     );
   }
 
   async getRulesForRegion(regionCode: string): Promise<SubnationalTaxRule[]> {
-    return mockSubnationalTaxRules.filter(
+    return this.db.subnationalTaxRules.findWhere(
       (rule) => rule.regionCode === regionCode
     );
   }
@@ -48,7 +52,7 @@ export class RegionalTaxService {
     grossPremium: number,
     insuranceLine: InsuranceLine
   ): Promise<RegionalComputationResult> {
-    const jurisdiction = mockTaxJurisdictions.find(
+    const [jurisdiction] = await this.db.taxJurisdictions.findWhere(
       (item) => item.countryCode === countryCode
     );
 
@@ -64,7 +68,7 @@ export class RegionalTaxService {
 
     const regionalLines = computeSubnationalTaxLines(
       grossPremium,
-      mockSubnationalTaxRules.filter(
+      await this.db.subnationalTaxRules.findWhere(
         (rule) => rule.regionCode === regionCode
       ),
       insuranceLine

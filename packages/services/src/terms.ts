@@ -4,29 +4,35 @@ import type {
   TermsDocument
 } from "@insuros/domain";
 import { hasAcceptedActiveTerms } from "@insuros/domain";
-import { mockTermsAcceptances, mockTermsDocuments } from "@insuros/mocks";
+import { getPersistence } from "./persistence";
 
 export class TermsService {
+  private get db() {
+    return getPersistence();
+  }
+
   async getTermsDocuments(): Promise<TermsDocument[]> {
-    return mockTermsDocuments;
+    return this.db.termsDocuments.findAll();
   }
 
   async getActiveTerms(audience: TermsAudience): Promise<TermsDocument | undefined> {
-    return mockTermsDocuments.find(
+    const [active] = await this.db.termsDocuments.findWhere(
       (document) =>
         document.status === "Active" &&
         (document.audience === audience || document.audience === "All")
     );
+
+    return active;
   }
 
   async getAcceptances(): Promise<TermsAcceptance[]> {
-    return mockTermsAcceptances;
+    return this.db.termsAcceptances.findAll();
   }
 
   async userHasAccepted(userId: string, audience: TermsAudience): Promise<boolean> {
     return hasAcceptedActiveTerms(
-      mockTermsDocuments,
-      mockTermsAcceptances,
+      await this.db.termsDocuments.findAll(),
+      await this.db.termsAcceptances.findAll(),
       userId,
       audience
     );
@@ -45,7 +51,7 @@ export class TermsService {
       throw new Error(`No active terms for audience: ${audience}`);
     }
 
-    const acceptance: TermsAcceptance = {
+    return this.db.termsAcceptances.insert({
       id: `acceptance-${Date.now()}`,
       termsId: active.id,
       termsVersion: active.version,
@@ -54,10 +60,6 @@ export class TermsService {
       acceptedAt: new Date().toISOString(),
       method: "ClickWrap",
       ipAddress
-    };
-
-    mockTermsAcceptances.push(acceptance);
-
-    return acceptance;
+    });
   }
 }

@@ -5,11 +5,7 @@ import type {
   InsuranceLine
 } from "@insuros/domain";
 import { buildStatement, computeCommissionAmount } from "@insuros/domain";
-import {
-  mockCommissionAccruals,
-  mockCommissionSchedules,
-  mockSalesAgents
-} from "@insuros/mocks";
+import { getPersistence } from "./persistence";
 
 export interface AccruePremiumInput {
   writingAgentId: string;
@@ -21,16 +17,20 @@ export interface AccruePremiumInput {
 }
 
 export class CommissionService {
+  private get db() {
+    return getPersistence();
+  }
+
   async getSchedules(): Promise<CommissionSchedule[]> {
-    return mockCommissionSchedules;
+    return this.db.commissionSchedules.findAll();
   }
 
   async getAccruals(): Promise<CommissionAccrual[]> {
-    return mockCommissionAccruals;
+    return this.db.commissionAccruals.findAll();
   }
 
   async getAccrualsForAgent(agentId: string): Promise<CommissionAccrual[]> {
-    return mockCommissionAccruals.filter(
+    return this.db.commissionAccruals.findWhere(
       (accrual) => accrual.agentId === agentId
     );
   }
@@ -39,7 +39,11 @@ export class CommissionService {
     agentId: string,
     period: string
   ): Promise<CommissionStatement> {
-    return buildStatement(agentId, period, mockCommissionAccruals);
+    return buildStatement(
+      agentId,
+      period,
+      await this.db.commissionAccruals.findAll()
+    );
   }
 
   /**
@@ -48,9 +52,7 @@ export class CommissionService {
    * the active schedule rate for the holder's rank.
    */
   async accruePremium(input: AccruePremiumInput): Promise<CommissionAccrual[]> {
-    const writer = mockSalesAgents.find(
-      (agent) => agent.id === input.writingAgentId
-    );
+    const writer = await this.db.salesAgents.findById(input.writingAgentId);
 
     if (!writer) {
       throw new Error(`Unknown agent: ${input.writingAgentId}`);
@@ -58,7 +60,10 @@ export class CommissionService {
 
     const created: CommissionAccrual[] = [];
 
-    const directSchedule = this.activeSchedule(writer.rank, input.insuranceLine);
+    const directSchedule = await this.activeSchedule(
+      writer.rank,
+      input.insuranceLine
+    );
 
     if (directSchedule && directSchedule.directRatePercent > 0) {
       created.push(
@@ -70,15 +75,13 @@ export class CommissionService {
     let supervisorId = writer.supervisorId;
 
     while (supervisorId) {
-      const supervisor = mockSalesAgents.find(
-        (agent) => agent.id === supervisorId
-      );
+      const supervisor = await this.db.salesAgents.findById(supervisorId);
 
       if (!supervisor) {
         break;
       }
 
-      const overrideSchedule = this.activeSchedule(
+      const overrideSchedule = await this.activeSchedule(
         supervisor.rank,
         input.insuranceLine
       );
@@ -93,37 +96,39 @@ export class CommissionService {
       supervisorId = supervisor.supervisorId;
     }
 
-    mockCommissionAccruals.push(...created);
+    for (const accrual of created) {
+      await this.db.commissionAccruals.insert(accrual);
+    }
 
     return created;
   }
 
   /** Claw back an accrual, e.g. for lapsed or fraudulent business. */
   async clawBack(accrualId: string, reason: string): Promise<CommissionAccrual> {
-    const accrual = mockCommissionAccruals.find(
-      (item) => item.id === accrualId
-    );
+    const accrual = await this.db.commissionAccruals.update(accrualId, {
+      status: "ClawedBack",
+      clawbackReason: reason
+    });
 
     if (!accrual) {
       throw new Error(`Unknown accrual: ${accrualId}`);
     }
 
-    accrual.status = "ClawedBack";
-    accrual.clawbackReason = reason;
-
     return accrual;
   }
 
-  private activeSchedule(
+  private async activeSchedule(
     rank: CommissionSchedule["rank"],
     line: InsuranceLine
-  ): CommissionSchedule | undefined {
-    return mockCommissionSchedules.find(
-      (schedule) =>
-        schedule.status === "Active" &&
-        schedule.rank === rank &&
-        (schedule.insuranceLine === "All" || schedule.insuranceLine === line)
+  ): Promise<CommissionSchedule | undefined> {
+    const [schedule] = await this.db.commissionSchedules.findWhere(
+      (item) =>
+        item.status === "Active" &&
+        item.rank === rank &&
+        (item.insuranceLine === "All" || item.insuranceLine === line)
     );
+
+    return schedule;
   }
 
   private makeAccrual(

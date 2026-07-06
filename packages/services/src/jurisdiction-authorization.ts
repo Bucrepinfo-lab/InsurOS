@@ -5,15 +5,16 @@ import type {
   ScopedAccessRequest
 } from "@insuros/domain";
 import { isWithinJurisdiction } from "@insuros/domain";
-import {
-  mockAdminRegions,
-  mockJurisdictionAssignments,
-  mockRoles
-} from "@insuros/mocks";
+import { mockRoles } from "@insuros/mocks";
+import { getPersistence } from "./persistence";
 
 export class JurisdictionAuthorizationService {
+  private get db() {
+    return getPersistence();
+  }
+
   async getAssignments(): Promise<JurisdictionAssignment[]> {
-    return mockJurisdictionAssignments;
+    return this.db.jurisdictionAssignments.findAll();
   }
 
   /**
@@ -22,7 +23,7 @@ export class JurisdictionAuthorizationService {
    * covers the target region (self or descendant).
    */
   async authorize(request: ScopedAccessRequest): Promise<ScopedAccessDecision> {
-    const assignments = mockJurisdictionAssignments.filter(
+    const assignments = await this.db.jurisdictionAssignments.findWhere(
       (assignment) =>
         assignment.userId === request.userId &&
         assignment.status === "Active"
@@ -35,7 +36,10 @@ export class JurisdictionAuthorizationService {
       };
     }
 
+    const regions = await this.db.regions.findAll();
+
     for (const assignment of assignments) {
+      // Roles remain mock-backed until a roles port lands with Clerk sync.
       const role = mockRoles.find((item) => item.id === assignment.roleId);
 
       const hasPermission = role?.permissions.some(
@@ -49,15 +53,11 @@ export class JurisdictionAuthorizationService {
       }
 
       if (
-        isWithinJurisdiction(
-          assignment.regionId,
-          request.targetRegionId,
-          mockAdminRegions
-        )
+        isWithinJurisdiction(assignment.regionId, request.targetRegionId, regions)
       ) {
         return {
           allowed: true,
-          reason: `Granted via ${role?.name ?? assignment.roleId} scoped to ${this.regionName(assignment.regionId)}.`,
+          reason: `Granted via ${role?.name ?? assignment.roleId} scoped to ${await this.regionName(assignment.regionId)}.`,
           matchedAssignmentId: assignment.id
         };
       }
@@ -65,28 +65,28 @@ export class JurisdictionAuthorizationService {
 
     return {
       allowed: false,
-      reason: `Target region ${this.regionName(request.targetRegionId)} is outside the user's jurisdiction, or the role lacks ${request.scope}:${request.action}.`
+      reason: `Target region ${await this.regionName(request.targetRegionId)} is outside the user's jurisdiction, or the role lacks ${request.scope}:${request.action}.`
     };
   }
 
   /** All regions the user can act in (their grants plus every descendant). */
   async getAccessibleRegions(userId: string): Promise<AdminRegion[]> {
-    const grants = mockJurisdictionAssignments.filter(
+    const grants = await this.db.jurisdictionAssignments.findWhere(
       (assignment) =>
         assignment.userId === userId && assignment.status === "Active"
     );
 
-    return mockAdminRegions.filter((region) =>
+    const regions = await this.db.regions.findAll();
+
+    return regions.filter((region) =>
       grants.some((grant) =>
-        isWithinJurisdiction(grant.regionId, region.id, mockAdminRegions)
+        isWithinJurisdiction(grant.regionId, region.id, regions)
       )
     );
   }
 
-  private regionName(regionId: string): string {
-    return (
-      mockAdminRegions.find((region) => region.id === regionId)?.name ??
-      regionId
-    );
+  private async regionName(regionId: string): Promise<string> {
+    const region = await this.db.regions.findById(regionId);
+    return region?.name ?? regionId;
   }
 }
