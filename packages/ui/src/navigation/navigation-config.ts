@@ -56,6 +56,11 @@ export const adminNavigation: NavigationSection[] = [
         id: 'sales-assignments',
         label: 'Assignments',
         href: '/dashboard/sales/assignments'
+      },
+      {
+        id: 'sales-commissions',
+        label: 'Commissions',
+        href: '/dashboard/sales/commissions'
       }
     ]
   },

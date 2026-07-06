@@ -34,3 +34,8 @@ export * from "./role-assignment";
 export * from "./platform-setting";
 export * from "./feature-flag";
 export * from "./system-configuration";
+export * from "./admin-hierarchy";
+export * from "./tax";
+export * from "./terms";
+export * from "./sales-hierarchy";
+export * from "./commission";

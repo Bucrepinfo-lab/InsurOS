@@ -34,12 +34,10 @@ Versioned, audience-scoped terms documents with click-wrap acceptance records (u
 
 Sales ranks mirror the admin hierarchy: Global Sales Head → Continental Director → National Manager → County Manager → Constituency Agent. A superior names agents and issues target assignments only to strictly lower ranks within their own reporting line. UI: `/dashboard/sales` and `/dashboard/sales/assignments`.
 
+## Commission Engine
+
+Rate cards per rank (direct + override percentages), automatic accrual on written premium up the supervisor chain, clawbacks for lapsed/fraudulent business, and per-agent period statements (direct + override − clawbacks = net payable). Every accrual names the writing agent, making override chains auditable. Kenya VAT (16%) applies to commissions per the tax module. UI: `/dashboard/sales/commissions`.
+
 ## Architecture
 
-Monorepo (pnpm): `apps/admin` (Next.js) + `packages/{domain,mocks,services,ui}`. Every capability follows Domain → Mocks → Services → Admin UI. UI consumes services only. Auth: Clerk (production config deferred). Deployment target: DigitalOcean (deferred until persistence lands).
-
-## Status
-
-Done: platform capabilities (activity, notifications, comments, attachments, audit, workflow engine), business workspaces, RBAC foundation, governance hierarchy, tax remittance, legal/terms, sales portal.
-
-Next: persistence adapters, Clerk production RBAC mapped to admin levels, per-state/per-county tax configuration, live payment-portal integrations, agent commission engine, DigitalOcean deployment.
+Monorepo (pnpm): `apps/admin` (Next.js) + `packages/{domain,mocks,services,ui}`. Every capability follows Domain → Mocks → Services → Admin UI. UI consumes services only. Auth: Clerk (production config deferred). Deployment target: DigitalOcean (deferred until persist
