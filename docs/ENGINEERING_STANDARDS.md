@@ -8,34 +8,12 @@
 4. Commit only after build passes.
 5. Prefer shared packages over app-local duplication.
 
-## Package Responsibilities
+## Delivery Loop (standing procedure, agreed 2026-07-06)
 
-### apps/admin
-Presentation, routing, and user interaction only.
+Every build session runs the full loop end to end — no handoff of manual steps:
 
-### packages/ui
-Reusable UI primitives, layouts, navigation, and domain UI patterns.
-
-### packages/domain
-Shared business entities and domain types.
-
-### packages/mocks
-Development and demo data.
-
-### packages/services
-Business-facing service layer. UI should access data through services.
-
-## Validation Order
-
-When changing domain:
-
-```bash
-pnpm --filter @insuros/domain typecheck
-pnpm --filter @insuros/mocks typecheck
-pnpm --filter @insuros/services typecheck
-pnpm --filter @insuros/admin build
-
-docs/architecture/ADR-001-monorepo.md
-docs/architecture/ADR-002-domain-models.md
-docs/architecture/ADR-003-service-layer.md
-docs/architecture/ADR-004-routing.md
+1. **Build** following the capability pattern (Domain → Mocks → Services → Admin UI).
+2. **Validate green**: run `pnpm validate` (all typechecks + full Next build) and confirm a clean exit before any commit. When working in a sandbox that cannot resolve platform-specific `node_modules`, perform a clean-room validation: copy the repo (excluding `node_modules`, `.git`, `.next`) to a native directory, `pnpm install`, then `pnpm validate`.
+3. **Add** only intended files, staged by explicit path.
+4. **Commit** one focused, reversible commit per capability.
+5. **Push** to GitHub in the same session. If credentials are unavailabl
