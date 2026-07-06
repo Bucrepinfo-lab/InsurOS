@@ -34,10 +34,10 @@ Versioned, audience-scoped terms documents with click-wrap acceptance records (u
 
 Sales ranks mirror the admin hierarchy: Global Sales Head → Continental Director → National Manager → County Manager → Constituency Agent. A superior names agents and issues target assignments only to strictly lower ranks within their own reporting line. UI: `/dashboard/sales` and `/dashboard/sales/assignments`.
 
+## Jurisdiction-Scoped RBAC
+
+Roles are granted per jurisdiction (`JurisdictionAssignment`: user × role × region). The authorization engine allows an action only when an active assignment's role carries the permission AND the target region is the grant region or a descendant — so a County admin cannot touch another county, and suspended grants deny everything. `getAccessibleRegions` resolves a user's full territory. This model maps 1:1 onto Clerk organization roles for production. UI: `/dashboard/governance/access` with a live authorization-decision preview.
+
 ## Commission Engine
 
-Rate cards per rank (direct + override percentages), automatic accrual on written premium up the supervisor chain, clawbacks for lapsed/fraudulent business, and per-agent period statements (direct + override − clawbacks = net payable). Every accrual names the writing agent, making override chains auditable. Kenya VAT (16%) applies to commissions per the tax module. UI: `/dashboard/sales/commissions`.
-
-## Architecture
-
-Monorepo (pnpm): `apps/admin` (Next.js) + `packages/{domain,mocks,services,ui}`. Every capability follows Domain → Mocks → Services → Admin UI. UI consumes services only. Auth: Clerk (production config deferred). Deployment target: DigitalOcean (deferred until persist
+Rate cards per rank (direct + override percentages), automatic accrual on written premium up the supervisor chain, clawbacks for 

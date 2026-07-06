@@ -35,3 +35,4 @@ export * from "./sales-agents";
 export * from "./sales-assignments";
 export * from "./commission-schedules";
 export * from "./commission-accruals";
+export * from "./jurisdiction-assignments";

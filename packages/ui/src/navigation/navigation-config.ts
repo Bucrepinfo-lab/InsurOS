@@ -32,6 +32,11 @@ export const adminNavigation: NavigationSection[] = [
         label: 'Admin Appointments',
         href: '/dashboard/governance/appointments'
       },
+      {
+        id: 'access',
+        label: 'Jurisdiction Access',
+        href: '/dashboard/governance/access'
+      },
       { id: 'legal', label: 'Legal & Terms', href: '/dashboard/legal' }
     ]
   },
