@@ -33,3 +33,4 @@ export * from "./role";
 export * from "./role-assignment";
 export * from "./platform-setting";
 export * from "./feature-flag";
+export * from "./system-configuration";
