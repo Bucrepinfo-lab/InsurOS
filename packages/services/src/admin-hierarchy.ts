@@ -1,6 +1,6 @@
 import type { AdminAppointment, AdminLevel, AdminRegion } from "@insuros/domain";
 import { canAdminister } from "@insuros/domain";
-import { mockAdminAppointments, mockAdminRegions } from "@insuros/mocks";
+import { getPersistence } from "./persistence";
 
 export interface AppointAdminInput {
   userId: string;
@@ -17,35 +17,41 @@ export interface AppointmentResult {
   appointment?: AdminAppointment;
 }
 
+/**
+ * Admin hierarchy service, backed by the persistence ports — the reference
+ * pattern for migrating services off direct mock imports.
+ */
 export class AdminHierarchyService {
+  private get db() {
+    return getPersistence();
+  }
+
   async getRegions(): Promise<AdminRegion[]> {
-    return mockAdminRegions;
+    return this.db.regions.findAll();
   }
 
   async getRegion(id: string): Promise<AdminRegion | undefined> {
-    return mockAdminRegions.find((region) => region.id === id);
+    return this.db.regions.findById(id);
   }
 
   async getChildRegions(parentRegionId: string): Promise<AdminRegion[]> {
-    return mockAdminRegions.filter(
+    return this.db.regions.findWhere(
       (region) => region.parentRegionId === parentRegionId
     );
   }
 
-  /** Regions by level, e.g. all counties. */
   async getRegionsByLevel(level: AdminLevel): Promise<AdminRegion[]> {
-    return mockAdminRegions.filter((region) => region.level === level);
+    return this.db.regions.findWhere((region) => region.level === level);
   }
 
-  /** The full ancestor chain of a region, from itself up to Global. */
   async getJurisdictionChain(regionId: string): Promise<AdminRegion[]> {
     const chain: AdminRegion[] = [];
-    let current = mockAdminRegions.find((region) => region.id === regionId);
+    let current = await this.db.regions.findById(regionId);
 
     while (current) {
       chain.push(current);
       current = current.parentRegionId
-        ? mockAdminRegions.find((region) => region.id === current?.parentRegionId)
+        ? await this.db.regions.findById(current.parentRegionId)
         : undefined;
     }
 
@@ -53,27 +59,23 @@ export class AdminHierarchyService {
   }
 
   async getAppointments(): Promise<AdminAppointment[]> {
-    return mockAdminAppointments;
+    return this.db.appointments.findAll();
   }
 
   async getAppointmentsForRegion(regionId: string): Promise<AdminAppointment[]> {
-    return mockAdminAppointments.filter(
+    return this.db.appointments.findWhere(
       (appointment) => appointment.regionId === regionId
     );
   }
 
-  /**
-   * Appoint an admin to a region. The appointer must hold an active
-   * appointment at a strictly higher level than the target region.
-   */
   async appointAdmin(input: AppointAdminInput): Promise<AppointmentResult> {
-    const region = mockAdminRegions.find((item) => item.id === input.regionId);
+    const region = await this.db.regions.findById(input.regionId);
 
     if (!region) {
       return { ok: false, error: `Unknown region: ${input.regionId}` };
     }
 
-    const appointerAppointment = mockAdminAppointments.find(
+    const [appointerAppointment] = await this.db.appointments.findWhere(
       (appointment) =>
         appointment.userId === input.appointedByUserId &&
         appointment.status === "Active"
@@ -90,7 +92,7 @@ export class AdminHierarchyService {
       };
     }
 
-    const appointment: AdminAppointment = {
+    const appointment = await this.db.appointments.insert({
       id: `appointment-${Date.now()}`,
       userId: input.userId,
       userName: input.userName,
@@ -101,9 +103,7 @@ export class AdminHierarchyService {
       appointedBy: input.appointedByUserId,
       appointedAt: new Date().toISOString(),
       status: "Pending"
-    };
-
-    mockAdminAppointments.push(appointment);
+    });
 
     return { ok: true, appointment };
   }

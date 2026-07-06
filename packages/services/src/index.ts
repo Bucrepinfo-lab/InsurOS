@@ -36,3 +36,4 @@ export * from "./commissions";
 export * from "./jurisdiction-authorization";
 export * from "./principal";
 export * from "./regional-tax";
+export * from "./persistence";
