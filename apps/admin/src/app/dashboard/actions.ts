@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { fail, ok, type ActionResult } from '@/lib/action-result';
 import {
   AdminHierarchyService,
   ClaimsAutomationService,
@@ -32,7 +33,7 @@ function randomMsisdn(): string {
   return `+2547${String(10000000 + Math.floor(Math.random() * 89999999))}`;
 }
 
-export async function submitDemoFnol(): Promise<string> {
+export async function submitDemoFnol(): Promise<ActionResult> {
   const service = new ClaimsAutomationService();
   const clean = Math.random() > 0.35;
 
@@ -51,10 +52,12 @@ export async function submitDemoFnol(): Promise<string> {
   });
 
   revalidatePath('/dashboard/claims/automation');
-  return `${result.decision.outcome} · fraud score ${result.assessment.score}`;
+  return result.decision.outcome === 'AutoApproved'
+    ? ok(`Auto-approved in seconds · fraud score ${result.assessment.score} · payout SLA ${result.decision.slaHours}h`)
+    : ok(`Routed to adjuster review · fraud score ${result.assessment.score}`);
 }
 
-export async function registerDemoSceneCapture(): Promise<string> {
+export async function registerDemoSceneCapture(): Promise<ActionResult> {
   const claims = new ClaimsAutomationService();
   const scenes = new SceneCaptureService();
   const fnols = await claims.getFnols();
@@ -73,10 +76,10 @@ export async function registerDemoSceneCapture(): Promise<string> {
   });
 
   revalidatePath('/dashboard/claims/evidence');
-  return 'Live capture registered — sealed and geo-tagged';
+  return ok('Live capture sealed — GPS and hash attached');
 }
 
-export async function enrolDemoMicroPolicy(): Promise<string> {
+export async function enrolDemoMicroPolicy(): Promise<ActionResult> {
   const service = new MicroinsuranceService();
   const products = await service.getProducts();
   const product = products[Math.floor(Math.random() * products.length)];
@@ -91,11 +94,11 @@ export async function enrolDemoMicroPolicy(): Promise<string> {
 
   revalidatePath('/dashboard/marketplace/micro');
   return result.ok
-    ? `Enrolled on ${product.name}`
-    : (result.error ?? 'Enrolment failed');
+    ? ok(`${result.policy?.holderName ?? 'Customer'} enrolled on ${product.name}`)
+    : fail(result.error ?? 'Enrolment failed — try again');
 }
 
-export async function addDemoSubscriber(): Promise<string> {
+export async function addDemoSubscriber(): Promise<ActionResult> {
   const service = new SubscriptionService();
   const name = randomName();
 
@@ -106,10 +109,10 @@ export async function addDemoSubscriber(): Promise<string> {
   });
 
   revalidatePath('/dashboard/subscribers');
-  return `${name} subscribed — first month free, nudges scheduled`;
+  return ok(`${name} subscribed · first month free · day-35 and day-39 nudges scheduled`);
 }
 
-export async function appointDemoAdmin(): Promise<string> {
+export async function appointDemoAdmin(): Promise<ActionResult> {
   const service = new AdminHierarchyService();
   const regions = await service.getRegions();
   const candidates = regions.filter(
@@ -129,11 +132,11 @@ export async function appointDemoAdmin(): Promise<string> {
 
   revalidatePath('/dashboard/governance/appointments');
   return result.ok
-    ? `${name} appointed to ${region.name}`
-    : (result.error ?? 'Appointment failed');
+    ? ok(`${name} appointed to ${region.name} — pending activation`)
+    : fail(result.error ?? 'Appointment blocked by hierarchy rules');
 }
 
-export async function createDemoRegion(): Promise<string> {
+export async function createDemoRegion(): Promise<ActionResult> {
   const db = getPersistence();
   const n = 100 + Math.floor(Math.random() * 900);
 
@@ -149,10 +152,10 @@ export async function createDemoRegion(): Promise<string> {
   });
 
   revalidatePath('/dashboard/governance');
-  return `Demo Ward ${n} created under Nairobi County`;
+  return ok(`Demo Ward ${n} created under Nairobi County`);
 }
 
-export async function grantDemoAccess(): Promise<string> {
+export async function grantDemoAccess(): Promise<ActionResult> {
   const db = getPersistence();
   const name = randomName();
 
@@ -168,20 +171,20 @@ export async function grantDemoAccess(): Promise<string> {
   });
 
   revalidatePath('/dashboard/governance/access');
-  return `${name} granted Finance role in Nairobi County`;
+  return ok(`${name} granted Finance Manager in Nairobi County and descendants`);
 }
 
-export async function recordDemoAcceptance(): Promise<string> {
+export async function recordDemoAcceptance(): Promise<ActionResult> {
   const service = new TermsService();
   const name = randomName();
 
   await service.recordAcceptance(`user-${Date.now()}`, name, 'Policyholder');
 
   revalidatePath('/dashboard/legal');
-  return `Click-wrap acceptance recorded for ${name}`;
+  return ok(`Click-wrap acceptance recorded for ${name} — audit trail updated`);
 }
 
-export async function computeDemoRemittance(): Promise<string> {
+export async function computeDemoRemittance(): Promise<ActionResult> {
   const service = new TaxRemittanceService();
   const db = getPersistence();
   const jurisdictions = await service.getJurisdictions();
@@ -198,10 +201,10 @@ export async function computeDemoRemittance(): Promise<string> {
   await db.taxRemittances.insert(remittance);
 
   revalidatePath('/dashboard/finance/tax');
-  return `${jurisdiction.countryName}: ${remittance.currency} ${remittance.totalDue.toLocaleString()} due`;
+  return ok(`${jurisdiction.countryName}: ${remittance.currency} ${remittance.totalDue.toLocaleString()} due · pay via ${jurisdiction.portalName}`);
 }
 
-export async function addDemoRegionalRule(): Promise<string> {
+export async function addDemoRegionalRule(): Promise<ActionResult> {
   const db = getPersistence();
   const n = Math.floor(Math.random() * 47) + 1;
 
@@ -223,10 +226,10 @@ export async function addDemoRegionalRule(): Promise<string> {
   });
 
   revalidatePath('/dashboard/finance/tax/regional');
-  return `Regional rule added for County ${n}`;
+  return ok(`Regional levy added for County ${n} — verify with the county before filing`);
 }
 
-export async function captureDemoBenchmark(): Promise<string> {
+export async function captureDemoBenchmark(): Promise<ActionResult> {
   const db = getPersistence();
   const price = 3_500 + Math.floor(Math.random() * 1_500);
 
@@ -241,10 +244,10 @@ export async function captureDemoBenchmark(): Promise<string> {
   });
 
   revalidatePath('/dashboard/marketplace/pricing-engine');
-  return `Benchmark captured at KES ${price.toLocaleString()} — median updated`;
+  return ok(`Benchmark captured at KES ${price.toLocaleString()} — market median recalculated`);
 }
 
-export async function nameDemoAgent(): Promise<string> {
+export async function nameDemoAgent(): Promise<ActionResult> {
   const db = getPersistence();
   const name = randomName();
 
@@ -260,10 +263,10 @@ export async function nameDemoAgent(): Promise<string> {
   });
 
   revalidatePath('/dashboard/sales');
-  return `${name} named as Constituency Agent under Faith Njeri`;
+  return ok(`${name} named Constituency Agent under Faith Njeri — onboarding`);
 }
 
-export async function createDemoAssignment(): Promise<string> {
+export async function createDemoAssignment(): Promise<ActionResult> {
   const service = new SalesHierarchyService();
 
   const result = await service.createAssignment({
@@ -277,10 +280,12 @@ export async function createDemoAssignment(): Promise<string> {
   });
 
   revalidatePath('/dashboard/sales/assignments');
-  return result.ok ? 'Target assigned down the chain of command' : (result.error ?? 'Failed');
+  return result.ok
+    ? ok('Target assigned — chain of command validated')
+    : fail(result.error ?? 'Assignment blocked by rank rules');
 }
 
-export async function accrueDemoPremium(): Promise<string> {
+export async function accrueDemoPremium(): Promise<ActionResult> {
   const service = new CommissionService();
 
   const created = await service.accruePremium({
@@ -293,10 +298,10 @@ export async function accrueDemoPremium(): Promise<string> {
   });
 
   revalidatePath('/dashboard/sales/commissions');
-  return `${created.length} accruals created up the override chain`;
+  return ok(`${created.length} accruals cascaded up the override chain`);
 }
 
-export async function ingestDemoDocument(): Promise<string> {
+export async function ingestDemoDocument(): Promise<ActionResult> {
   const service = new DocumentIntelligenceService();
   const strong = Math.random() > 0.4;
   const confidence = strong ? 0.93 + Math.random() * 0.06 : 0.45 + Math.random() * 0.3;
@@ -313,11 +318,11 @@ export async function ingestDemoDocument(): Promise<string> {
 
   revalidatePath('/dashboard/operations/documents');
   return extraction.status === 'Verified'
-    ? `Auto-verified at ${Math.round(extraction.overallConfidence * 100)}% confidence`
-    : `Routed to human review (${Math.round(extraction.overallConfidence * 100)}%)`;
+    ? ok(`Auto-verified at ${Math.round(extraction.overallConfidence * 100)}% confidence`)
+    : ok(`Low confidence (${Math.round(extraction.overallConfidence * 100)}%) — routed to human review`);
 }
 
-export async function createDemoContent(): Promise<string> {
+export async function createDemoContent(): Promise<ActionResult> {
   const db = getPersistence();
 
   await db.marketingContent.insert({
@@ -334,10 +339,10 @@ export async function createDemoContent(): Promise<string> {
   });
 
   revalidatePath('/dashboard/operations/crm');
-  return 'Draft content created';
+  return ok('Draft created — edit and activate when ready');
 }
 
-export async function recordDemoSnapshot(): Promise<string> {
+export async function recordDemoSnapshot(): Promise<ActionResult> {
   const db = getPersistence();
   const snapshots = await db.kpiSnapshots.findAll();
   const latest = snapshots[snapshots.length - 1];
@@ -357,10 +362,10 @@ export async function recordDemoSnapshot(): Promise<string> {
   });
 
   revalidatePath('/dashboard/finance/analytics');
-  return 'July snapshot recorded — automation trending up';
+  return ok('July snapshot recorded — combined ratio improving');
 }
 
-export async function refreshClerkPlan(): Promise<string> {
+export async function refreshClerkPlan(): Promise<ActionResult> {
   revalidatePath('/dashboard/identity/clerk-sync');
-  return 'Plan refreshed — execution needs CLERK_SECRET_KEY';
+  return fail('Plan refreshed, but execution needs CLERK_SECRET_KEY — provision it to go live');
 }

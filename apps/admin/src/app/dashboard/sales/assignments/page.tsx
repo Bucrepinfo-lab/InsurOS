@@ -72,7 +72,7 @@ export default async function SalesAssignmentsPage() {
     <DomainModulePage
       title='Sales Assignments'
       description='Target assignments flowing down the sales chain of command.'
-      actions={<ActionButton label='Create assignment' action={createDemoAssignment} />}
+      actions={<ActionButton label='Assign target' action={createDemoAssignment} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard

@@ -73,7 +73,7 @@ export default async function DocumentIntelligencePage() {
     <DomainModulePage
       title='Document Intelligence (OCR)'
       description='Every uploaded file is read at intake: fields extracted, required data checked, low confidence routed to a human. OCR accelerates — it never silently decides.'
-      actions={<ActionButton label='Ingest document' action={ingestDemoDocument} />}
+      actions={<ActionButton label='Scan document' action={ingestDemoDocument} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard

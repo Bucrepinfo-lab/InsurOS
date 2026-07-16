@@ -96,7 +96,7 @@ export default async function SceneEvidencePage() {
     <DomainModulePage
       title='Scene Evidence'
       description='Customers photograph the scene live in the app — GPS, timestamps, and an on-device hash seal the truth at capture. Strong evidence replaces adjuster visits on small claims.'
-      actions={<ActionButton label='Register capture' action={registerDemoSceneCapture} />}
+      actions={<ActionButton label='Register live capture' action={registerDemoSceneCapture} />}
     >
       {banner ? (
         <MarketingBanner

@@ -147,7 +147,7 @@ export default async function SubscriberExperiencePage() {
     <DomainModulePage
       title='Subscriber Experience'
       description='The customer-side experience, previewed: 10 units/month (first month free, day-40 renewal, day-35 & 39 nudges), policy health, engagement feed with share-ready content, newsletter threads, and merit-comparison banners.'
-      actions={<ActionButton label='New subscriber' action={addDemoSubscriber} />}
+      actions={<ActionButton label='Add subscriber' action={addDemoSubscriber} />}
     >
       <MarketingBanner
         headline={`Same cover. KES ${savings.toLocaleString()} less every month than the market median.`}

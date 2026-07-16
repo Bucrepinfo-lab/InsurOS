@@ -48,7 +48,7 @@ export default async function CrmContentPage() {
     <DomainModulePage
       title='CRM Marketing Content'
       description='Merit-led write-ups popularised across every policy UI: claims speed, engineered fair pricing, KES-20 micro cover, parametric no-forms payouts, sealed scene evidence, and radical transparency.'
-      actions={<ActionButton label='Create content' action={createDemoContent} />}
+      actions={<ActionButton label='Draft content' action={createDemoContent} />}
     >
       {preview ? (
         <MarketingBanner
