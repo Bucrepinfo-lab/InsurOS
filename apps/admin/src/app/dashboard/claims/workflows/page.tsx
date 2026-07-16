@@ -7,6 +7,10 @@ import {
   type DataTableColumn
 } from "@insuros/ui";
 import { ClaimService } from "@insuros/services";
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Claim workflows' };
 
 const claimService = new ClaimService();
 
@@ -41,7 +45,7 @@ export default async function ClaimWorkflowsPage() {
     <DomainModulePage
       title="Claim Workflows"
       description="Track claim workflow stages and execution status across FNOL, assessment, investigation, settlement, and closure."
-      actions={<Button>Configure Claim Workflow</Button>}
+      actions={<ActionButton label='Configure Claim Workflow' action={queueDemoRequest.bind(null, 'Configure Claim Workflow')} />}
     >
       <div className="mb-6 grid gap-4 md:grid-cols-3">
         <KPICard title="Claim Workflows" value={String(workflows.length)} change="Tracked claims" />

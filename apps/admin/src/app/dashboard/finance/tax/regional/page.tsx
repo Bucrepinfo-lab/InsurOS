@@ -10,6 +10,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { addDemoRegionalRule } from '@/app/dashboard/actions';
 import { RegionalTaxService } from '@insuros/services';
 
+export const metadata = { title: 'Regional tax' };
+
 const regionalTaxService = new RegionalTaxService();
 
 export default async function RegionalTaxPage() {

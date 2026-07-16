@@ -8,6 +8,8 @@ import {
 } from '@insuros/ui';
 import { PlatformActivityService } from '@insuros/services';
 
+export const metadata = { title: 'Activity' };
+
 const activityService = new PlatformActivityService();
 
 export default async function ActivityPage() {
@@ -36,7 +38,6 @@ export default async function ActivityPage() {
     <DomainModulePage
       title='Activity & Timeline'
       description='Review cross-module activity, operational history, audit events, and lifecycle changes.'
-      actions={<Button>Export Activity</Button>}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Activity Events' value={String(events.length)} change='Across modules' />

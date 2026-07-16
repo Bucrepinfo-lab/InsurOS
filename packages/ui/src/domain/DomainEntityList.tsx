@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { DataTable, ExportCsvButton, FilterBar, Pagination, SearchInput, TableToolbar, type DataTableColumn } from '../data';
+import { DataTable, ExportCsvButton, TableShell, TableToolbar, type DataTableColumn } from '../data';
 import { EmptyState } from '../enterprise/EmptyState';
 
 export interface DomainEntityListProps<TData> {
@@ -25,12 +25,21 @@ export function DomainEntityList<TData>({
   emptyAction,
   actions
 }: DomainEntityListProps<TData>) {
+  if (data.length === 0) {
+    return (
+      <>
+        <TableToolbar title={title} description={description} />
+        <EmptyState title={emptyTitle} description={emptyDescription} action={emptyAction} />
+      </>
+    );
+  }
+
   return (
     <>
       <TableToolbar title={title} description={description} />
 
-      <FilterBar
-        search={<SearchInput placeholder={searchPlaceholder} />}
+      <TableShell
+        searchPlaceholder={searchPlaceholder}
         actions={
           <>
             {actions}
@@ -44,14 +53,13 @@ export function DomainEntityList<TData>({
             />
           </>
         }
-      />
-
-      <DataTable
-        columns={columns}
-        data={data}
-        empty={<EmptyState title={emptyTitle} description={emptyDescription} action={emptyAction} />}
-        footer={<Pagination page={1} totalPages={1} totalItems={data.length} />}
-      />
+      >
+        <DataTable
+          columns={columns}
+          data={data}
+          empty={<EmptyState title={emptyTitle} description={emptyDescription} action={emptyAction} />}
+        />
+      </TableShell>
     </>
   );
 }

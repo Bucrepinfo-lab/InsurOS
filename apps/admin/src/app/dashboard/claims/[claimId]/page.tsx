@@ -13,6 +13,10 @@ import {
   WorkflowService,
   WorkflowStateMachineService
 } from '@insuros/services';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Claim' };
 
 const claimId = 'CLM-2026-0001';
 const claimService = new ClaimService();
@@ -53,7 +57,7 @@ export default async function ClaimDetailPage() {
     <DomainModulePage
       title='Claim CLM-2026-0001'
       description='Complete claim workspace for FNOL, assessment, reserves, settlement, documents, workflow, and audit history.'
-      actions={<Button>Assign Adjuster</Button>}
+      actions={<ActionButton label='Assign Adjuster' action={queueDemoRequest.bind(null, 'Assign Adjuster')} />}
     >
       <div className='mb-6 flex flex-wrap gap-3'>
         {tabs.map((tab) => (

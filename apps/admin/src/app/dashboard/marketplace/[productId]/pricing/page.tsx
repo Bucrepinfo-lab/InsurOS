@@ -5,6 +5,10 @@ import {
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Pricing' };
 
 type PricingRuleRow = {
   name: string;
@@ -48,7 +52,7 @@ export default function ProductPricingPage() {
     <DomainModulePage
       title='Pricing Rules'
       description='Configure premiums, rating inputs, loadings, discounts, taxes, fees, and pricing formulas.'
-      actions={<Button>Add Pricing Rule</Button>}
+      actions={<ActionButton label='Add Pricing Rule' action={queueDemoRequest.bind(null, 'Add Pricing Rule')} />}
     >
       <DomainEntityList
         title='Pricing Rules'

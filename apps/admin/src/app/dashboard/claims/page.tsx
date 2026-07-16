@@ -6,6 +6,8 @@
   type DataTableColumn
 } from '@insuros/ui';
 import { mockClaims } from '@insuros/mocks';
+import { ActionButton } from '@/components/ActionButton';
+import { registerDemoClaim } from '@/app/dashboard/actions';
 
 const claims = mockClaims;
 
@@ -28,7 +30,7 @@ export default function ClaimsPage() {
     <DomainModulePage
       title='Claims Management'
       description='Manage FNOL, claim assessment, reserves, approvals, settlement, recovery, and closure.'
-      actions={<Button>Register Claim</Button>}
+      actions={<ActionButton label='Register claim' action={registerDemoClaim} />}
     >
       <DomainEntityList
         title='Claims'

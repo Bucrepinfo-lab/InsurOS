@@ -10,6 +10,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { createDemoRegion } from '@/app/dashboard/actions';
 import { AdminHierarchyService } from '@insuros/services';
 
+export const metadata = { title: 'Governance' };
+
 const adminHierarchyService = new AdminHierarchyService();
 
 export default async function GovernancePage() {

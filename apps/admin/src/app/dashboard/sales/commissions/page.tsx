@@ -10,6 +10,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { accrueDemoPremium } from '@/app/dashboard/actions';
 import { CommissionService, SalesHierarchyService } from '@insuros/services';
 
+export const metadata = { title: 'Commissions' };
+
 const commissionService = new CommissionService();
 const salesService = new SalesHierarchyService();
 

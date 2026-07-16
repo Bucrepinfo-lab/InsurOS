@@ -9,6 +9,8 @@
   type DataTableColumn
 } from '@insuros/ui';
 import { FinanceService } from '@insuros/services';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
 
 const financeService = new FinanceService();
 
@@ -38,7 +40,7 @@ export default async function FinancePage() {
     <DomainModulePage
       title='Finance & Billing'
       description='Manage invoices, payments, claim payouts, refunds, commissions, balances, reconciliation, and finance workflows.'
-      actions={<Button>Create Invoice</Button>}
+      actions={<ActionButton label='Create Invoice' action={queueDemoRequest.bind(null, 'Create Invoice')} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Finance Workflows' value={String(workflows.length)} change='Tracked finance items' />

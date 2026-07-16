@@ -7,6 +7,10 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { WorkflowService } from '@insuros/services';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Rules' };
 
 const workflowService = new WorkflowService();
 
@@ -44,7 +48,7 @@ export default async function WorkflowRulesPage() {
     <DomainModulePage
       title='Workflow Rules'
       description='Define allowed workflow transitions, approval requirements, and reason requirements.'
-      actions={<Button>Create Rule</Button>}
+      actions={<ActionButton label='Create Rule' action={queueDemoRequest.bind(null, 'Create Rule')} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Rules' value={String(rules.length)} change='Configured transitions' />

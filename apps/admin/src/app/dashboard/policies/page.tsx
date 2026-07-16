@@ -6,6 +6,10 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { PolicyService } from '@insuros/services';
+import { ActionButton } from '@/components/ActionButton';
+import { issueDemoPolicy } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Policies' };
 
 const policyService = new PolicyService();
 
@@ -30,7 +34,7 @@ export default async function PoliciesPage() {
     <DomainModulePage
       title='Policy Lifecycle'
       description='Manage policy issuance, servicing, endorsements, renewals, cancellations, and lifecycle operations.'
-      actions={<Button>Issue Policy</Button>}
+      actions={<ActionButton label='Issue policy' action={issueDemoPolicy} />}
     >
       <DomainEntityList
         title='Policies'

@@ -5,6 +5,10 @@ import {
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Reconciliation' };
 
 type ReconciliationRow = {
   reference: string;
@@ -48,7 +52,7 @@ export default function FinanceReconciliationPage() {
     <DomainModulePage
       title='Finance Reconciliation'
       description='Match invoices, payments, payouts, refunds, bank entries, and ledger records.'
-      actions={<Button>Run Reconciliation</Button>}
+      actions={<ActionButton label='Run Reconciliation' action={queueDemoRequest.bind(null, 'Run Reconciliation')} />}
     >
       <DomainEntityList
         title='Reconciliation Items'

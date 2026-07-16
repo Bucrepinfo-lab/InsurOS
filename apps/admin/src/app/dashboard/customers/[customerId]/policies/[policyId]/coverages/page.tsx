@@ -5,6 +5,10 @@ import {
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Coverages' };
 
 type PolicyCoverageRow = {
   name: string;
@@ -44,7 +48,7 @@ export default function PolicyCoveragesPage() {
     <DomainModulePage
       title='Policy Coverages'
       description='View coverages, limits, deductibles, exclusions, and insured interests attached to this policy.'
-      actions={<Button>Add Coverage</Button>}
+      actions={<ActionButton label='Add Coverage' action={queueDemoRequest.bind(null, 'Add Coverage')} />}
     >
       <DomainEntityList
         title='Coverages'

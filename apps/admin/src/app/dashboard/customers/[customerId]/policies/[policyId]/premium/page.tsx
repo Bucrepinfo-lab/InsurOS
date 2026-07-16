@@ -5,6 +5,10 @@ import {
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Premium' };
 
 type PremiumRow = {
   invoice: string;
@@ -38,7 +42,7 @@ export default function PolicyPremiumPage() {
     <DomainModulePage
       title='Premium Schedule'
       description='View invoices, installment schedules, payment status, balances, and premium collection history.'
-      actions={<Button>Record Payment</Button>}
+      actions={<ActionButton label='Record Payment' action={queueDemoRequest.bind(null, 'Record Payment')} />}
     >
       <DomainEntityList
         title='Premiums'

@@ -11,6 +11,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { enrolDemoMicroPolicy } from '@/app/dashboard/actions';
 import { MarketingService, MicroinsuranceService } from '@insuros/services';
 
+export const metadata = { title: 'Microinsurance' };
+
 const microinsuranceService = new MicroinsuranceService();
 const marketingService = new MarketingService();
 

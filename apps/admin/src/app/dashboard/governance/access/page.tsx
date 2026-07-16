@@ -15,6 +15,8 @@ import {
   RoleService
 } from '@insuros/services';
 
+export const metadata = { title: 'Jurisdiction access' };
+
 const authorizationService = new JurisdictionAuthorizationService();
 const adminHierarchyService = new AdminHierarchyService();
 const roleService = new RoleService();

@@ -7,6 +7,10 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { AttachmentService } from '@insuros/services';
+import { ActionButton } from '@/components/ActionButton';
+import { uploadDemoAttachment } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Attachments' };
 
 const attachmentService = new AttachmentService();
 
@@ -45,7 +49,7 @@ export default async function AttachmentsPage() {
     <DomainModulePage
       title='Attachments'
       description='Review uploaded documents, files, evidence, policy schedules, and operational attachments.'
-      actions={<Button>Upload Attachment</Button>}
+      actions={<ActionButton label='Register attachment' action={uploadDemoAttachment} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Attachments' value={String(attachments.length)} change='Across modules' />

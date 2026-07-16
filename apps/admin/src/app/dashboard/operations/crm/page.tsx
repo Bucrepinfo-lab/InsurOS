@@ -11,6 +11,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { createDemoContent } from '@/app/dashboard/actions';
 import { MarketingService } from '@insuros/services';
 
+export const metadata = { title: 'CRM content' };
+
 const marketingService = new MarketingService();
 
 export default async function CrmContentPage() {

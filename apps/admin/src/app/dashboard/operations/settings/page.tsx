@@ -7,6 +7,10 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { PlatformSettingService } from '@insuros/services';
+import { ActionButton } from '@/components/ActionButton';
+import { createDemoSetting } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Platform settings' };
 
 const platformSettingService = new PlatformSettingService();
 
@@ -34,7 +38,7 @@ export default async function PlatformSettingsPage() {
     <DomainModulePage
       title='Platform Settings'
       description='Runtime configuration across platform, tenant, module, workflow, and security scopes.'
-      actions={<Button>Create Setting</Button>}
+      actions={<ActionButton label='Create setting' action={createDemoSetting} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard

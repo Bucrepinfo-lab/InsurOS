@@ -7,6 +7,10 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { WorkflowService } from '@insuros/services';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Escalations' };
 
 const workflowService = new WorkflowService();
 
@@ -38,7 +42,7 @@ export default async function EscalationsQueuePage() {
     <DomainModulePage
       title='Escalations'
       description='Track blocked, critical, overdue, and escalated operational work.'
-      actions={<Button>Escalation Rules</Button>}
+      actions={<ActionButton label='Escalation Rules' action={queueDemoRequest.bind(null, 'Escalation Rules')} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Escalated Workflows' value={String(workflows.length)} change='Requires management review' />

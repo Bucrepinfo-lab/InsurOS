@@ -17,6 +17,8 @@ import {
   computePolicyHealth
 } from '@insuros/services';
 
+export const metadata = { title: 'Subscribers' };
+
 const subscriptionService = new SubscriptionService();
 const engagementService = new EngagementService();
 const microinsuranceService = new MicroinsuranceService();

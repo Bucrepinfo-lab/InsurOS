@@ -16,6 +16,8 @@ import {
   evaluateSceneIntegrity
 } from '@insuros/services';
 
+export const metadata = { title: 'Scene evidence' };
+
 const sceneCaptureService = new SceneCaptureService();
 const claimsAutomationService = new ClaimsAutomationService();
 const marketingService = new MarketingService();

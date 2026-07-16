@@ -7,6 +7,10 @@ import {
   DomainModulePage,
   Tabs
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Customer' };
 
 const policyId = 'POL-2026-0001';
 
@@ -48,7 +52,7 @@ export default function PolicyDetailPage() {
     <DomainModulePage
       title="Policy POL-2026-0001"
       description="Complete policy workspace covering issuance, servicing, endorsements, renewals, claims, and audit history."
-      actions={<Button>Endorse Policy</Button>}
+      actions={<ActionButton label='Endorse Policy' action={queueDemoRequest.bind(null, 'Endorse Policy')} />}
     >
       <div className="mb-6 flex flex-wrap gap-3">
         {tabs.map((tab) => (

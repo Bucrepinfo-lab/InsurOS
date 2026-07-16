@@ -10,6 +10,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { ingestDemoDocument } from '@/app/dashboard/actions';
 import { DocumentIntelligenceService } from '@insuros/services';
 
+export const metadata = { title: 'Document intelligence' };
+
 const documentIntelligenceService = new DocumentIntelligenceService();
 
 export default async function DocumentIntelligencePage() {

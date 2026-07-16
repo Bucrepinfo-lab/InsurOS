@@ -11,6 +11,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { captureDemoBenchmark } from '@/app/dashboard/actions';
 import { MarketingService, PricingService } from '@insuros/services';
 
+export const metadata = { title: 'Pricing engine' };
+
 const pricingService = new PricingService();
 const marketingService = new MarketingService();
 

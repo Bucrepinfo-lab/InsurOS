@@ -1,8 +1,18 @@
 import { ClerkProvider } from '@clerk/nextjs';
+import type { Metadata } from 'next';
 import { Fraunces, Onest, Spline_Sans_Mono } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { clerkEnabled } from '../lib/clerk-enabled';
 import './globals.css';
+
+export const metadata: Metadata = {
+  title: {
+    default: "InsurOS — The Underwriter's Ledger",
+    template: '%s · InsurOS'
+  },
+  description:
+    'Multi-continental insurance operations: claims in hours, engineered fair prices, cover from 20 bob a day.'
+};
 
 const display = Fraunces({
   subsets: ['latin'],

@@ -5,6 +5,10 @@ import {
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Document intelligence' };
 
 type PolicyDocumentRow = {
   name: string;
@@ -38,7 +42,7 @@ export default function PolicyDocumentsPage() {
     <DomainModulePage
       title='Policy Documents'
       description='Manage policy schedules, certificates, endorsements, invoices, receipts, and uploaded attachments.'
-      actions={<Button>Upload Document</Button>}
+      actions={<ActionButton label='Upload Document' action={queueDemoRequest.bind(null, 'Upload Document')} />}
     >
       <DomainEntityList
         title='Documents'

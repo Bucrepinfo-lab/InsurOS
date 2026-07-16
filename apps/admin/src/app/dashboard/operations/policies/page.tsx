@@ -7,6 +7,10 @@ import {
   type DataTableColumn
 } from "@insuros/ui";
 import { WorkflowService } from "@insuros/services";
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Policies' };
 
 const workflowService = new WorkflowService();
 
@@ -47,7 +51,7 @@ export default async function WorkflowPoliciesPage() {
     <DomainModulePage
       title="Workflow Policies"
       description="Configure authorization and approval policies for workflow actions."
-      actions={<Button>Create Policy</Button>}
+      actions={<ActionButton label='Create Policy' action={queueDemoRequest.bind(null, 'Create Policy')} />}
     >
       <div className="mb-6 grid gap-4 md:grid-cols-3">
         <KPICard

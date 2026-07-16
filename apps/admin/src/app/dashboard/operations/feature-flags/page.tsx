@@ -7,6 +7,10 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { FeatureFlagService } from '@insuros/services';
+import { ActionButton } from '@/components/ActionButton';
+import { createDemoFlag } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Feature flags' };
 
 const featureFlagService = new FeatureFlagService();
 
@@ -35,7 +39,7 @@ export default async function FeatureFlagsPage() {
     <DomainModulePage
       title='Feature Flags'
       description='Manage platform, tenant, and module feature flags used to control runtime capabilities.'
-      actions={<Button>Create Feature Flag</Button>}
+      actions={<ActionButton label='Create flag' action={createDemoFlag} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard

@@ -7,6 +7,10 @@ import {
   DomainModulePage,
   Tabs
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Marketplace' };
 
 const productId = 'motor-comprehensive';
 
@@ -22,7 +26,7 @@ export default function MarketplaceProductDetailPage() {
     <DomainModulePage
       title='Motor Comprehensive'
       description='Product detail, configuration, pricing, coverages, riders, and publishing status.'
-      actions={<Button>Edit Product</Button>}
+      actions={<ActionButton label='Edit Product' action={queueDemoRequest.bind(null, 'Edit Product')} />}
     >
       <div className='mb-6 flex flex-wrap gap-3'>
         {tabs.map((tab) => (

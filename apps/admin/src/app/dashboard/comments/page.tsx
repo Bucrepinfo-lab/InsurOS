@@ -7,6 +7,10 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { CommentService } from '@insuros/services';
+import { ActionButton } from '@/components/ActionButton';
+import { addDemoComment } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Comments' };
 
 const commentService = new CommentService();
 
@@ -32,7 +36,7 @@ export default async function CommentsPage() {
     <DomainModulePage
       title='Comments'
       description='Review collaboration notes, operational remarks, and cross-module comments.'
-      actions={<Button>Add Comment</Button>}
+      actions={<ActionButton label='Add comment' action={addDemoComment} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Comments' value={String(comments.length)} change='Across modules' />

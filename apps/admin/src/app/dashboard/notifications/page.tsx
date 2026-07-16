@@ -7,6 +7,10 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { NotificationEventService, NotificationService } from '@insuros/services';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Notifications' };
 
 const notificationService = new NotificationService();
 const notificationEventService = new NotificationEventService();
@@ -85,7 +89,7 @@ export default async function NotificationsPage() {
     <DomainModulePage
       title='Notification Center'
       description='Review platform notifications, notification events, alerts, warnings, approvals, and operational messages.'
-      actions={<Button>Notification Rules</Button>}
+      actions={<ActionButton label='Notification Rules' action={queueDemoRequest.bind(null, 'Notification Rules')} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Notifications' value={String(notifications.length)} change='Across platform' />

@@ -9,6 +9,10 @@ import {
   type DataTableColumn
 } from "@insuros/ui";
 import { MarketplaceService } from "@insuros/services";
+import { ActionButton } from '@/components/ActionButton';
+import { createDemoProduct } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Marketplace' };
 
 const marketplaceService = new MarketplaceService();
 
@@ -38,7 +42,7 @@ export default async function MarketplacePage() {
     <DomainModulePage
       title="Marketplace"
       description="Manage insurance products, pricing, publishing, carrier availability, and marketplace workflows."
-      actions={<Button>Create Product</Button>}
+      actions={<ActionButton label='Create product' action={createDemoProduct} />}
     >
       <div className="mb-6 grid gap-4 md:grid-cols-3">
         <KPICard title="Products" value={String(products.length)} change="Marketplace catalog" />

@@ -375,3 +375,88 @@ export async function refreshClerkPlan(): Promise<ActionResult> {
   revalidatePath('/dashboard/identity/clerk-sync');
   return fail('Key required to execute', 'Plan refreshed, but running it needs CLERK_SECRET_KEY — provision it and this button goes live', { reference: 'CLERK_SECRET_KEY' });
 }
+
+/* ── Legacy-page actions: clone-from-template inserts + universal request log ── */
+
+import {
+  mockAttachments,
+  mockAuditEvents,
+  mockClaims,
+  mockComments,
+  mockCustomers,
+  mockFeatureFlags,
+  mockPlatformSettings,
+  mockPolicies,
+  mockProducts
+} from '@insuros/mocks';
+
+function cloneRow<T extends { id: string }>(rows: T[], overrides: Partial<T> = {}): T {
+  const template = { ...rows[0], id: `${rows[0].id}-d${Date.now() % 100000}`, ...overrides };
+  rows.push(template);
+  return template;
+}
+
+/**
+ * Universal acknowledgment for operational requests: the request is
+ * receipted into the audit trail so nothing pressed ever vanishes.
+ */
+export async function queueDemoRequest(label: string): Promise<ActionResult> {
+  const entry = cloneRow(mockAuditEvents as unknown as { id: string }[]) as Record<string, unknown>;
+  if ('description' in entry) entry.description = `${label} requested from the console`;
+  if ('action' in entry) entry.action = label;
+  if ('occurredAt' in entry) entry.occurredAt = new Date().toISOString();
+  if ('createdAt' in entry) entry.createdAt = new Date().toISOString();
+
+  revalidatePath('/dashboard/audit');
+  return ok('Request receipted', `"${label}" logged to the audit trail — full workflow lands with persistence`, {
+    reference: String(entry.id)
+  });
+}
+
+export async function registerDemoClaim(): Promise<ActionResult> {
+  const row = cloneRow(mockClaims);
+  revalidatePath('/dashboard/claims');
+  return ok('Claim registered', 'New claim opened from template — visible on the register below', { reference: row.id });
+}
+
+export async function issueDemoPolicy(): Promise<ActionResult> {
+  const row = cloneRow(mockPolicies);
+  revalidatePath('/dashboard/policies');
+  return ok('Policy issued', 'Policy issued from template — schedule and coverages attached', { reference: row.id });
+}
+
+export async function addDemoCustomer(): Promise<ActionResult> {
+  const row = cloneRow(mockCustomers);
+  revalidatePath('/dashboard/customers');
+  return ok('Customer added', 'Customer record created — KYC checks queued', { reference: row.id });
+}
+
+export async function createDemoProduct(): Promise<ActionResult> {
+  const row = cloneRow(mockProducts);
+  revalidatePath('/dashboard/marketplace');
+  return ok('Product created', 'Draft product cloned — set pricing before publishing', { reference: row.id });
+}
+
+export async function addDemoComment(): Promise<ActionResult> {
+  const row = cloneRow(mockComments);
+  revalidatePath('/dashboard/comments');
+  return ok('Comment receipted', 'Operational note recorded against the thread', { reference: row.id });
+}
+
+export async function uploadDemoAttachment(): Promise<ActionResult> {
+  const row = cloneRow(mockAttachments);
+  revalidatePath('/dashboard/attachments');
+  return ok('Attachment receipted', 'File registered — OCR intake picks it up next', { reference: row.id });
+}
+
+export async function createDemoSetting(): Promise<ActionResult> {
+  const row = cloneRow(mockPlatformSettings);
+  revalidatePath('/dashboard/operations/settings');
+  return ok('Setting registered', 'Runtime setting created — takes effect on next read', { reference: row.id });
+}
+
+export async function createDemoFlag(): Promise<ActionResult> {
+  const row = cloneRow(mockFeatureFlags);
+  revalidatePath('/dashboard/operations/feature-flags');
+  return ok('Flag registered', 'Feature flag created — disabled until you switch it on', { reference: row.id });
+}

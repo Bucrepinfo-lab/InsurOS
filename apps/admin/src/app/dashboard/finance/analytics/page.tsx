@@ -10,6 +10,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { recordDemoSnapshot } from '@/app/dashboard/actions';
 import { AnalyticsService } from '@insuros/services';
 
+export const metadata = { title: 'Analytics' };
+
 const analyticsService = new AnalyticsService();
 
 export default async function AnalyticsPage() {

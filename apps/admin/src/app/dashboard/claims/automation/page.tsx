@@ -11,6 +11,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { submitDemoFnol } from '@/app/dashboard/actions';
 import { ClaimsAutomationService, MarketingService } from '@insuros/services';
 
+export const metadata = { title: 'Claims automation' };
+
 const claimsAutomationService = new ClaimsAutomationService();
 const marketingService = new MarketingService();
 

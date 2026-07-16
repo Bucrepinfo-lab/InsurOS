@@ -10,6 +10,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { refreshClerkPlan } from '@/app/dashboard/actions';
 import { PrincipalService } from '@insuros/services';
 
+export const metadata = { title: 'Clerk sync' };
+
 const principalService = new PrincipalService();
 
 export default async function ClerkSyncPage() {

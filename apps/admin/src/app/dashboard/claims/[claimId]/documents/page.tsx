@@ -5,6 +5,10 @@ import {
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Document intelligence' };
 
 type ClaimDocumentRow = {
   name: string;
@@ -44,7 +48,7 @@ export default function ClaimDocumentsPage() {
     <DomainModulePage
       title='Claim Documents'
       description='Manage evidence, assessments, approvals, receipts, and settlement documents attached to this claim.'
-      actions={<Button>Upload Document</Button>}
+      actions={<ActionButton label='Upload Document' action={queueDemoRequest.bind(null, 'Upload Document')} />}
     >
       <DomainEntityList
         title='Documents'

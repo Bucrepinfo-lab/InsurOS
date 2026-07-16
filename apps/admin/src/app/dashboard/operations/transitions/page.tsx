@@ -8,6 +8,8 @@ import {
 } from '@insuros/ui';
 import { WorkflowService } from '@insuros/services';
 
+export const metadata = { title: 'Transitions' };
+
 const workflowService = new WorkflowService();
 
 export default async function WorkflowTransitionsPage() {
@@ -45,7 +47,6 @@ export default async function WorkflowTransitionsPage() {
     <DomainModulePage
       title='Workflow Transitions'
       description='Review workflow state changes, approvals, escalations, reopen events, and closure history.'
-      actions={<Button>Export History</Button>}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Transitions' value={String(transitions.length)} change='Workflow events' />

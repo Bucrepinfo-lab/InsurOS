@@ -8,6 +8,8 @@ import {
 } from '@insuros/ui';
 import { AuditEventService, AuditService } from '@insuros/services';
 
+export const metadata = { title: 'Audit' };
+
 const auditService = new AuditService();
 const auditEventService = new AuditEventService();
 
@@ -57,7 +59,6 @@ export default async function AuditCenterPage() {
     <DomainModulePage
       title='Audit Center'
       description='Review immutable audit records and platform audit events for compliance, traceability, and operational governance.'
-      actions={<Button>Export Audit Log</Button>}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Audit Records' value={String(records.length)} change='Tracked records' />

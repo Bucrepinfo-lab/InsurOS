@@ -10,6 +10,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { computeDemoRemittance } from '@/app/dashboard/actions';
 import { TaxRemittanceService } from '@insuros/services';
 
+export const metadata = { title: 'Tax remittance' };
+
 const taxService = new TaxRemittanceService();
 
 export default async function TaxRemittancePage() {

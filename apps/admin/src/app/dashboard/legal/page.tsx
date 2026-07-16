@@ -10,6 +10,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { recordDemoAcceptance } from '@/app/dashboard/actions';
 import { TermsService } from '@insuros/services';
 
+export const metadata = { title: 'Legal and terms' };
+
 const termsService = new TermsService();
 
 export default async function LegalPage() {

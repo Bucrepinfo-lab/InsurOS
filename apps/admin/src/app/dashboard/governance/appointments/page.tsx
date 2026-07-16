@@ -10,6 +10,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { appointDemoAdmin } from '@/app/dashboard/actions';
 import { AdminHierarchyService } from '@insuros/services';
 
+export const metadata = { title: 'Admin appointments' };
+
 const adminHierarchyService = new AdminHierarchyService();
 
 export default async function AdminAppointmentsPage() {

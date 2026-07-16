@@ -15,6 +15,10 @@ import {
   RoleAssignmentService,
   RoleService
 } from '@insuros/services';
+import { ActionButton } from '@/components/ActionButton';
+import { appointDemoAdmin } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Identity' };
 
 type UserRow = {
   id: string;
@@ -94,7 +98,7 @@ export default async function IdentityPage() {
     <DomainModulePage
       title='Identity & Access Management'
       description='Manage users, roles, permissions, memberships, role assignments, verification workflows, and secure access across InsurOS tenants.'
-      actions={<Button>Invite User</Button>}
+      actions={<ActionButton label='Appoint administrator' action={appointDemoAdmin} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard title='Identity Workflows' value={String(workflows.length)} change='Tracked identities' />

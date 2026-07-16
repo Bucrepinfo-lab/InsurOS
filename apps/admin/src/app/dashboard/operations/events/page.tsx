@@ -7,6 +7,10 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { PlatformEventService } from '@insuros/services';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Events' };
 
 const platformEventService = new PlatformEventService();
 
@@ -45,7 +49,7 @@ export default async function PlatformEventsPage() {
     <DomainModulePage
       title='Platform Events'
       description='Review cross-domain platform events used for workflow orchestration, audit, notifications, and future integrations.'
-      actions={<Button>Replay Events</Button>}
+      actions={<ActionButton label='Replay Events' action={queueDemoRequest.bind(null, 'Replay Events')} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Events' value={String(events.length)} change='Platform bus' />

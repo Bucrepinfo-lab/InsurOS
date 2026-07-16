@@ -10,6 +10,8 @@ import { ActionButton } from '@/components/ActionButton';
 import { createDemoAssignment } from '@/app/dashboard/actions';
 import { AdminHierarchyService, SalesHierarchyService } from '@insuros/services';
 
+export const metadata = { title: 'Sales assignments' };
+
 const salesService = new SalesHierarchyService();
 const adminHierarchyService = new AdminHierarchyService();
 
