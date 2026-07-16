@@ -51,7 +51,11 @@ export function ActionButton({ label, action, variant = 'primary' }: ActionButto
                 setTimeout(() => setFlash(false), 1200);
               }
             } catch {
-              setResult({ ok: false, message: 'Something went wrong — try again' });
+              setResult({
+                ok: false,
+                title: 'Action failed',
+                message: 'Something went wrong — try again'
+              });
             }
           })
         }
@@ -101,11 +105,19 @@ export function ActionButton({ label, action, variant = 'primary' }: ActionButto
               </svg>
             )}
           </span>
-          <span className='leading-snug'>
-            <span className='block text-[11px] font-medium uppercase tracking-[0.14em] text-white/60'>
-              {result.ok ? 'Success' : 'Attention'}
+          <span className='min-w-0 leading-snug'>
+            <span className='flex flex-wrap items-center gap-2'>
+              <span className='font-display text-[15px]'>{result.title}</span>
+              {result.reference ? (
+                <span className='rounded-md bg-white/12 px-1.5 py-0.5 font-mono text-[10.5px] tracking-tight text-white/85'>
+                  {result.reference}
+                </span>
+              ) : null}
             </span>
-            {result.message}
+            <span className='mt-0.5 block text-[12.5px] text-white/80'>{result.message}</span>
+            <span className='mt-1.5 block text-[10px] uppercase tracking-[0.16em] text-white/45'>
+              {result.ok ? 'Receipt' : 'Attention'} · {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
           </span>
           <button
             type='button'

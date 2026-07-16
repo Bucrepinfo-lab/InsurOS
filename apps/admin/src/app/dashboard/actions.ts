@@ -53,8 +53,8 @@ export async function submitDemoFnol(): Promise<ActionResult> {
 
   revalidatePath('/dashboard/claims/automation');
   return result.decision.outcome === 'AutoApproved'
-    ? ok(`Auto-approved in seconds · fraud score ${result.assessment.score} · payout SLA ${result.decision.slaHours}h`)
-    : ok(`Routed to adjuster review · fraud score ${result.assessment.score}`);
+    ? ok('Claim auto-approved', `Fraud score ${result.assessment.score} · payout SLA ${result.decision.slaHours}h · reasons on the ledger`, { reference: result.fnol.claimReference })
+    : ok('Claim received — under review', `Fraud score ${result.assessment.score} · an adjuster owns the decision from here`, { reference: result.fnol.claimReference });
 }
 
 export async function registerDemoSceneCapture(): Promise<ActionResult> {
@@ -63,7 +63,7 @@ export async function registerDemoSceneCapture(): Promise<ActionResult> {
   const fnols = await claims.getFnols();
   const fnol = fnols[fnols.length - 1];
 
-  await scenes.register({
+  const photo = await scenes.register({
     claimReference: fnol?.claimReference ?? 'CLM-KE-2026-0801',
     url: `https://storage.insuros.example/scenes/scene-${Date.now()}.jpg`,
     sha256: Array.from({ length: 64 }, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join(''),
@@ -76,7 +76,7 @@ export async function registerDemoSceneCapture(): Promise<ActionResult> {
   });
 
   revalidatePath('/dashboard/claims/evidence');
-  return ok('Live capture sealed — GPS and hash attached');
+  return ok('Evidence sealed at the scene', 'Live capture with GPS fix and on-device hash — tamper-evident from this second', { reference: photo.claimReference });
 }
 
 export async function enrolDemoMicroPolicy(): Promise<ActionResult> {
@@ -94,22 +94,22 @@ export async function enrolDemoMicroPolicy(): Promise<ActionResult> {
 
   revalidatePath('/dashboard/marketplace/micro');
   return result.ok
-    ? ok(`${result.policy?.holderName ?? 'Customer'} enrolled on ${product.name}`)
-    : fail(result.error ?? 'Enrolment failed — try again');
+    ? ok('Enrolment confirmed', `${result.policy?.holderName ?? 'Customer'} covered on ${product.name} — first premium via M-PESA activates it`, { reference: result.policy?.id })
+    : fail('Enrolment declined', result.error ?? 'Try again or pick another product');
 }
 
 export async function addDemoSubscriber(): Promise<ActionResult> {
   const service = new SubscriptionService();
   const name = randomName();
 
-  await service.subscribe({
+  const sub = await service.subscribe({
     subscriberName: name,
     msisdn: randomMsisdn(),
     countryCode: 'KE'
   });
 
   revalidatePath('/dashboard/subscribers');
-  return ok(`${name} subscribed · first month free · day-35 and day-39 nudges scheduled`);
+  return ok('Subscription receipted', `${name} starts a free first month · renewal due day 40 · nudges booked for days 35 and 39`, { reference: sub.id });
 }
 
 export async function appointDemoAdmin(): Promise<ActionResult> {
@@ -132,8 +132,8 @@ export async function appointDemoAdmin(): Promise<ActionResult> {
 
   revalidatePath('/dashboard/governance/appointments');
   return result.ok
-    ? ok(`${name} appointed to ${region.name} — pending activation`)
-    : fail(result.error ?? 'Appointment blocked by hierarchy rules');
+    ? ok('Appointment issued', `${name} appointed to ${region.name} — pending activation, audit-logged`, { reference: result.appointment?.id })
+    : fail('Appointment blocked', result.error ?? 'Hierarchy rules prevented this appointment');
 }
 
 export async function createDemoRegion(): Promise<ActionResult> {
@@ -152,15 +152,16 @@ export async function createDemoRegion(): Promise<ActionResult> {
   });
 
   revalidatePath('/dashboard/governance');
-  return ok(`Demo Ward ${n} created under Nairobi County`);
+  return ok('Region registered', `Demo Ward ${n} created under Nairobi County — jurisdiction chain resolves to Global`, { reference: `KE-047-D${n}` });
 }
 
 export async function grantDemoAccess(): Promise<ActionResult> {
   const db = getPersistence();
   const name = randomName();
+  const grantId = `jgrant-${Date.now()}`;
 
   await db.jurisdictionAssignments.insert({
-    id: `jgrant-${Date.now()}`,
+    id: grantId,
     userId: `user-${Date.now()}`,
     userName: name,
     roleId: 'role-finance-manager',
@@ -171,17 +172,17 @@ export async function grantDemoAccess(): Promise<ActionResult> {
   });
 
   revalidatePath('/dashboard/governance/access');
-  return ok(`${name} granted Finance Manager in Nairobi County and descendants`);
+  return ok('Access granted', `${name} holds Finance Manager across Nairobi County and all descendants`, { reference: grantId });
 }
 
 export async function recordDemoAcceptance(): Promise<ActionResult> {
   const service = new TermsService();
   const name = randomName();
 
-  await service.recordAcceptance(`user-${Date.now()}`, name, 'Policyholder');
+  const acceptance = await service.recordAcceptance(`user-${Date.now()}`, name, 'Policyholder');
 
   revalidatePath('/dashboard/legal');
-  return ok(`Click-wrap acceptance recorded for ${name} — audit trail updated`);
+  return ok('Acceptance receipted', `${name} accepted the active terms — version, time, and method preserved in the audit trail`, { reference: acceptance.id });
 }
 
 export async function computeDemoRemittance(): Promise<ActionResult> {
@@ -201,15 +202,16 @@ export async function computeDemoRemittance(): Promise<ActionResult> {
   await db.taxRemittances.insert(remittance);
 
   revalidatePath('/dashboard/finance/tax');
-  return ok(`${jurisdiction.countryName}: ${remittance.currency} ${remittance.totalDue.toLocaleString()} due · pay via ${jurisdiction.portalName}`);
+  return ok('Remittance computed', `${jurisdiction.countryName}: ${remittance.currency} ${remittance.totalDue.toLocaleString()} due in 20 days · pay via ${jurisdiction.portalName}`, { reference: remittance.id });
 }
 
 export async function addDemoRegionalRule(): Promise<ActionResult> {
   const db = getPersistence();
   const n = Math.floor(Math.random() * 47) + 1;
+  const ruleId = `sub-ke-demo-${Date.now()}`;
 
   await db.subnationalTaxRules.insert({
-    id: `sub-ke-demo-${Date.now()}`,
+    id: ruleId,
     countryCode: 'KE',
     regionCode: `KE-${String(n).padStart(3, '0')}`,
     regionName: `County ${n}`,
@@ -226,15 +228,16 @@ export async function addDemoRegionalRule(): Promise<ActionResult> {
   });
 
   revalidatePath('/dashboard/finance/tax/regional');
-  return ok(`Regional levy added for County ${n} — verify with the county before filing`);
+  return ok('Regional rule registered', `Levy recorded for County ${n} — verify the band with the county before filing`, { reference: ruleId });
 }
 
 export async function captureDemoBenchmark(): Promise<ActionResult> {
   const db = getPersistence();
   const price = 3_500 + Math.floor(Math.random() * 1_500);
+  const benchId = `bench-${Date.now()}`;
 
   await db.competitorBenchmarks.insert({
-    id: `bench-${Date.now()}`,
+    id: benchId,
     competitor: `Competitor ${String.fromCharCode(70 + Math.floor(Math.random() * 15))}`,
     insuranceLine: 'Motor',
     countryCode: 'KE',
@@ -244,15 +247,16 @@ export async function captureDemoBenchmark(): Promise<ActionResult> {
   });
 
   revalidatePath('/dashboard/marketplace/pricing-engine');
-  return ok(`Benchmark captured at KES ${price.toLocaleString()} — market median recalculated`);
+  return ok('Benchmark filed', `Captured at KES ${price.toLocaleString()} — the market median and undercut price recalculated instantly`, { reference: benchId });
 }
 
 export async function nameDemoAgent(): Promise<ActionResult> {
   const db = getPersistence();
   const name = randomName();
+  const agentId = `sales-agent-${Date.now()}`;
 
   await db.salesAgents.insert({
-    id: `sales-agent-${Date.now()}`,
+    id: agentId,
     name,
     email: `${name.toLowerCase().replace(' ', '.')}@insuros.example`,
     rank: 'Constituency Agent',
@@ -263,7 +267,7 @@ export async function nameDemoAgent(): Promise<ActionResult> {
   });
 
   revalidatePath('/dashboard/sales');
-  return ok(`${name} named Constituency Agent under Faith Njeri — onboarding`);
+  return ok('Agent named', `${name} joins as Constituency Agent under Faith Njeri — onboarding checklist opened`, { reference: agentId });
 }
 
 export async function createDemoAssignment(): Promise<ActionResult> {
@@ -281,8 +285,8 @@ export async function createDemoAssignment(): Promise<ActionResult> {
 
   revalidatePath('/dashboard/sales/assignments');
   return result.ok
-    ? ok('Target assigned — chain of command validated')
-    : fail(result.error ?? 'Assignment blocked by rank rules');
+    ? ok('Target assigned', 'Rank and reporting line validated — the assignment is on the register', { reference: result.assignment?.id })
+    : fail('Assignment blocked', result.error ?? 'Rank rules prevented this assignment');
 }
 
 export async function accrueDemoPremium(): Promise<ActionResult> {
@@ -298,7 +302,7 @@ export async function accrueDemoPremium(): Promise<ActionResult> {
   });
 
   revalidatePath('/dashboard/sales/commissions');
-  return ok(`${created.length} accruals cascaded up the override chain`);
+  return ok('Commissions accrued', `${created.length} accruals cascaded up the override chain — every beneficiary named`, { reference: created[0]?.policyReference });
 }
 
 export async function ingestDemoDocument(): Promise<ActionResult> {
@@ -318,15 +322,17 @@ export async function ingestDemoDocument(): Promise<ActionResult> {
 
   revalidatePath('/dashboard/operations/documents');
   return extraction.status === 'Verified'
-    ? ok(`Auto-verified at ${Math.round(extraction.overallConfidence * 100)}% confidence`)
-    : ok(`Low confidence (${Math.round(extraction.overallConfidence * 100)}%) — routed to human review`);
+    ? ok('Document auto-verified', `Read at ${Math.round(extraction.overallConfidence * 100)}% confidence — fields extracted and receipted`, { reference: extraction.attachmentReference })
+    : ok('Document receipted — needs review', `Confidence ${Math.round(extraction.overallConfidence * 100)}% — routed to a human, never silently decided`, { reference: extraction.attachmentReference });
 }
 
 export async function createDemoContent(): Promise<ActionResult> {
   const db = getPersistence();
 
+  const contentId = `mkt-demo-${Date.now()}`;
+
   await db.marketingContent.insert({
-    id: `mkt-demo-${Date.now()}`,
+    id: contentId,
     title: `Draft merit ${new Date().toISOString().slice(11, 19)}`,
     headline: 'A new merit worth telling the world about.',
     body: 'Draft created from the console — edit before publishing.',
@@ -339,7 +345,7 @@ export async function createDemoContent(): Promise<ActionResult> {
   });
 
   revalidatePath('/dashboard/operations/crm');
-  return ok('Draft created — edit and activate when ready');
+  return ok('Draft receipted', 'Content saved as draft — edit the merit and activate to publish across policy UIs', { reference: contentId });
 }
 
 export async function recordDemoSnapshot(): Promise<ActionResult> {
@@ -362,10 +368,10 @@ export async function recordDemoSnapshot(): Promise<ActionResult> {
   });
 
   revalidatePath('/dashboard/finance/analytics');
-  return ok('July snapshot recorded — combined ratio improving');
+  return ok('Snapshot filed', 'July KPIs recorded — combined ratio improving as automation climbs', { reference: '2026-07 · KE' });
 }
 
 export async function refreshClerkPlan(): Promise<ActionResult> {
   revalidatePath('/dashboard/identity/clerk-sync');
-  return fail('Plan refreshed, but execution needs CLERK_SECRET_KEY — provision it to go live');
+  return fail('Key required to execute', 'Plan refreshed, but running it needs CLERK_SECRET_KEY — provision it and this button goes live', { reference: 'CLERK_SECRET_KEY' });
 }
