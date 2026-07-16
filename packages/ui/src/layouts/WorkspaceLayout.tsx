@@ -15,20 +15,20 @@ export function WorkspaceLayout({
   className
 }: WorkspaceLayoutProps) {
   return (
-    <div className={cn('min-h-screen bg-slate-50 text-slate-950', className)}>
+    <div className={cn('min-h-screen bg-paper text-ink', className)}>
       <div className='flex min-h-screen'>
-        <aside className='hidden w-72 border-r bg-white lg:block'>
+        <aside className='hidden w-72 bg-ink lg:block'>
           {sidebar}
         </aside>
 
         <div className='flex min-w-0 flex-1 flex-col'>
           {topbar ? (
-            <header className='border-b bg-white px-6 py-4'>
+            <header className='border-b border-line bg-sheet px-6'>
               {topbar}
             </header>
           ) : null}
 
-          <main className='flex-1 p-6'>
+          <main className='animate-rise flex-1 p-6 lg:px-10 lg:py-8'>
             {children}
           </main>
         </div>

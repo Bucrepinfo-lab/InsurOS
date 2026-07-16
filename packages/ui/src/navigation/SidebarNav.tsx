@@ -17,21 +17,23 @@ export interface SidebarNavProps {
 export function SidebarNav({ title = 'InsurOS', items, footer }: SidebarNavProps) {
   return (
     <div className='flex h-full flex-col'>
-      <div className='border-b px-5 py-4'>
-        <p className='text-lg font-semibold text-slate-950'>{title}</p>
-        <p className='text-xs text-slate-500'>Control Plane</p>
+      <div className='border-b border-white/10 px-6 py-5'>
+        <p className='font-display text-xl tracking-tight text-paper'>{title}</p>
+        <p className='mt-0.5 text-[11px] uppercase tracking-[0.18em] text-seal'>
+          Control plane
+        </p>
       </div>
 
-      <nav className='flex-1 space-y-1 p-3'>
+      <nav className='flex-1 space-y-0.5 p-3'>
         {items.map((item) => (
           <a
             key={item.href}
             href={item.href}
             className={cn(
-              'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition',
+              'flex items-center gap-3 rounded-md border-l-2 px-3 py-2 text-[13px] font-medium transition',
               item.isActive
-                ? 'bg-slate-900 text-white'
-                : 'text-slate-700 hover:bg-slate-100 hover:text-slate-950'
+                ? 'border-seal bg-white/10 text-white'
+                : 'border-transparent text-paper/60 hover:bg-white/5 hover:text-paper'
             )}
           >
             {item.icon ? <span className='text-base'>{item.icon}</span> : null}
@@ -40,7 +42,7 @@ export function SidebarNav({ title = 'InsurOS', items, footer }: SidebarNavProps
         ))}
       </nav>
 
-      {footer ? <div className='border-t p-4'>{footer}</div> : null}
+      {footer ? <div className='border-t border-white/10 p-4'>{footer}</div> : null}
     </div>
   );
 }

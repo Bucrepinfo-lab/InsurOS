@@ -4,18 +4,23 @@ import { cn } from '../utils/cn';
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('rounded-lg border border-slate-200 bg-white shadow-sm', className)}
+      className={cn(
+        'rounded-xl border border-line bg-sheet shadow-[0_1px_2px_rgba(27,42,65,0.05)]',
+        className
+      )}
       {...props}
     />
   );
 }
 
 export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('border-b px-5 py-4', className)} {...props} />;
+  return <div className={cn('border-b border-line px-5 py-4', className)} {...props} />;
 }
 
 export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn('text-base font-semibold text-slate-950', className)} {...props} />;
+  return (
+    <h3 className={cn('font-display text-lg text-ink', className)} {...props} />
+  );
 }
 
 export function CardContent({ className, ...props }: HTMLAttributes<HTMLDivElement>) {

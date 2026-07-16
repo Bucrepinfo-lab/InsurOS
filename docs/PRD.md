@@ -1,6 +1,6 @@
 # InsurOS — Product Requirements Document
 
-**Version:** 3.2 · **Updated:** 2026-07-16 · **Owner:** Jacob (Super Admin)
+**Version:** 3.3 · **Updated:** 2026-07-16 · **Owner:** Jacob (Super Admin)
 
 ## Vision
 
@@ -67,6 +67,10 @@ Roles are granted per jurisdiction (`JurisdictionAssignment`: user × role × re
 ## Commission Engine
 
 Rate cards per rank (direct + override percentages), automatic accrual on written premium up the supervisor chain, clawbacks for lapsed/fraudulent business, and per-agent period statements (direct + override − clawbacks = net payable). Every accrual names the writing agent, making override chains auditable. Kenya VAT (16%) applies to commissions per the tax module. UI: `/dashboard/sales/commissions`.
+
+## Design System
+
+"The Underwriter's Ledger" (see `docs/DESIGN_SYSTEM.md`): warm paper ground, ink-navy structure, seal-green signal, Fraunces display + Onest body + Spline Sans Mono figures, single orchestrated page-entry motion with reduced-motion support. Applied globally through Tailwind v4 `@theme` tokens and the shared `@insuros/ui` components — every screen inherits it.
 
 ## Architecture
 

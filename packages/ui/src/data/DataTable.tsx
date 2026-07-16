@@ -30,9 +30,12 @@ export function DataTable<TData>({
         <div className='overflow-x-auto'>
           <table className='w-full text-left text-sm'>
             <thead>
-              <tr className='border-b text-slate-500'>
+              <tr className='border-b border-line'>
                 {columns.map((column) => (
-                  <th key={String(column.key)} className='py-3 font-medium'>
+                  <th
+                    key={String(column.key)}
+                    className='py-3 pr-4 text-[11px] font-medium uppercase tracking-[0.12em] text-dim'
+                  >
                     {column.header}
                   </th>
                 ))}
@@ -40,9 +43,9 @@ export function DataTable<TData>({
             </thead>
             <tbody>
               {data.map((row, rowIndex) => (
-                <tr key={rowIndex} className='border-b last:border-0'>
+                <tr key={rowIndex} className='border-b border-line transition last:border-0 hover:bg-paper/60'>
                   {columns.map((column) => (
-                    <td key={String(column.key)} className='py-4 text-slate-600'>
+                    <td key={String(column.key)} className='py-3.5 pr-4 text-[13px] leading-relaxed text-ink/80'>
                      {column.render
   ? column.render(row)
   : String((row as Record<string, unknown>)[String(column.key)] ?? '')}
