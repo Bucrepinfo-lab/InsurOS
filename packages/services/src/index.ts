@@ -41,3 +41,6 @@ export * from "./claims-automation";
 export * from "./pricing";
 export * from "./microinsurance";
 export * from "./analytics";
+export * from "./document-intelligence";
+export * from "./scene-capture";
+export * from "./marketing";

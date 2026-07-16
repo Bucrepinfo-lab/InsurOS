@@ -68,6 +68,11 @@ export const adminNavigation: NavigationSection[] = [
         label: 'Claims Automation',
         href: '/dashboard/claims/automation'
       },
+      {
+        id: 'claims-evidence',
+        label: 'Scene Evidence',
+        href: '/dashboard/claims/evidence'
+      },
       { id: 'finance', label: 'Finance', href: '/dashboard/finance' },
       { id: 'tax', label: 'Tax Remittance', href: '/dashboard/finance/tax' },
       {
@@ -104,6 +109,12 @@ export const adminNavigation: NavigationSection[] = [
     title: 'Operations',
     items: [
       { id: 'operations', label: 'Operations', href: '/dashboard/operations' },
+      {
+        id: 'documents',
+        label: 'Document Intelligence',
+        href: '/dashboard/operations/documents'
+      },
+      { id: 'crm', label: 'CRM Content', href: '/dashboard/operations/crm' },
       { id: 'activity', label: 'Activity', href: '/dashboard/activity' },
       { id: 'notifications', label: 'Notifications', href: '/dashboard/notifications' },
       { id: 'audit', label: 'Audit', href: '/dashboard/audit' }

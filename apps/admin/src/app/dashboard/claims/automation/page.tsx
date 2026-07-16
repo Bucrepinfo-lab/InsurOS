@@ -4,17 +4,20 @@ import {
   DomainEntityList,
   DomainModulePage,
   KPICard,
+  MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
-import { ClaimsAutomationService } from '@insuros/services';
+import { ClaimsAutomationService, MarketingService } from '@insuros/services';
 
 const claimsAutomationService = new ClaimsAutomationService();
+const marketingService = new MarketingService();
 
 export default async function ClaimsAutomationPage() {
   const fnols = await claimsAutomationService.getFnols();
   const rules = await claimsAutomationService.getRules();
   const decisions = await claimsAutomationService.getDecisions();
   const stpRate = await claimsAutomationService.getStpRate();
+  const [banner] = await marketingService.getContentFor('ClaimsPortal');
 
   type DecisionRow = (typeof decisions)[number];
   type RuleRow = (typeof rules)[number];
@@ -99,6 +102,15 @@ export default async function ClaimsAutomationPage() {
       description='Straight-through processing: FNOL intake, explainable fraud scoring, and rules-based auto-adjudication. Denials are never automated — a human always owns them.'
       actions={<Button>Submit FNOL</Button>}
     >
+      {banner ? (
+        <MarketingBanner
+          headline={banner.headline}
+          body={banner.body}
+          cta={banner.cta}
+          ctaHref={banner.ctaHref}
+        />
+      ) : null}
+
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard
           title='STP Rate'

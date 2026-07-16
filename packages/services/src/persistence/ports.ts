@@ -9,11 +9,14 @@ import type {
   CompetitorBenchmark,
   FnolSubmission,
   KpiSnapshot,
+  MarketingContent,
   MicroPayment,
   MicroPolicy,
   MicroProduct,
   MobileMoneyProvider,
+  OcrExtraction,
   RiskFactor,
+  ScenePhoto,
   JurisdictionAssignment,
   SalesAgent,
   SalesAssignment,
@@ -64,4 +67,7 @@ export interface PersistenceAdapter {
   microPolicies: Repository<MicroPolicy>;
   microPayments: Repository<MicroPayment>;
   kpiSnapshots: Repository<KpiSnapshot>;
+  ocrExtractions: Repository<OcrExtraction>;
+  scenePhotos: Repository<ScenePhoto>;
+  marketingContent: Repository<MarketingContent>;
 }

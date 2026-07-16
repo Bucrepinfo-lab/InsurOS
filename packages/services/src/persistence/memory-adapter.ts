@@ -6,11 +6,14 @@ import {
   mockCompetitorBenchmarks,
   mockFnolSubmissions,
   mockKpiSnapshots,
+  mockMarketingContent,
   mockMicroPayments,
   mockMicroPolicies,
   mockMicroProducts,
   mockMobileMoneyProviders,
+  mockOcrExtractions,
   mockRiskFactors,
+  mockScenePhotos,
   mockAdminRegions,
   mockCommissionAccruals,
   mockCommissionSchedules,
@@ -87,6 +90,9 @@ export function createMemoryAdapter(): PersistenceAdapter {
     mobileMoneyProviders: new MemoryRepository(mockMobileMoneyProviders),
     microPolicies: new MemoryRepository(mockMicroPolicies),
     microPayments: new MemoryRepository(mockMicroPayments),
-    kpiSnapshots: new MemoryRepository(mockKpiSnapshots)
+    kpiSnapshots: new MemoryRepository(mockKpiSnapshots),
+    ocrExtractions: new MemoryRepository(mockOcrExtractions),
+    scenePhotos: new MemoryRepository(mockScenePhotos),
+    marketingContent: new MemoryRepository(mockMarketingContent)
   };
 }

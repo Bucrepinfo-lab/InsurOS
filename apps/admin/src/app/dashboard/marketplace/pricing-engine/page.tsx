@@ -4,16 +4,19 @@ import {
   DomainEntityList,
   DomainModulePage,
   KPICard,
+  MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
-import { PricingService } from '@insuros/services';
+import { MarketingService, PricingService } from '@insuros/services';
 
 const pricingService = new PricingService();
+const marketingService = new MarketingService();
 
 export default async function PricingEnginePage() {
   const factors = await pricingService.getRiskFactors();
   const bands = await pricingService.getAffordabilityBands();
   const benchmarks = await pricingService.getBenchmarks();
+  const [banner] = await marketingService.getContentFor('PricingQuote');
 
   // Worked example: urban safe driver, Jua Kali band, Kenya motor.
   const sampleQuote = await pricingService.quote({
@@ -62,6 +65,15 @@ export default async function PricingEnginePage() {
       description='Competitive-friendly premiums: risk-adjusted technical price, lean digital loadings, competitor undercut, affordability floors. Never priced below expected risk cost.'
       actions={<Button>New Quote</Button>}
     >
+      {banner ? (
+        <MarketingBanner
+          headline={banner.headline}
+          body={banner.body}
+          cta={banner.cta}
+          ctaHref={banner.ctaHref}
+        />
+      ) : null}
+
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard
           title='Sample Quote (KE Motor)'

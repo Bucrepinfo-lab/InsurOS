@@ -4,17 +4,20 @@ import {
   DomainEntityList,
   DomainModulePage,
   KPICard,
+  MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
-import { MicroinsuranceService } from '@insuros/services';
+import { MarketingService, MicroinsuranceService } from '@insuros/services';
 
 const microinsuranceService = new MicroinsuranceService();
+const marketingService = new MarketingService();
 
 export default async function MicroinsurancePage() {
   const products = await microinsuranceService.getProducts();
   const providers = await microinsuranceService.getProviders();
   const policies = await microinsuranceService.getPolicies();
   const payments = await microinsuranceService.getPayments();
+  const [banner] = await marketingService.getContentFor('Micro');
 
   type ProductRow = (typeof products)[number];
   type PolicyRow = (typeof policies)[number];
@@ -93,6 +96,15 @@ export default async function MicroinsurancePage() {
       description='Micro-premium covers distributed on mobile-money rails (USSD, app, agent, embedded). The mobile number is identity and payment instrument in one — closing the penetration gap.'
       actions={<Button>Enrol Policyholder</Button>}
     >
+      {banner ? (
+        <MarketingBanner
+          headline={banner.headline}
+          body={banner.body}
+          cta={banner.cta}
+          ctaHref={banner.ctaHref}
+        />
+      ) : null}
+
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard
           title='Micro Products'
