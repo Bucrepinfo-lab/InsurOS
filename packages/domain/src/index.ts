@@ -49,3 +49,5 @@ export * from "./analytics";
 export * from "./document-intelligence";
 export * from "./scene-capture";
 export * from "./marketing";
+export * from "./subscription";
+export * from "./engagement";

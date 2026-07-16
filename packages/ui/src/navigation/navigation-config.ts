@@ -89,8 +89,13 @@ export const adminNavigation: NavigationSection[] = [
   },
   {
     id: 'sales',
-    title: 'Sales',
+    title: 'Sales & Growth',
     items: [
+      {
+        id: 'subscribers',
+        label: 'Subscribers',
+        href: '/dashboard/subscribers'
+      },
       { id: 'sales', label: 'Sales Portal', href: '/dashboard/sales' },
       {
         id: 'sales-assignments',

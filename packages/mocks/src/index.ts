@@ -44,3 +44,5 @@ export * from "./kpi-snapshots";
 export * from "./document-intelligence";
 export * from "./scene-capture";
 export * from "./marketing";
+export * from "./subscriptions";
+export * from "./engagement";

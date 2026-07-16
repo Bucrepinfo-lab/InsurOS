@@ -4,6 +4,7 @@ import {
   mockAdminAppointments,
   mockAffordabilityBands,
   mockCompetitorBenchmarks,
+  mockEngagementItems,
   mockFnolSubmissions,
   mockKpiSnapshots,
   mockMarketingContent,
@@ -11,9 +12,14 @@ import {
   mockMicroPolicies,
   mockMicroProducts,
   mockMobileMoneyProviders,
+  mockNewsletterIssues,
   mockOcrExtractions,
+  mockRenewalAlerts,
   mockRiskFactors,
   mockScenePhotos,
+  mockSubscriberPrefs,
+  mockSubscriptionPlans,
+  mockSubscriptions,
   mockAdminRegions,
   mockCommissionAccruals,
   mockCommissionSchedules,
@@ -93,6 +99,14 @@ export function createMemoryAdapter(): PersistenceAdapter {
     kpiSnapshots: new MemoryRepository(mockKpiSnapshots),
     ocrExtractions: new MemoryRepository(mockOcrExtractions),
     scenePhotos: new MemoryRepository(mockScenePhotos),
-    marketingContent: new MemoryRepository(mockMarketingContent)
+    marketingContent: new MemoryRepository(mockMarketingContent),
+    subscriptionPlans: new MemoryRepository(mockSubscriptionPlans),
+    subscriptions: new MemoryRepository(mockSubscriptions),
+    renewalAlerts: new MemoryRepository(mockRenewalAlerts),
+    engagementItems: new MemoryRepository(mockEngagementItems),
+    newsletterIssues: new MemoryRepository(mockNewsletterIssues),
+    subscriberPrefs: new MemoryRepository(
+      mockSubscriberPrefs.map((prefs) => ({ id: prefs.subscriptionId, ...prefs }))
+    )
   };
 }

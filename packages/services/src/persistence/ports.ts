@@ -7,6 +7,7 @@ import type {
   CommissionAccrual,
   CommissionSchedule,
   CompetitorBenchmark,
+  EngagementItem,
   FnolSubmission,
   KpiSnapshot,
   MarketingContent,
@@ -14,9 +15,14 @@ import type {
   MicroPolicy,
   MicroProduct,
   MobileMoneyProvider,
+  NewsletterIssue,
   OcrExtraction,
+  RenewalAlert,
   RiskFactor,
   ScenePhoto,
+  SubscriberDashboardPrefs,
+  Subscription,
+  SubscriptionPlan,
   JurisdictionAssignment,
   SalesAgent,
   SalesAssignment,
@@ -70,4 +76,10 @@ export interface PersistenceAdapter {
   ocrExtractions: Repository<OcrExtraction>;
   scenePhotos: Repository<ScenePhoto>;
   marketingContent: Repository<MarketingContent>;
+  subscriptionPlans: Repository<SubscriptionPlan>;
+  subscriptions: Repository<Subscription>;
+  renewalAlerts: Repository<RenewalAlert>;
+  engagementItems: Repository<EngagementItem>;
+  newsletterIssues: Repository<NewsletterIssue>;
+  subscriberPrefs: Repository<SubscriberDashboardPrefs & { id: string }>;
 }

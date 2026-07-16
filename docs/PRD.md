@@ -1,6 +1,6 @@
 # InsurOS — Product Requirements Document
 
-**Version:** 3.1 · **Updated:** 2026-07-16 · **Owner:** Jacob (Super Admin)
+**Version:** 3.2 · **Updated:** 2026-07-16 · **Owner:** Jacob (Super Admin)
 
 ## Vision
 
@@ -21,6 +21,8 @@ Deep research into why insurance businesses fail to thrive (see `docs/MARKET_GAP
 **Document Intelligence (OCR, v3.1)** — every uploaded file (police abstracts, receipts, invoices, IDs, logbooks) is OCR-read at intake: fields extracted with confidence scores, required fields checked per document type, low confidence auto-routed to human review. Feeds `documentsComplete` in claims automation. UI: `/dashboard/operations/documents`.
 
 **Scene Capture (v3.1)** — customers photograph the incident scene live in-app; GPS, capture/upload timestamps, and an on-device SHA-256 seal attach automatically. Five integrity checks (live capture, timeliness, GPS, real-time upload, hash) produce a Strong/Acceptable/Weak verdict; Strong evidence replaces adjuster visits on small claims — boosting transparency, cutting delays, pre-empting disputes, and building confidence. UI: `/dashboard/claims/evidence`.
+
+**Subscription & Engagement (v3.2)** — app subscription at 10 units of each country's currency per month: first month free, renewal due on day 40 of the cycle, nudges automatically scheduled for day 35 (push) and day 39 (SMS); Trial → Active → PastDue lifecycle with referral codes ("give a month, get a month"). The engagement layer earns daily relevance for a rarely-used product: weather/risk alerts, safety tips, milestone rewards, a policy-health score, and "The Cover Letter" newsletter thread — every shareable item ships with a WhatsApp-ready forward text for word-of-mouth growth. Subscriber dashboard preview (policy states, customizable widgets, renewal countdown, newsletter, merit-comparison banner vs competitor median): `/dashboard/subscribers`.
 
 **CRM Marketing Content (v3.1)** — merit-led write-ups (claims paid in hours; engineered fair prices; KES-20/day cover; no-forms parametric payouts; sealed scene evidence; decisions with reasons) targeted by placement, insurance line, and audience, and rendered as banners across the policy UIs (micro, pricing, claims). Managed at `/dashboard/operations/crm`.
 
@@ -74,7 +76,7 @@ Persistence: services depend on repository ports (`getPersistence()`), backed by
 
 ## Status
 
-Done: platform capabilities (activity, notifications, comments, attachments, audit, workflow engine), business workspaces, RBAC foundation, governance hierarchy, tax remittance (national + regional), legal/terms, sales portal, commission engine, jurisdiction-scoped RBAC, Clerk integration layer, persistence ports + PostgreSQL schema, CI validation pipeline, the v3.0 gap-closing modules: claims automation (STP + fraud), pricing engine, microinsurance + mobile money (incl. parametric), executive analytics; and the v3.1 trust stack: OCR document intelligence, live scene capture with integrity verdicts, CRM marketing content across policy UIs.
+Done: platform capabilities (activity, notifications, comments, attachments, audit, workflow engine), business workspaces, RBAC foundation, governance hierarchy, tax remittance (national + regional), legal/terms, sales portal, commission engine, jurisdiction-scoped RBAC, Clerk integration layer, persistence ports + PostgreSQL schema, CI validation pipeline, the v3.0 gap-closing modules: claims automation (STP + fraud), pricing engine, microinsurance + mobile money (incl. parametric), executive analytics; the v3.1 trust stack: OCR document intelligence, live scene capture with integrity verdicts, CRM marketing content across policy UIs; and the v3.2 growth layer: subscription lifecycle (10 units/mo, free first month, day-40 renewal with day-35/39 alerts), engagement feed with share-ready content, newsletter threads, and the subscriber experience dashboard.
 
 All governance/tax/legal/sales services now consume persistence ports (`getPersistence()`); roles stay mock-backed until a roles port lands with Clerk sync.
 
