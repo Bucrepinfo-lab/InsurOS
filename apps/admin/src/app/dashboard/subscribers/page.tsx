@@ -7,12 +7,12 @@ import {
   MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
-import { computePolicyHealth } from '@insuros/domain';
 import {
   EngagementService,
   MicroinsuranceService,
   PricingService,
-  SubscriptionService
+  SubscriptionService,
+  computePolicyHealth
 } from '@insuros/services';
 
 const subscriptionService = new SubscriptionService();

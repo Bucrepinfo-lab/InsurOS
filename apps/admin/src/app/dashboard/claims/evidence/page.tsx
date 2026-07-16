@@ -7,8 +7,12 @@ import {
   MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
-import { evaluateSceneIntegrity } from '@insuros/domain';
-import { ClaimsAutomationService, MarketingService, SceneCaptureService } from '@insuros/services';
+import {
+  ClaimsAutomationService,
+  MarketingService,
+  SceneCaptureService,
+  evaluateSceneIntegrity
+} from '@insuros/services';
 
 const sceneCaptureService = new SceneCaptureService();
 const claimsAutomationService = new ClaimsAutomationService();

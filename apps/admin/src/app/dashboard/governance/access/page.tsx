@@ -6,7 +6,7 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
-import type { ScopedAccessRequest } from '@insuros/domain';
+import type { ScopedAccessRequest } from '@insuros/services';
 import {
   AdminHierarchyService,
   JurisdictionAuthorizationService,
