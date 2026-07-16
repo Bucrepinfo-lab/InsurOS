@@ -11,8 +11,8 @@ export interface KPICardProps {
 }
 
 /**
- * Ledger-style figure card: small-caps label, monospaced value (money and
- * counts read as exact), seal tick rule on top.
+ * Ledger figure card: seal gradient rule, small-caps label, monospaced
+ * value, soft radial highlight, hover lift.
  */
 export function KPICard({ title, value, change, trend = 'neutral', icon, className }: KPICardProps) {
   const trendClass = {
@@ -24,17 +24,32 @@ export function KPICard({ title, value, change, trend = 'neutral', icon, classNa
   return (
     <div
       className={cn(
-        'rounded-xl border border-line bg-sheet p-5 shadow-[0_1px_2px_rgba(27,42,65,0.05)]',
+        'group relative overflow-hidden rounded-2xl border border-line bg-sheet p-5',
+        'shadow-[0_1px_2px_rgba(18,28,49,0.04),0_12px_32px_-20px_rgba(18,28,49,0.25)]',
+        'transition-all duration-300 hover:-translate-y-0.5',
+        'hover:shadow-[0_2px_4px_rgba(18,28,49,0.05),0_22px_44px_-18px_rgba(18,28,49,0.32)]',
         className
       )}
     >
-      <div className='mb-3 h-0.5 w-8 rounded bg-seal' aria-hidden='true' />
-      <div className='flex items-start justify-between gap-4'>
+      <div
+        aria-hidden='true'
+        className='pointer-events-none absolute -right-10 -top-14 h-36 w-36 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100'
+        style={{
+          backgroundImage:
+            'radial-gradient(closest-side, rgba(15,110,86,0.12), transparent)'
+        }}
+      />
+      <div
+        className='mb-3 h-1 w-10 rounded-full'
+        style={{ backgroundImage: 'linear-gradient(90deg, #17a37e, #0f6e56)' }}
+        aria-hidden='true'
+      />
+      <div className='relative flex items-start justify-between gap-4'>
         <div>
-          <p className='text-[11px] font-medium uppercase tracking-[0.14em] text-dim'>
+          <p className='text-[11px] font-medium uppercase tracking-[0.16em] text-dim'>
             {title}
           </p>
-          <p className='mt-2 font-mono text-[26px] leading-none tracking-tight text-ink'>
+          <p className='mt-2 font-mono text-[28px] leading-none tracking-tight text-ink'>
             {value}
           </p>
           {change ? (

@@ -1,6 +1,6 @@
-# InsurOS Design System — "The Underwriter's Ledger"
+# InsurOS Design System — "The Underwriter's Ledger" v1.1
 
-**Adopted:** 2026-07-16 · This is the binding aesthetic direction for every InsurOS surface. Evolve it only deliberately, and record changes here.
+**Adopted:** 2026-07-16 · **v1.1 (atmosphere):** 2026-07-16, complementing the frontend-design skill's depth principles · This is the binding aesthetic direction for every InsurOS surface. Evolve it only deliberately, and record changes here.
 
 ## Concept
 
@@ -23,6 +23,10 @@ Statutory  --color-warnink #8A5410 / --color-warnsoft #F8ECD7
 ## Typography (loaded via `next/font` in the root layout)
 
 Fraunces (display — headings, card titles, banner headlines; `font-display`), Onest (body; default on `body`), Spline Sans Mono (KPI values, money, policy/claim references; `font-mono`). Never Arial, Inter, Roboto, or system defaults.
+
+## Atmosphere (v1.1 — depth over flat fills)
+
+The page ground carries three soft radial washes (seal, gold, ink), a faint 32px ruled-ledger line texture, and a fixed film grain at 5% — the paper feels like paper. The sidebar is an ink gradient with a seal aurora glow behind the brand and a pulsing seal dot. Cards float on layered long-throw shadows and lift on hover; KPI cards reveal a seal radial highlight. The marketing banner is the showpiece: deep seal gradient with radial glows, grain, and a white CTA that lifts. Badges carry glowing status dots. Page content enters as an orchestrated stagger (six steps, 60ms apart); all motion honours reduced-motion.
 
 ## Component rules
 

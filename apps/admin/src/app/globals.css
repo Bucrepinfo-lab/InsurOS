@@ -1,25 +1,28 @@
 @import "tailwindcss";
 
 /*
-  InsurOS design system — "The Underwriter's Ledger"
-  Warm paper ground, ink-navy structure, one authoritative seal green.
-  Serif display for document-grade trust; mono for money and references.
+  InsurOS design system — "The Underwriter's Ledger" v1.1 (atmosphere)
+  Warm paper ground with gradient washes, grain, and a faint ruled-ledger
+  texture; ink-navy structure; one authoritative seal green. Depth over
+  flat fills — atmosphere is part of the credibility.
 */
 @theme {
-  --color-paper: #f6f4ee;
-  --color-sheet: #fffdf9;
-  --color-line: #e5e1d6;
+  --color-paper: #f6f3ec;
+  --color-sheet: #fffdf8;
+  --color-line: #e6e1d4;
   --color-ink: #1b2a41;
-  --color-inkdeep: #12203a;
+  --color-inkdeep: #101c31;
   --color-dim: #5b6b7f;
   --color-faint: #939dab;
   --color-seal: #0f6e56;
-  --color-sealdark: #07423a;
+  --color-sealbright: #17a37e;
+  --color-sealdark: #06382f;
   --color-sealsoft: #e3f2ea;
   --color-warnink: #8a5410;
   --color-warnsoft: #f8ecd7;
   --color-dangerink: #a32d2d;
   --color-dangersoft: #fbeaea;
+  --color-gold: #b98a2f;
 
   --font-display: var(--font-fraunces), Georgia, serif;
   --font-body: var(--font-onest), system-ui, sans-serif;
@@ -27,21 +30,49 @@
 }
 
 body {
-  background: var(--color-paper);
+  background-color: var(--color-paper);
+  background-image:
+    radial-gradient(1100px 520px at 88% -8%, rgba(15, 110, 86, 0.09), transparent 62%),
+    radial-gradient(900px 480px at -12% 4%, rgba(185, 138, 47, 0.07), transparent 58%),
+    radial-gradient(760px 560px at 55% 118%, rgba(27, 42, 65, 0.06), transparent 60%),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 31px,
+      rgba(27, 42, 65, 0.028) 31px,
+      rgba(27, 42, 65, 0.028) 32px
+    );
+  background-attachment: fixed;
   color: var(--color-ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }
 
+/* film grain over everything, extremely faint */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
 h1, h2, h3 {
   font-family: var(--font-display);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
+}
+
+::selection {
+  background: var(--color-seal);
+  color: #ffffff;
 }
 
 @keyframes ledger-rise {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -50,11 +81,33 @@ h1, h2, h3 {
 }
 
 .animate-rise {
-  animation: ledger-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: ledger-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* orchestrated stagger: direct children of the page reveal in sequence */
+.stagger > * {
+  animation: ledger-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stagger > *:nth-child(1) { animation-delay: 0.03s; }
+.stagger > *:nth-child(2) { animation-delay: 0.09s; }
+.stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger > *:nth-child(4) { animation-delay: 0.21s; }
+.stagger > *:nth-child(5) { animation-delay: 0.27s; }
+.stagger > *:nth-child(6) { animation-delay: 0.33s; }
+
+@keyframes seal-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(23, 163, 126, 0.45); }
+  50% { box-shadow: 0 0 0 5px rgba(23, 163, 126, 0); }
+}
+
+.seal-dot {
+  animation: seal-pulse 2.6s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-rise {
+  .animate-rise,
+  .stagger > *,
+  .seal-dot {
     animation: none;
   }
 }

@@ -43,7 +43,7 @@ export function DataTable<TData>({
             </thead>
             <tbody>
               {data.map((row, rowIndex) => (
-                <tr key={rowIndex} className='border-b border-line transition last:border-0 hover:bg-paper/60'>
+                <tr key={rowIndex} className='group border-b border-line transition-colors duration-150 last:border-0 hover:bg-sealsoft/40'>
                   {columns.map((column) => (
                     <td key={String(column.key)} className='py-3.5 pr-4 text-[13px] leading-relaxed text-ink/80'>
                      {column.render
