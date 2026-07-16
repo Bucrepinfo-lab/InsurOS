@@ -6,6 +6,8 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { createDemoRegion } from '@/app/dashboard/actions';
 import { AdminHierarchyService } from '@insuros/services';
 
 const adminHierarchyService = new AdminHierarchyService();
@@ -52,7 +54,7 @@ export default async function GovernancePage() {
     <DomainModulePage
       title='Governance'
       description='Multi-continental administrative hierarchy: Super Admin → Continental → National → County → Constituency.'
-      actions={<Button>Create Region</Button>}
+      actions={<ActionButton label='Create region' action={createDemoRegion} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-5'>
         <KPICard
@@ -91,7 +93,6 @@ export default async function GovernancePage() {
         emptyTitle='No regions'
         emptyDescription='No administrative regions have been configured.'
         emptyAction={<Button>Create Region</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

@@ -7,6 +7,8 @@ import {
   MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { submitDemoFnol } from '@/app/dashboard/actions';
 import { ClaimsAutomationService, MarketingService } from '@insuros/services';
 
 const claimsAutomationService = new ClaimsAutomationService();
@@ -100,7 +102,7 @@ export default async function ClaimsAutomationPage() {
     <DomainModulePage
       title='Claims Automation'
       description='Straight-through processing: FNOL intake, explainable fraud scoring, and rules-based auto-adjudication. Denials are never automated — a human always owns them.'
-      actions={<Button>Submit FNOL</Button>}
+      actions={<ActionButton label='Submit FNOL' action={submitDemoFnol} />}
     >
       {banner ? (
         <MarketingBanner
@@ -156,7 +158,6 @@ export default async function ClaimsAutomationPage() {
         emptyTitle='No decisions'
         emptyDescription='No claims have been adjudicated.'
         emptyAction={<Button>Submit FNOL</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

@@ -6,6 +6,8 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { accrueDemoPremium } from '@/app/dashboard/actions';
 import { CommissionService, SalesHierarchyService } from '@insuros/services';
 
 const commissionService = new CommissionService();
@@ -104,7 +106,7 @@ export default async function CommissionsPage() {
     <DomainModulePage
       title='Commissions'
       description='Commission schedules per rank, accruals with override chains, and clawbacks for lapsed business.'
-      actions={<Button>Accrue Premium</Button>}
+      actions={<ActionButton label='Accrue premium' action={accrueDemoPremium} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard
@@ -139,7 +141,6 @@ export default async function CommissionsPage() {
           emptyTitle='No schedules'
           emptyDescription='No commission schedules have been configured.'
           emptyAction={<Button>Create Schedule</Button>}
-          actions={<Button variant='secondary'>Export</Button>}
         />
       </div>
 
@@ -152,7 +153,6 @@ export default async function CommissionsPage() {
         emptyTitle='No accruals'
         emptyDescription='No commissions have been accrued.'
         emptyAction={<Button>Accrue Premium</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

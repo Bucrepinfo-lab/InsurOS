@@ -6,6 +6,8 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { recordDemoAcceptance } from '@/app/dashboard/actions';
 import { TermsService } from '@insuros/services';
 
 const termsService = new TermsService();
@@ -63,7 +65,7 @@ export default async function LegalPage() {
     <DomainModulePage
       title='Legal & Terms'
       description='Versioned terms & conditions with click-wrap acceptance tracking across all audiences and jurisdictions.'
-      actions={<Button>Publish New Version</Button>}
+      actions={<ActionButton label='Record acceptance' action={recordDemoAcceptance} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard
@@ -93,7 +95,6 @@ export default async function LegalPage() {
           emptyTitle='No documents'
           emptyDescription='No terms documents have been published.'
           emptyAction={<Button>Publish Terms</Button>}
-          actions={<Button variant='secondary'>Export</Button>}
         />
       </div>
 
@@ -106,7 +107,6 @@ export default async function LegalPage() {
         emptyTitle='No acceptances'
         emptyDescription='No terms acceptances have been recorded.'
         emptyAction={<Button>Request Acceptance</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

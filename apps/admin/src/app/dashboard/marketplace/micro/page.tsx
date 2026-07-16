@@ -7,6 +7,8 @@ import {
   MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { enrolDemoMicroPolicy } from '@/app/dashboard/actions';
 import { MarketingService, MicroinsuranceService } from '@insuros/services';
 
 const microinsuranceService = new MicroinsuranceService();
@@ -94,7 +96,7 @@ export default async function MicroinsurancePage() {
     <DomainModulePage
       title='Microinsurance'
       description='Micro-premium covers distributed on mobile-money rails (USSD, app, agent, embedded). The mobile number is identity and payment instrument in one — closing the penetration gap.'
-      actions={<Button>Enrol Policyholder</Button>}
+      actions={<ActionButton label='Enrol policyholder' action={enrolDemoMicroPolicy} />}
     >
       {banner ? (
         <MarketingBanner
@@ -150,7 +152,6 @@ export default async function MicroinsurancePage() {
         emptyTitle='No policies'
         emptyDescription='No micro policies enrolled.'
         emptyAction={<Button>Enrol Policyholder</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

@@ -6,6 +6,8 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { refreshClerkPlan } from '@/app/dashboard/actions';
 import { PrincipalService } from '@insuros/services';
 
 const principalService = new PrincipalService();
@@ -43,7 +45,7 @@ export default async function ClerkSyncPage() {
     <DomainModulePage
       title='Clerk Sync'
       description='Production role mapping: each jurisdiction assignment becomes a Clerk organization membership with a level-specific role. Executing the plan requires CLERK_SECRET_KEY.'
-      actions={<Button>Execute Sync Plan</Button>}
+      actions={<ActionButton label='Refresh plan' action={refreshClerkPlan} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard
@@ -72,7 +74,6 @@ export default async function ClerkSyncPage() {
         emptyTitle='Nothing to sync'
         emptyDescription='No jurisdiction assignments require Clerk changes.'
         emptyAction={<Button>Refresh Plan</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

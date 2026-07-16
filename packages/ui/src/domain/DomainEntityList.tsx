@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { DataTable, FilterBar, Pagination, SearchInput, TableToolbar, type DataTableColumn } from '../data';
+import { DataTable, ExportCsvButton, FilterBar, Pagination, SearchInput, TableToolbar, type DataTableColumn } from '../data';
 import { EmptyState } from '../enterprise/EmptyState';
 
 export interface DomainEntityListProps<TData> {
@@ -29,7 +29,22 @@ export function DomainEntityList<TData>({
     <>
       <TableToolbar title={title} description={description} />
 
-      <FilterBar search={<SearchInput placeholder={searchPlaceholder} />} actions={actions} />
+      <FilterBar
+        search={<SearchInput placeholder={searchPlaceholder} />}
+        actions={
+          <>
+            {actions}
+            <ExportCsvButton
+              filename={title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
+              columns={columns.map((column) => ({
+                key: String(column.key),
+                header: column.header
+              }))}
+              rows={data as unknown as Record<string, unknown>[]}
+            />
+          </>
+        }
+      />
 
       <DataTable
         columns={columns}

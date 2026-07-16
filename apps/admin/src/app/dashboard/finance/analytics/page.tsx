@@ -6,6 +6,8 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { recordDemoSnapshot } from '@/app/dashboard/actions';
 import { AnalyticsService } from '@insuros/services';
 
 const analyticsService = new AnalyticsService();
@@ -74,7 +76,7 @@ export default async function AnalyticsPage() {
     <DomainModulePage
       title='Executive Analytics'
       description='The economics of digitalization in one view: combined ratio below 100% means the book underwrites at a profit. STP rate and claim cycle track how automation is cutting expenses.'
-      actions={<Button>Export Report</Button>}
+      actions={<ActionButton label='Record snapshot' action={recordDemoSnapshot} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard
@@ -108,7 +110,6 @@ export default async function AnalyticsPage() {
         emptyTitle='No snapshots'
         emptyDescription='No KPI snapshots recorded.'
         emptyAction={<Button>Record Snapshot</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

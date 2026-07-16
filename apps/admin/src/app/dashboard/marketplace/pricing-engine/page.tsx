@@ -7,6 +7,8 @@ import {
   MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { captureDemoBenchmark } from '@/app/dashboard/actions';
 import { MarketingService, PricingService } from '@insuros/services';
 
 const pricingService = new PricingService();
@@ -63,7 +65,7 @@ export default async function PricingEnginePage() {
     <DomainModulePage
       title='Pricing Engine'
       description='Competitive-friendly premiums: risk-adjusted technical price, lean digital loadings, competitor undercut, affordability floors. Never priced below expected risk cost.'
-      actions={<Button>New Quote</Button>}
+      actions={<ActionButton label='Capture benchmark' action={captureDemoBenchmark} />}
     >
       {banner ? (
         <MarketingBanner
@@ -121,7 +123,6 @@ export default async function PricingEnginePage() {
         emptyTitle='No benchmarks'
         emptyDescription='No competitor benchmarks captured.'
         emptyAction={<Button>Add Benchmark</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

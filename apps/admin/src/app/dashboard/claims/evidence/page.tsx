@@ -7,6 +7,8 @@ import {
   MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { registerDemoSceneCapture } from '@/app/dashboard/actions';
 import {
   ClaimsAutomationService,
   MarketingService,
@@ -94,7 +96,7 @@ export default async function SceneEvidencePage() {
     <DomainModulePage
       title='Scene Evidence'
       description='Customers photograph the scene live in the app — GPS, timestamps, and an on-device hash seal the truth at capture. Strong evidence replaces adjuster visits on small claims.'
-      actions={<Button>Register Capture</Button>}
+      actions={<ActionButton label='Register capture' action={registerDemoSceneCapture} />}
     >
       {banner ? (
         <MarketingBanner
@@ -132,7 +134,6 @@ export default async function SceneEvidencePage() {
         emptyTitle='No evidence'
         emptyDescription='No scene photos registered.'
         emptyAction={<Button>Register Capture</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

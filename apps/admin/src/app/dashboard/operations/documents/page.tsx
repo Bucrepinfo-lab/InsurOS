@@ -6,6 +6,8 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { ingestDemoDocument } from '@/app/dashboard/actions';
 import { DocumentIntelligenceService } from '@insuros/services';
 
 const documentIntelligenceService = new DocumentIntelligenceService();
@@ -71,7 +73,7 @@ export default async function DocumentIntelligencePage() {
     <DomainModulePage
       title='Document Intelligence (OCR)'
       description='Every uploaded file is read at intake: fields extracted, required data checked, low confidence routed to a human. OCR accelerates — it never silently decides.'
-      actions={<Button>Ingest Document</Button>}
+      actions={<ActionButton label='Ingest document' action={ingestDemoDocument} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard
@@ -100,7 +102,6 @@ export default async function DocumentIntelligencePage() {
         emptyTitle='No extractions'
         emptyDescription='No documents have been processed.'
         emptyAction={<Button>Ingest Document</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

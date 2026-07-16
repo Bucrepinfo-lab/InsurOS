@@ -6,6 +6,8 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { grantDemoAccess } from '@/app/dashboard/actions';
 import type { ScopedAccessRequest } from '@insuros/services';
 import {
   AdminHierarchyService,
@@ -144,7 +146,7 @@ export default async function JurisdictionAccessPage() {
     <DomainModulePage
       title='Jurisdiction Access'
       description='Region-bound RBAC: a role acts only inside its assigned jurisdiction and descendants. Foundation for Clerk production role mapping.'
-      actions={<Button>Grant Access</Button>}
+      actions={<ActionButton label='Grant access' action={grantDemoAccess} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard
@@ -174,7 +176,6 @@ export default async function JurisdictionAccessPage() {
           emptyTitle='No assignments'
           emptyDescription='No jurisdiction-scoped roles have been granted.'
           emptyAction={<Button>Grant Access</Button>}
-          actions={<Button variant='secondary'>Export</Button>}
         />
       </div>
 

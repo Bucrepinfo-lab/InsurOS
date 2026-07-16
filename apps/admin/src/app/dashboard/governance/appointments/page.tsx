@@ -6,6 +6,8 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { appointDemoAdmin } from '@/app/dashboard/actions';
 import { AdminHierarchyService } from '@insuros/services';
 
 const adminHierarchyService = new AdminHierarchyService();
@@ -55,7 +57,7 @@ export default async function AdminAppointmentsPage() {
     <DomainModulePage
       title='Admin Appointments'
       description='Administrator appointments across the hierarchy. Superiors may only appoint admins at strictly lower levels.'
-      actions={<Button>Appoint Administrator</Button>}
+      actions={<ActionButton label='Appoint administrator' action={appointDemoAdmin} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard
@@ -84,7 +86,6 @@ export default async function AdminAppointmentsPage() {
         emptyTitle='No appointments'
         emptyDescription='No administrators have been appointed.'
         emptyAction={<Button>Appoint Administrator</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

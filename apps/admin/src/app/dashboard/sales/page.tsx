@@ -6,6 +6,8 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { nameDemoAgent } from '@/app/dashboard/actions';
 import { AdminHierarchyService, SalesHierarchyService } from '@insuros/services';
 
 const salesService = new SalesHierarchyService();
@@ -61,7 +63,7 @@ export default async function SalesPortalPage() {
     <DomainModulePage
       title='Sales Portal'
       description='Sales hierarchy mirroring the administrative structure. Superiors name and assign subordinates one rank below.'
-      actions={<Button>Name New Agent</Button>}
+      actions={<ActionButton label='Name new agent' action={nameDemoAgent} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard
@@ -95,7 +97,6 @@ export default async function SalesPortalPage() {
         emptyTitle='No agents'
         emptyDescription='No sales agents have been named.'
         emptyAction={<Button>Name New Agent</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

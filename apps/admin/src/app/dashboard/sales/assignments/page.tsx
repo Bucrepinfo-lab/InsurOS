@@ -6,6 +6,8 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { createDemoAssignment } from '@/app/dashboard/actions';
 import { AdminHierarchyService, SalesHierarchyService } from '@insuros/services';
 
 const salesService = new SalesHierarchyService();
@@ -70,7 +72,7 @@ export default async function SalesAssignmentsPage() {
     <DomainModulePage
       title='Sales Assignments'
       description='Target assignments flowing down the sales chain of command.'
-      actions={<Button>Create Assignment</Button>}
+      actions={<ActionButton label='Create assignment' action={createDemoAssignment} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard
@@ -99,7 +101,6 @@ export default async function SalesAssignmentsPage() {
         emptyTitle='No assignments'
         emptyDescription='No sales assignments have been created.'
         emptyAction={<Button>Create Assignment</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

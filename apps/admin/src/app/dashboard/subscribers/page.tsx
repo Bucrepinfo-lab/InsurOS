@@ -7,6 +7,8 @@ import {
   MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { addDemoSubscriber } from '@/app/dashboard/actions';
 import {
   EngagementService,
   MicroinsuranceService,
@@ -145,7 +147,7 @@ export default async function SubscriberExperiencePage() {
     <DomainModulePage
       title='Subscriber Experience'
       description='The customer-side experience, previewed: 10 units/month (first month free, day-40 renewal, day-35 & 39 nudges), policy health, engagement feed with share-ready content, newsletter threads, and merit-comparison banners.'
-      actions={<Button>New Subscriber</Button>}
+      actions={<ActionButton label='New subscriber' action={addDemoSubscriber} />}
     >
       <MarketingBanner
         headline={`Same cover. KES ${savings.toLocaleString()} less every month than the market median.`}
@@ -212,7 +214,6 @@ export default async function SubscriberExperiencePage() {
         emptyTitle='No issues'
         emptyDescription='No newsletter issues published.'
         emptyAction={<Button>Draft Issue</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

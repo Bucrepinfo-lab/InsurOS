@@ -6,6 +6,8 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { addDemoRegionalRule } from '@/app/dashboard/actions';
 import { RegionalTaxService } from '@insuros/services';
 
 const regionalTaxService = new RegionalTaxService();
@@ -67,7 +69,7 @@ export default async function RegionalTaxPage() {
     <DomainModulePage
       title='Regional Tax Configuration'
       description='Per-state and per-county statutory rules layered on national components. Representative rates compiled 2026-07-06 — re-verify with each authority before filing.'
-      actions={<Button>Add Regional Rule</Button>}
+      actions={<ActionButton label='Add regional rule' action={addDemoRegionalRule} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard
@@ -101,7 +103,6 @@ export default async function RegionalTaxPage() {
         emptyTitle='No regional rules'
         emptyDescription='No subnational tax rules have been configured.'
         emptyAction={<Button>Add Regional Rule</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
 
       <div className='mt-4'>

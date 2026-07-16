@@ -7,6 +7,8 @@ import {
   MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { createDemoContent } from '@/app/dashboard/actions';
 import { MarketingService } from '@insuros/services';
 
 const marketingService = new MarketingService();
@@ -46,7 +48,7 @@ export default async function CrmContentPage() {
     <DomainModulePage
       title='CRM Marketing Content'
       description='Merit-led write-ups popularised across every policy UI: claims speed, engineered fair pricing, KES-20 micro cover, parametric no-forms payouts, sealed scene evidence, and radical transparency.'
-      actions={<Button>Create Content</Button>}
+      actions={<ActionButton label='Create content' action={createDemoContent} />}
     >
       {preview ? (
         <MarketingBanner
@@ -84,7 +86,6 @@ export default async function CrmContentPage() {
         emptyTitle='No content'
         emptyDescription='No marketing content configured.'
         emptyAction={<Button>Create Content</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

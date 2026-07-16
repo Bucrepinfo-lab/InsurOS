@@ -6,6 +6,8 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { computeDemoRemittance } from '@/app/dashboard/actions';
 import { TaxRemittanceService } from '@insuros/services';
 
 const taxService = new TaxRemittanceService();
@@ -104,7 +106,7 @@ export default async function TaxRemittancePage() {
     <DomainModulePage
       title='Tax Remittance'
       description='Statutory tax computation and remittance per country. Rates verified 2026-07-06 — always re-verify with the named authority before filing.'
-      actions={<Button>Compute Remittance</Button>}
+      actions={<ActionButton label='Compute remittance' action={computeDemoRemittance} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard
@@ -139,7 +141,6 @@ export default async function TaxRemittancePage() {
           emptyTitle='No jurisdictions'
           emptyDescription='No tax jurisdictions have been configured.'
           emptyAction={<Button>Add Jurisdiction</Button>}
-          actions={<Button variant='secondary'>Export</Button>}
         />
       </div>
 
@@ -152,7 +153,6 @@ export default async function TaxRemittancePage() {
         emptyTitle='No remittances'
         emptyDescription='No tax remittances have been computed.'
         emptyAction={<Button>Compute Remittance</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );
