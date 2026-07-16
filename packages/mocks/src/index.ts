@@ -37,3 +37,7 @@ export * from "./commission-schedules";
 export * from "./commission-accruals";
 export * from "./jurisdiction-assignments";
 export * from "./subnational-tax-rules";
+export * from "./claim-automation";
+export * from "./pricing";
+export * from "./microinsurance";
+export * from "./kpi-snapshots";

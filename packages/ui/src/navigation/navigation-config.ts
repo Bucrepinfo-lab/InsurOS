@@ -50,15 +50,35 @@ export const adminNavigation: NavigationSection[] = [
     title: 'Insurance Operations',
     items: [
       { id: 'marketplace', label: 'Marketplace', href: '/dashboard/marketplace' },
+      {
+        id: 'pricing-engine',
+        label: 'Pricing Engine',
+        href: '/dashboard/marketplace/pricing-engine'
+      },
+      {
+        id: 'micro',
+        label: 'Microinsurance',
+        href: '/dashboard/marketplace/micro'
+      },
       { id: 'customers', label: 'Customers', href: '/dashboard/customers' },
       { id: 'policies', label: 'Policies', href: '/dashboard/policies' },
       { id: 'claims', label: 'Claims', href: '/dashboard/claims' },
+      {
+        id: 'claims-automation',
+        label: 'Claims Automation',
+        href: '/dashboard/claims/automation'
+      },
       { id: 'finance', label: 'Finance', href: '/dashboard/finance' },
       { id: 'tax', label: 'Tax Remittance', href: '/dashboard/finance/tax' },
       {
         id: 'regional-tax',
         label: 'Regional Tax',
         href: '/dashboard/finance/tax/regional'
+      },
+      {
+        id: 'analytics',
+        label: 'Analytics',
+        href: '/dashboard/finance/analytics'
       }
     ]
   },

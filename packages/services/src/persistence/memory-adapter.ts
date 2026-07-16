@@ -1,5 +1,16 @@
 import {
+  mockAdjudicationDecisions,
+  mockAdjudicationRules,
   mockAdminAppointments,
+  mockAffordabilityBands,
+  mockCompetitorBenchmarks,
+  mockFnolSubmissions,
+  mockKpiSnapshots,
+  mockMicroPayments,
+  mockMicroPolicies,
+  mockMicroProducts,
+  mockMobileMoneyProviders,
+  mockRiskFactors,
   mockAdminRegions,
   mockCommissionAccruals,
   mockCommissionSchedules,
@@ -65,6 +76,17 @@ export function createMemoryAdapter(): PersistenceAdapter {
     commissionSchedules: new MemoryRepository(mockCommissionSchedules),
     commissionAccruals: new MemoryRepository(mockCommissionAccruals),
     termsDocuments: new MemoryRepository(mockTermsDocuments),
-    termsAcceptances: new MemoryRepository(mockTermsAcceptances)
+    termsAcceptances: new MemoryRepository(mockTermsAcceptances),
+    fnolSubmissions: new MemoryRepository(mockFnolSubmissions),
+    adjudicationRules: new MemoryRepository(mockAdjudicationRules),
+    adjudicationDecisions: new MemoryRepository(mockAdjudicationDecisions),
+    riskFactors: new MemoryRepository(mockRiskFactors),
+    affordabilityBands: new MemoryRepository(mockAffordabilityBands),
+    competitorBenchmarks: new MemoryRepository(mockCompetitorBenchmarks),
+    microProducts: new MemoryRepository(mockMicroProducts),
+    mobileMoneyProviders: new MemoryRepository(mockMobileMoneyProviders),
+    microPolicies: new MemoryRepository(mockMicroPolicies),
+    microPayments: new MemoryRepository(mockMicroPayments),
+    kpiSnapshots: new MemoryRepository(mockKpiSnapshots)
   };
 }

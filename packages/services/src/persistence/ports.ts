@@ -1,8 +1,19 @@
 import type {
+  AdjudicationDecision,
+  AdjudicationRule,
   AdminAppointment,
   AdminRegion,
+  AffordabilityBand,
   CommissionAccrual,
   CommissionSchedule,
+  CompetitorBenchmark,
+  FnolSubmission,
+  KpiSnapshot,
+  MicroPayment,
+  MicroPolicy,
+  MicroProduct,
+  MobileMoneyProvider,
+  RiskFactor,
   JurisdictionAssignment,
   SalesAgent,
   SalesAssignment,
@@ -42,4 +53,15 @@ export interface PersistenceAdapter {
   commissionAccruals: Repository<CommissionAccrual>;
   termsDocuments: Repository<TermsDocument>;
   termsAcceptances: Repository<TermsAcceptance>;
+  fnolSubmissions: Repository<FnolSubmission>;
+  adjudicationRules: Repository<AdjudicationRule>;
+  adjudicationDecisions: Repository<AdjudicationDecision>;
+  riskFactors: Repository<RiskFactor>;
+  affordabilityBands: Repository<AffordabilityBand>;
+  competitorBenchmarks: Repository<CompetitorBenchmark>;
+  microProducts: Repository<MicroProduct>;
+  mobileMoneyProviders: Repository<MobileMoneyProvider>;
+  microPolicies: Repository<MicroPolicy>;
+  microPayments: Repository<MicroPayment>;
+  kpiSnapshots: Repository<KpiSnapshot>;
 }
