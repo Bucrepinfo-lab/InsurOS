@@ -54,7 +54,6 @@ export default async function ActivityPage() {
         emptyTitle='No activity'
         emptyDescription='No activity events have been recorded yet.'
         emptyAction={<Button>Export Activity</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

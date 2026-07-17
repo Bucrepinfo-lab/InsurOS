@@ -65,7 +65,6 @@ export default async function WorkflowRulesPage() {
         emptyTitle='No workflow rules'
         emptyDescription='No workflow transition rules have been configured yet.'
         emptyAction={<Button>Create Rule</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

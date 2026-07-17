@@ -59,7 +59,6 @@ export default function ClaimDocumentsPage() {
         emptyTitle='No documents'
         emptyDescription='Upload the first document for this claim.'
         emptyAction={<Button>Upload Document</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

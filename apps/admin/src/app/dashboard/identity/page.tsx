@@ -157,7 +157,6 @@ export default async function IdentityPage() {
           emptyTitle='No role assignments'
           emptyDescription='No role assignments are currently configured.'
           emptyAction={<Button>Assign Role</Button>}
-          actions={<Button variant='secondary'>Export</Button>}
         />
 
         <DomainEntityList
@@ -169,7 +168,6 @@ export default async function IdentityPage() {
           emptyTitle='No roles'
           emptyDescription='No platform roles are currently configured.'
           emptyAction={<Button>Create Role</Button>}
-          actions={<Button variant='secondary'>Export</Button>}
         />
 
         <DomainEntityList
@@ -181,7 +179,6 @@ export default async function IdentityPage() {
           emptyTitle='No permissions'
           emptyDescription='No platform permissions are currently configured.'
           emptyAction={<Button>Create Permission</Button>}
-          actions={<Button variant='secondary'>Export</Button>}
         />
 
         <DomainEntityList
@@ -193,7 +190,6 @@ export default async function IdentityPage() {
           emptyTitle='No users yet'
           emptyDescription='Invite the first administrator or operator to begin managing this tenant.'
           emptyAction={<Button>Invite User</Button>}
-          actions={<Button variant='secondary'>Export</Button>}
         />
       </div>
     </DomainModulePage>

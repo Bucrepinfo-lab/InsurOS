@@ -63,7 +63,6 @@ export default function ProductPricingPage() {
         emptyTitle='No pricing rules'
         emptyDescription='Add the first pricing rule for this product.'
         emptyAction={<Button>Add Pricing Rule</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

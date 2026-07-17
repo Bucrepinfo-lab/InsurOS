@@ -62,7 +62,6 @@ export default function FinanceReconciliationPage() {
         data={items}
         emptyTitle='No reconciliation items'
         emptyDescription='No unmatched or pending finance items are currently available.'
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

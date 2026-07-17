@@ -68,7 +68,6 @@ export default async function FeatureFlagsPage() {
         emptyTitle='No feature flags'
         emptyDescription='No feature flags have been configured.'
         emptyAction={<Button>Create Feature Flag</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

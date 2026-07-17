@@ -64,7 +64,6 @@ export default async function ApprovalQueuePage() {
         emptyTitle='No approvals'
         emptyDescription='No workflow approvals are currently pending.'
         emptyAction={<Button>Configure Approvals</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

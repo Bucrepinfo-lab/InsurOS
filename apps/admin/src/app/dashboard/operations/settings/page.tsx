@@ -67,7 +67,6 @@ export default async function PlatformSettingsPage() {
         emptyTitle='No settings'
         emptyDescription='No platform settings have been configured.'
         emptyAction={<Button>Create Setting</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

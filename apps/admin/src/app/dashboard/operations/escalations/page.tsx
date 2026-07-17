@@ -59,7 +59,6 @@ export default async function EscalationsQueuePage() {
         emptyTitle='No escalations'
         emptyDescription='No escalated workflow items are currently active.'
         emptyAction={<Button>Escalation Rules</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

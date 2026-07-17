@@ -82,7 +82,6 @@ export default async function WorkflowPoliciesPage() {
         emptyTitle="No policies"
         emptyDescription="No workflow policies configured."
         emptyAction={<Button>Create Policy</Button>}
-        actions={<Button variant="secondary">Export</Button>}
       />
     </DomainModulePage>
   );

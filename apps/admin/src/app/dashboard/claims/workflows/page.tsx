@@ -62,7 +62,6 @@ export default async function ClaimWorkflowsPage() {
         emptyTitle="No claim workflows"
         emptyDescription="No claim workflow records are currently available."
         emptyAction={<Button>Configure Claim Workflow</Button>}
-        actions={<Button variant="secondary">Export</Button>}
       />
     </DomainModulePage>
   );

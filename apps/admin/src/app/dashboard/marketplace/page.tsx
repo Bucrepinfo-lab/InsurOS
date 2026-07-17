@@ -79,7 +79,6 @@ export default async function MarketplacePage() {
         emptyTitle="No products"
         emptyDescription="Create the first marketplace product."
         emptyAction={<Button>Create Product</Button>}
-        actions={<Button variant="secondary">Export</Button>}
       />
     </DomainModulePage>
   );

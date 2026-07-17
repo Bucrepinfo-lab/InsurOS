@@ -59,7 +59,6 @@ export default function ProductCoveragesPage() {
         emptyTitle='No coverages'
         emptyDescription='Add the first coverage definition for this product.'
         emptyAction={<Button>Add Coverage</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

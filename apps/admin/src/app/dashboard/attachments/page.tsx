@@ -66,7 +66,6 @@ export default async function AttachmentsPage() {
         emptyTitle='No attachments'
         emptyDescription='No attachments have been uploaded yet.'
         emptyAction={<Button>Upload Attachment</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

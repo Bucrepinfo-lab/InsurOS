@@ -53,7 +53,6 @@ export default function TenantsPage() {
         emptyTitle='No tenants yet'
         emptyDescription='Create the first tenant organization to begin operating the InsurOS platform.'
         emptyAction={<Button>Add Tenant</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

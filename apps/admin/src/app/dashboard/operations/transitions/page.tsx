@@ -63,7 +63,6 @@ export default async function WorkflowTransitionsPage() {
         emptyTitle='No transitions'
         emptyDescription='No workflow transitions have been recorded yet.'
         emptyAction={<Button>Export History</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

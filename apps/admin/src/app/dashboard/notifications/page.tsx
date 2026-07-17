@@ -107,7 +107,6 @@ export default async function NotificationsPage() {
           emptyTitle='No notification events'
           emptyDescription='No platform notification events are currently available.'
           emptyAction={<Button>Notification Rules</Button>}
-          actions={<Button variant='secondary'>Export</Button>}
         />
 
         <DomainEntityList
@@ -119,7 +118,6 @@ export default async function NotificationsPage() {
           emptyTitle='No notifications'
           emptyDescription='No platform notifications are currently available.'
           emptyAction={<Button>Notification Rules</Button>}
-          actions={<Button variant='secondary'>Export</Button>}
         />
       </div>
     </DomainModulePage>

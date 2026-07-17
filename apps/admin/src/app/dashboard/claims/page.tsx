@@ -41,7 +41,6 @@ export default function ClaimsPage() {
         emptyTitle='No claims'
         emptyDescription='Register the first claim.'
         emptyAction={<Button>Register Claim</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

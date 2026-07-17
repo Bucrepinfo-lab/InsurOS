@@ -45,7 +45,6 @@ export default async function PoliciesPage() {
         emptyTitle='No policies'
         emptyDescription='Issue the first insurance policy.'
         emptyAction={<Button>Issue Policy</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

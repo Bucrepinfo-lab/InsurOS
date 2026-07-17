@@ -76,7 +76,6 @@ export default async function AuditCenterPage() {
           emptyTitle='No audit events'
           emptyDescription='No platform audit events have been generated yet.'
           emptyAction={<Button>Export Audit Events</Button>}
-          actions={<Button variant='secondary'>Export</Button>}
         />
 
         <DomainEntityList
@@ -88,7 +87,6 @@ export default async function AuditCenterPage() {
           emptyTitle='No audit records'
           emptyDescription='No audit records have been generated yet.'
           emptyAction={<Button>Export Audit Log</Button>}
-          actions={<Button variant='secondary'>Export</Button>}
         />
       </div>
     </DomainModulePage>

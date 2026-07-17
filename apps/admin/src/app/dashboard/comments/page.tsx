@@ -53,7 +53,6 @@ export default async function CommentsPage() {
         emptyTitle='No comments'
         emptyDescription='No comments have been recorded yet.'
         emptyAction={<Button>Add Comment</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

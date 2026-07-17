@@ -77,7 +77,6 @@ export default async function FinancePage() {
         emptyTitle='No transactions'
         emptyDescription='Create the first invoice or payment record.'
         emptyAction={<Button>Create Invoice</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

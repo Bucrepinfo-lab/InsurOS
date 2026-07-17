@@ -53,7 +53,6 @@ export default function PolicyDocumentsPage() {
         emptyTitle='No documents'
         emptyDescription='Upload or generate the first document for this policy.'
         emptyAction={<Button>Upload Document</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

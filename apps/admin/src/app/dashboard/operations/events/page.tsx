@@ -66,7 +66,6 @@ export default async function PlatformEventsPage() {
         emptyTitle='No platform events'
         emptyDescription='No platform events have been emitted yet.'
         emptyAction={<Button>Replay Events</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

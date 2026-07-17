@@ -53,7 +53,6 @@ export default function PolicyPremiumPage() {
         emptyTitle='No premium schedule'
         emptyDescription='Create the first premium schedule for this policy.'
         emptyAction={<Button>Create Schedule</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

@@ -59,7 +59,6 @@ export default function PolicyCoveragesPage() {
         emptyTitle='No coverages'
         emptyDescription='Add coverage items to this policy.'
         emptyAction={<Button>Add Coverage</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );

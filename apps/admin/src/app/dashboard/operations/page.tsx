@@ -67,7 +67,6 @@ export default async function OperationsPage() {
         emptyTitle='No workflows'
         emptyDescription='No operational workflows are currently active.'
         emptyAction={<Button>Create Workflow</Button>}
-        actions={<Button variant='secondary'>Export</Button>}
       />
     </DomainModulePage>
   );
