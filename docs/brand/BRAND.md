@@ -6,7 +6,7 @@ InsurOS is a multi-continental insurance operating system. Its identity, "The Un
 
 ## Vision
 
-**Cover you can see through.** A world where every household, trader, and enterprise — from constituency to continent — holds insurance it can read, afford, and trust to pay when it matters.
+**Cover you can see through.** A world where every household, trader, and enterprise holds insurance it can read, afford, and trust to pay when it matters.
 
 ## Mission
 
