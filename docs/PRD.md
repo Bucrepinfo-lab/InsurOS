@@ -1,6 +1,6 @@
 # InsurOS — Product Requirements Document
 
-**Version:** 3.4 · **Updated:** 2026-07-16 · **Owner:** Jacob (Super Admin)
+**Version:** 3.5 · **Updated:** 2026-07-17 · **Owner:** Jacob (Super Admin)
 
 ## Vision
 
@@ -82,6 +82,10 @@ Persistence: services depend on repository ports (`getPersistence()`), backed by
 
 Every control on the platform works. All primary buttons run real engines through server actions returning receipt acknowledgments (context headline, traceable mono reference, detail, timestamp; seal toast for success, danger for failure). Every table has live text search, 10-per-page pagination, and one-click CSV export. Mobile gets a drawer navigation. Browser tabs carry per-page titles and the seal favicon. The topbar global search is the single remaining visual-only control, reserved for the persistence phase.
 
+## Brand Identity (v3.5)
+
+Brand charter at `docs/brand/BRAND.md` (binding, alongside the design system). Vision: "Cover you can see through." Mission: run the whole insurance value chain on one transparent ledger — affordable pricing, minutes-not-months claims, statutory remittance everywhere, named accountability, a receipt for every action. Five core values map one-to-one onto shipped modules (transparency, fairness-then-speed, inclusion, chain accountability, craft). Mark: the Ledger Seal — wax-seal emblem, Fraunces "In" monogram over a gold signature rule, "MMXXVI". Files: `docs/brand/insuros-seal.svg`, `-horizontal`, `-inverse`, `-mono`; favicon aligned.
+
 ## Status
 
 Done: platform capabilities (activity, notifications, comments, attachments, audit, workflow engine), business workspaces, RBAC foundation, governance hierarchy, tax remittance (national + regional), legal/terms, sales portal, commission engine, jurisdiction-scoped RBAC, Clerk integration layer, persistence ports + PostgreSQL schema, CI validation pipeline, the v3.0 gap-closing modules: claims automation (STP + fraud), pricing engine, microinsurance + mobile money (incl. parametric), executive analytics; the v3.1 trust stack: OCR document intelligence, live scene capture with integrity verdicts, CRM marketing content across policy UIs; and the v3.2 growth layer: subscription lifecycle (10 units/mo, free first month, day-40 renewal with day-35/39 alerts), engagement feed with share-ready content, newsletter threads, and the subscriber experience dashboard.
@@ -89,3 +93,7 @@ Done: platform capabilities (activity, notifications, comments, attachments, aud
 All governance/tax/legal/sales services now consume persistence ports (`getPersistence()`); roles stay mock-backed until a roles port lands with Clerk sync.
 
 Next (activation phase, awaiting owner accounts): 1) DO Managed PostgreSQL → extend schema.sql with v3.0–v3.2 tables, apply, seed, wire Drizzle adapter (`docs/PERSISTENCE.md`); 2) CLERK_SECRET_KEY → execute the Clerk sync plan; 3) SMS/push provider for day-35/39 renewal nudges; 4) payment-portal + M-PESA Daraja APIs; 5) DigitalOcean App Platform deployment. Code side is feature-complete and locked at commit ffcba084.
+
+### Observation log
+
+**2026-07-17 (weekly observation run):** Repo unchanged since the same-day lock (HEAD `0c56ab44`). Packages domain/mocks/services/ui typecheck clean. Fixed a regression from the polish sweep — 34 dead duplicate "Export" buttons rendered in table headers beside the working auto ExportCsvButton (`actions={<Button>Export</Button>}` across 29 dashboard pages); removed (commit `3c098532`). Follow-up logged for the next run: 59 empty-state CTA buttons (`emptyAction={<Button>…</Button>}`) are still inert — wire each through `queueDemoRequest`/ActionButton so they emit receipts like the header actions do. Activation checklist below remains blocked on owner credentials.
