@@ -1,6 +1,6 @@
 # InsurOS — Product Requirements Document
 
-**Version:** 3.3 · **Updated:** 2026-07-16 · **Owner:** Jacob (Super Admin)
+**Version:** 3.4 · **Updated:** 2026-07-16 · **Owner:** Jacob (Super Admin)
 
 ## Vision
 
@@ -78,10 +78,14 @@ Monorepo (pnpm): `apps/admin` (Next.js) + `packages/{domain,mocks,services,ui}`.
 
 Persistence: services depend on repository ports (`getPersistence()`), backed by an in-memory adapter today and PostgreSQL on DigitalOcean via Drizzle once provisioned. Full DDL in `packages/services/src/persistence/schema.sql`; plan in `docs/PERSISTENCE.md`. `AdminHierarchyService` is the reference port-based service.
 
+## Interaction Standard (v3.4)
+
+Every control on the platform works. All primary buttons run real engines through server actions returning receipt acknowledgments (context headline, traceable mono reference, detail, timestamp; seal toast for success, danger for failure). Every table has live text search, 10-per-page pagination, and one-click CSV export. Mobile gets a drawer navigation. Browser tabs carry per-page titles and the seal favicon. The topbar global search is the single remaining visual-only control, reserved for the persistence phase.
+
 ## Status
 
 Done: platform capabilities (activity, notifications, comments, attachments, audit, workflow engine), business workspaces, RBAC foundation, governance hierarchy, tax remittance (national + regional), legal/terms, sales portal, commission engine, jurisdiction-scoped RBAC, Clerk integration layer, persistence ports + PostgreSQL schema, CI validation pipeline, the v3.0 gap-closing modules: claims automation (STP + fraud), pricing engine, microinsurance + mobile money (incl. parametric), executive analytics; the v3.1 trust stack: OCR document intelligence, live scene capture with integrity verdicts, CRM marketing content across policy UIs; and the v3.2 growth layer: subscription lifecycle (10 units/mo, free first month, day-40 renewal with day-35/39 alerts), engagement feed with share-ready content, newsletter threads, and the subscriber experience dashboard.
 
 All governance/tax/legal/sales services now consume persistence ports (`getPersistence()`); roles stay mock-backed until a roles port lands with Clerk sync.
 
-Next: provision DO PostgreSQL + wire Drizzle adapter, Clerk secret-key provisioning + sync execution, live payment-portal integrations, DigitalOcean deployment.
+Next (activation phase, awaiting owner accounts): 1) DO Managed PostgreSQL → extend schema.sql with v3.0–v3.2 tables, apply, seed, wire Drizzle adapter (`docs/PERSISTENCE.md`); 2) CLERK_SECRET_KEY → execute the Clerk sync plan; 3) SMS/push provider for day-35/39 renewal nudges; 4) payment-portal + M-PESA Daraja APIs; 5) DigitalOcean App Platform deployment. Code side is feature-complete and locked at commit ffcba084.
