@@ -1,0 +1,41 @@
+# Fly.io — InsurOS admin (Next.js 16, standalone, pnpm monorepo)
+# Deploy from the repo root:
+#   fly deploy --remote-only --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+# Runtime secret (set once):  fly secrets set CLERK_SECRET_KEY=sk_test_... --app insuros
+app = "insuros"
+primary_region = "fra"
+
+[build]
+dockerfile = "Dockerfile"
+
+# NEXT_PUBLIC_* are needed at BUILD time (baked into the client bundle).
+# The Clerk publishable key is public by design; safe to commit.
+# Baked here so `fly deploy` is self-contained (no --build-arg to mistype).
+[build.args]
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_cHJlc2VudC1wZWFjb2NrLTk1LmNsZXJrLmFjY291bnRzLmRldiQ"
+
+[env]
+PORT = "8080"
+NODE_ENV = "production"
+HOSTNAME = "0.0.0.0"
+NEXT_PUBLIC_CLERK_SIGN_IN_URL = "/sign-in"
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL = "/dashboard"
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL = "/dashboard"
+
+[http_service]
+internal_port = 8080
+force_https = true
+auto_stop_machines = "stop"
+auto_start_machines = true
+min_machines_running = 1
+
+[[http_service.checks]]
+interval = "30s"
+timeout = "5s"
+grace_period = "20s"
+method = "GET"
+path = "/api/health"
+
+[[vm]]
+size = "shared-cpu-1x"
+memory = "512mb"
