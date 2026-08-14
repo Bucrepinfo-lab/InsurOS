@@ -51,3 +51,6 @@ export * from "./scene-capture";
 export * from "./marketing";
 export * from "./subscription";
 export * from "./engagement";
+
+export * from "./phone";
+export * from "./payments";

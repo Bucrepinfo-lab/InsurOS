@@ -1,7 +1,7 @@
 # Fly.io — InsurOS admin (Next.js 16, standalone, pnpm monorepo)
-# Deploy from the repo root:
-#   fly deploy --remote-only --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-# Runtime secret (set once):  fly secrets set CLERK_SECRET_KEY=sk_test_... --app insuros
+# Deploy from the repo root:  fly deploy --remote-only
+# Runtime secrets (set once): fly secrets set SUPABASE_SEND_SMS_HOOK_SECRET=... \
+#   AT_USERNAME=... AT_API_KEY=... AT_PAYMENTS_PRODUCT_NAME=... AT_PAYMENTS_CALLBACK_SECRET=... --app insuros
 app = "insuros"
 primary_region = "fra"
 
@@ -9,18 +9,16 @@ primary_region = "fra"
 dockerfile = "Dockerfile"
 
 # NEXT_PUBLIC_* are needed at BUILD time (baked into the client bundle).
-# The Clerk publishable key is public by design; safe to commit.
-# Baked here so `fly deploy` is self-contained (no --build-arg to mistype).
+# The Supabase URL + anon key are public by design. Replace the placeholders with
+# your project values before deploying (leave blank to run in open dev mode).
 [build.args]
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_cHJlc2VudC1wZWFjb2NrLTk1LmNsZXJrLmFjY291bnRzLmRldiQ"
+NEXT_PUBLIC_SUPABASE_URL = "https://REPLACE-project-ref.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "REPLACE_WITH_SUPABASE_ANON_KEY"
 
 [env]
 PORT = "8080"
 NODE_ENV = "production"
 HOSTNAME = "0.0.0.0"
-NEXT_PUBLIC_CLERK_SIGN_IN_URL = "/sign-in"
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL = "/dashboard"
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL = "/dashboard"
 
 [http_service]
 internal_port = 8080

@@ -1,8 +1,6 @@
-import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import { Fraunces, Onest, Spline_Sans_Mono } from 'next/font/google';
 import type { ReactNode } from 'react';
-import { clerkEnabled } from '../lib/clerk-enabled';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -30,7 +28,7 @@ const mono = Spline_Sans_Mono({
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  const app = (
+  return (
     <html
       lang='en'
       className={`${display.variable} ${body.variable} ${mono.variable}`}
@@ -38,6 +36,4 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>{children}</body>
     </html>
   );
-
-  return clerkEnabled ? <ClerkProvider>{app}</ClerkProvider> : app;
 }
