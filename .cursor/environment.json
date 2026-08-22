@@ -1,0 +1,5 @@
+{
+  "name": "InsurOS",
+  "install": "COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm@9.15.0 install --no-frozen-lockfile",
+  "start": "COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm@9.15.0 --filter @insuros/admin dev"
+}
