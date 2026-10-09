@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+.next/
+out/
+.turbo/
+.expo/
+*.tsbuildinfo
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Session / agent artifacts
+.agents/
+skills-lock.json
+
+# Logs & OS
+*.log
+npm-debug.log*
+.DS_Store
+
+# NOTE: .claude/agents and .claude/skills are intentionally NOT ignored —
+# the agents and skills are committed source of truth.
