@@ -43,6 +43,7 @@ export * from "./jurisdiction-access";
 export * from "./clerk-integration";
 export * from "./subnational-tax";
 export * from "./claim-automation";
+export * from "./claim-decision-message";
 export * from "./pricing";
 export * from "./microinsurance";
 export * from "./analytics";
