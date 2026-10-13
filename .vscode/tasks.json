@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "pnpm validate",
+      "type": "shell",
+      "command": "pnpm validate",
+      "problemMatcher": []
+    },
+    {
+      "label": "pnpm repo:health",
+      "type": "shell",
+      "command": "pnpm repo:health",
+      "problemMatcher": []
+    },
+    {
+      "label": "admin build",
+      "type": "shell",
+      "command": "pnpm --filter @insuros/admin build",
+      "problemMatcher": []
+    }
+  ]
+}
