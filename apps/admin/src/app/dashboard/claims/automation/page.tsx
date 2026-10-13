@@ -9,7 +9,7 @@ import {
 } from '@insuros/ui';
 import { ActionButton } from '@/components/ActionButton';
 import { submitDemoFnol } from '@/app/dashboard/actions';
-import { ClaimsAutomationService, MarketingService } from '@insuros/services';
+import { ClaimsAutomationService, MarketingService, claimantMessageFor } from '@insuros/services';
 
 export const metadata = { title: 'Claims automation' };
 
@@ -71,6 +71,11 @@ export default async function ClaimsAutomationPage() {
       key: 'reasons',
       header: 'Reason',
       render: (row) => row.reasons.join(' ')
+    },
+    {
+      key: 'claimantMessage',
+      header: 'Claimant message',
+      render: (row) => claimantMessageFor(row)
     },
     { key: 'decidedAt', header: 'Decided At' }
   ];

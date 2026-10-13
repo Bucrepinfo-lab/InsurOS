@@ -38,6 +38,7 @@ export * from "./principal";
 export * from "./regional-tax";
 export * from "./persistence";
 export * from "./claims-automation";
+export * from "./claim-messages";
 export * from "./pricing";
 export * from "./microinsurance";
 export * from "./analytics";
