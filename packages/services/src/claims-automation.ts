@@ -4,7 +4,13 @@ import type {
   FnolSubmission,
   FraudAssessment
 } from "@insuros/domain";
+import type {
+  ClaimDecisionMessage,
+  ClaimMessageGenerate,
+  ClaimMessageLanguage
+} from "@insuros/domain";
 import { adjudicate, assessFraud } from "@insuros/domain";
+import { buildClaimantMessage } from "./claim-messages";
 import { getPersistence } from "./persistence";
 
 export interface SubmitFnolInput {
@@ -25,6 +31,21 @@ export interface StpResult {
   fnol: FnolSubmission;
   assessment: FraudAssessment;
   decision: AdjudicationDecision;
+  /**
+   * The claimant-facing notice for this decision (EN/Kiswahili). Built once per
+   * decision; never exposes the internal reasons, scores or rules.
+   */
+  claimantMessage: ClaimDecisionMessage;
+}
+
+export interface SubmitFnolOptions {
+  /** Language of the claimant notice. Defaults to English. */
+  claimantLanguage?: ClaimMessageLanguage;
+  /**
+   * Optional AI polish for the notice (from createClaimMessageGenerator).
+   * Omit for the free deterministic template.
+   */
+  messageGenerate?: ClaimMessageGenerate;
 }
 
 export class ClaimsAutomationService {
@@ -64,7 +85,7 @@ export class ClaimsAutomationService {
    * all in one call. Legitimate small claims resolve in seconds; only
    * risk-flagged or large claims reach a human.
    */
-  async submitFnol(input: SubmitFnolInput): Promise<StpResult> {
+  async submitFnol(input: SubmitFnolInput, options: SubmitFnolOptions = {}): Promise<StpResult> {
     const fnol: FnolSubmission = {
       id: `fnol-${Date.now()}`,
       ...input,
@@ -86,6 +107,13 @@ export class ClaimsAutomationService {
     fnol.status = "Adjudicated";
     await this.db.fnolSubmissions.insert(fnol);
 
-    return { fnol, assessment, decision };
+    // One claimant notice per decision — the only place the optional AI runs.
+    const claimantMessage = await buildClaimantMessage(
+      decision,
+      options.claimantLanguage ?? "en",
+      options.messageGenerate
+    );
+
+    return { fnol, assessment, decision, claimantMessage };
   }
 }

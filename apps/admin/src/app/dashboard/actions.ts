@@ -5,6 +5,7 @@ import { fail, ok, type ActionResult } from '@/lib/action-result';
 import {
   AdminHierarchyService,
   ClaimsAutomationService,
+  createClaimMessageGenerator,
   CommissionService,
   DocumentIntelligenceService,
   MicroinsuranceService,
@@ -49,12 +50,20 @@ export async function submitDemoFnol(): Promise<ActionResult> {
     documentsComplete: clean,
     policyAgeDays: clean ? 120 + Math.floor(Math.random() * 300) : 12,
     priorClaimsCount: clean ? 0 : 4
+  }, {
+    // Off unless CLAIM_MESSAGE_PROVIDER=anthropic and a key are set; one call per decision.
+    messageGenerate: createClaimMessageGenerator({
+      provider: process.env.CLAIM_MESSAGE_PROVIDER,
+      apiKey: process.env.ANTHROPIC_API_KEY,
+      model: process.env.CLAIM_MESSAGE_MODEL
+    })
   });
 
   revalidatePath('/dashboard/claims/automation');
+  const notice = `Claimant notice${result.claimantMessage.usedModel ? ' (AI-polished)' : ''}: “${result.claimantMessage.text}”`;
   return result.decision.outcome === 'AutoApproved'
-    ? ok('Claim auto-approved', `Fraud score ${result.assessment.score} · payout SLA ${result.decision.slaHours}h · reasons on the ledger`, { reference: result.fnol.claimReference })
-    : ok('Claim received — under review', `Fraud score ${result.assessment.score} · an adjuster owns the decision from here`, { reference: result.fnol.claimReference });
+    ? ok('Claim auto-approved', `Fraud score ${result.assessment.score} · payout SLA ${result.decision.slaHours}h · ${notice}`, { reference: result.fnol.claimReference })
+    : ok('Claim received — under review', `Fraud score ${result.assessment.score} · an adjuster owns the decision · ${notice}`, { reference: result.fnol.claimReference });
 }
 
 export async function registerDemoSceneCapture(): Promise<ActionResult> {
