@@ -7,3 +7,20 @@ build/
 .env
 .env.local
 pnpm-debug.log*
+
+# Added by add-claude-skills
+.pnpm-store/
+out/
+.turbo/
+.expo/
+*.tsbuildinfo
+.env.*
+!.env.example
+.agents/
+skills-lock.json
+*.log
+npm-debug.log*
+.DS_Store
+
+# NOTE: .claude/agents and .claude/skills are intentionally NOT ignored —
+# the agents and skills are committed source of truth.
