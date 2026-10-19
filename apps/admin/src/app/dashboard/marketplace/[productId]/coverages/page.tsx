@@ -1,0 +1,65 @@
+import {
+  Badge,
+  Button,
+  DomainEntityList,
+  DomainModulePage,
+  type DataTableColumn
+} from '@insuros/ui';
+import { ActionButton } from '@/components/ActionButton';
+import { queueDemoRequest } from '@/app/dashboard/actions';
+
+export const metadata = { title: 'Coverages' };
+
+type CoverageRow = {
+  name: string;
+  type: string;
+  limit: string;
+  status: string;
+};
+
+const coverages: CoverageRow[] = [
+  {
+    name: 'Own Damage',
+    type: 'Mandatory',
+    limit: 'Market value',
+    status: 'Active'
+  },
+  {
+    name: 'Third Party Liability',
+    type: 'Mandatory',
+    limit: 'Statutory limit',
+    status: 'Active'
+  }
+];
+
+const columns: DataTableColumn<CoverageRow>[] = [
+  { key: 'name', header: 'Coverage' },
+  { key: 'type', header: 'Type' },
+  { key: 'limit', header: 'Limit' },
+  {
+    key: 'status',
+    header: 'Status',
+    render: (row) => <Badge tone='success'>{row.status}</Badge>
+  }
+];
+
+export default function ProductCoveragesPage() {
+  return (
+    <DomainModulePage
+      title='Coverage Builder'
+      description='Configure mandatory and optional product coverages, limits, deductibles, and exclusions.'
+      actions={<ActionButton label='Add Coverage' action={queueDemoRequest.bind(null, 'Add Coverage')} />}
+    >
+      <DomainEntityList
+        title='Coverages'
+        description='Coverage definitions attached to this product version.'
+        searchPlaceholder='Search coverages...'
+        columns={columns}
+        data={coverages}
+        emptyTitle='No coverages'
+        emptyDescription='Add the first coverage definition for this product.'
+        emptyAction={<Button>Add Coverage</Button>}
+      />
+    </DomainModulePage>
+  );
+}

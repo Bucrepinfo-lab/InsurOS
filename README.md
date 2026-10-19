@@ -1,91 +1,32 @@
 # InsurOS
 
-**An insurance operating system for emerging markets - Kenya-first.**
+Multi-continental insurance SaaS: marketplace, policies, claims, customers, and finance operated under a five-level administrative hierarchy (Super Admin → Continental → National → County → Constituency), with per-country statutory tax remittance, versioned terms & conditions, and a mirrored sales chain of command.
 
-> **Status: greenfield - bootstrapping.** This repository currently holds only
-> the vision, the intended architecture, and the Claude agents + skills that
-> guide building it. No application code exists yet. The first build task is the
-> `architecture-scaffold` skill.
+## Repository
 
-## Vision
-
-InsurOS is a multi-tenant platform that lets insurers, MGAs, brokers, and agents
-run the full insurance lifecycle - define products, underwrite and rate risk,
-administer policies, handle claims, bill premiums and commissions, and stay
-compliant - on a single mobile-first system built for African markets, starting
-with Kenya. It is distribution-friendly (direct, broker, and agent channels) and
-regulator-aware from day one (Kenya Insurance Regulatory Authority + the Data
-Protection Act, 2019).
-
-The goal is not a single insurer's admin tool but an **operating system**: a
-tenant onboards, configures its products and rating, plugs in M-Pesa, and starts
-quoting, binding, and servicing policies under its own regulatory identity.
-
-## Intended module map
-
-Domain modules live in `packages/core` as pure, framework-free logic; schemas in
-`packages/db`. Paths below are the **convention to create**, not existing files.
-
-| Module | Intended home | Responsibility |
-| --- | --- | --- |
-| **Products & coverages** | `packages/core/src/product.ts` | Product catalog, coverages, limits, deductibles, rating factors as configurable entities. |
-| **Underwriting & rating** | `packages/core/src/underwriting.ts` | Risk assessment, rate tables, a rule engine, declines/referrals, full auditability. |
-| **Policy administration** | `packages/core/src/policy.ts` | Lifecycle state machine: quote -> bind -> issue -> endorse -> renew -> cancel. |
-| **Claims** | `packages/core/src/claims.ts` | Intake -> adjudication -> reserving -> settlement; fraud flags; no autonomous payout. |
-| **Billing & payments** | `packages/core/src/billing.ts` | Premium billing, installments, commissions, reconciliation; integer cents; M-Pesa. |
-| **Compliance** | `packages/core/src/compliance.ts` | IRA returns, DPA controls, audit trail, regulatory reporting. |
-| **Tenancy & geo** | `packages/core/src/tenancy.ts` | Continent -> country -> county -> tenant hierarchy, query-layer isolation + RLS. |
-
-## Portfolio stack / DNA
-
-InsurOS matches the owner's portfolio shape:
-
-- **Monorepo:** Turborepo + pnpm workspaces.
-- **Web:** `apps/web` - Next.js 15, React 19, TypeScript.
-- **Mobile:** `apps/mobile` - Expo.
-- **Domain:** `packages/core` - pure domain logic, no framework imports.
-- **Data:** `packages/db` - Prisma + PostgreSQL. **All money stored as INTEGER
-  CENTS** (never floats).
-- **Tenancy:** multi-tenant over a continent -> country -> county -> tenant geo
-  hierarchy, enforced by a query-layer isolation boundary **and** PostgreSQL
-  Row-Level Security.
-- **Auth:** phone-OTP via Supabase.
-- **Payments:** M-Pesa (Daraja / Africa's Talking) behind a provider
-  abstraction; never a hard dependency on one gateway.
-- **Subscription:** first month free, then ~10 local-currency-units / month per
-  tenant.
-- **Operating layer:** a six-agent system (research, operation, support, sales,
-  finance, legal) defined in `.claude/agents/`.
-
-## Repository layout (intended)
-
+```text
+apps/admin        Next.js admin control plane
+packages/domain   Business entities and contracts (source of truth)
+packages/mocks    Development and demo data
+packages/services Business-facing service layer (persistence ports)
+packages/ui       Reusable UI primitives, layouts, navigation
+docs/             PRD, standards, ADRs, persistence and legal docs
 ```
-apps/
-  web/            # Next.js 15 + React 19 web / PWA
-  mobile/         # Expo
-packages/
-  core/           # pure domain logic (product, underwriting, policy, claims, billing, compliance, tenancy)
-  db/             # Prisma schema, migrations, seed (Postgres, integer cents, RLS)
-.claude/
-  agents/         # the six operating personas
-  skills/         # build-guidance skills (scaffold, product, underwriting, policy, claims, billing, compliance, tenancy, ship)
-turbo.json
-pnpm-workspace.yaml
-```
-
-## Safety rules that govern every agent and skill
-
-- **Propose, don't dispose.** Agents prepare and recommend; a human authorizes.
-- **No autonomous money movement.** No claim settlement, payout, refund, or
-  remittance executes without explicit human authorization.
-- **Tenant-locked.** Every query, mutation, and report is scoped to one tenant;
-  isolation is an acceptance criterion, never an afterthought.
-- **Cite your sources.** Any legal/regulatory claim cites a source and is flagged
-  "verify against current regulation."
 
 ## Getting started
 
-There is nothing to run yet. To begin building, invoke the
-`architecture-scaffold` skill, which stands up the monorepo in the shape above
-and defines the gate commands. Then build vertical slices module by module using
-the matching skills, and ship with `ship-workflow`.
+```bash
+pnpm install
+pnpm --filter @insuros/admin dev   # run the admin app
+pnpm validate                      # typecheck all packages + build admin
+```
+
+Copy `.env.example` to `apps/admin/.env.local` and fill in Clerk keys. Without `DATABASE_URL`, persistence runs on the in-memory adapter over mock data.
+
+## Key documents
+
+Product requirements: `docs/PRD.md` · Engineering standards: `docs/ENGINEERING_STANDARDS.md` · Persistence plan: `docs/PERSISTENCE.md` · Terms & conditions: `docs/TERMS_AND_CONDITIONS.md` · ADRs: `docs/architecture/`.
+
+## Delivery
+
+Every push runs CI (`.github/workflows/validate.yml`): full typecheck plus the Next.js production build. One focused commit per capability; see the delivery loop in `docs/ENGINEERING_STANDARDS.md`.
