@@ -16,7 +16,7 @@ first) — while never moving money autonomously.
 - The InsurOS subscription charge (first month free → ~10 local units/month).
 
 ## Core model (intended)
-In `packages/core/src/billing.ts`:
+In `packages/domain/src/finance.ts` + `commission.ts`:
 - **Invoice / Installment schedule** — premium split into dated installments;
   amounts in **integer cents**; proration from endorsements.
 - **Payment** — a collection attempt through the `PaymentProvider` abstraction;
@@ -41,9 +41,9 @@ In `packages/core/src/billing.ts`:
    tenant, priced in cents.
 
 ## Intended paths
-`packages/core/src/billing.ts`,
-`packages/core/src/payment-provider.ts` (the abstraction),
-`packages/db/prisma/schema.prisma` (Invoice, Installment, Payment, Commission,
+`packages/domain/src/finance.ts` + `commission.ts`,
+`packages/domain/src/payments.ts` (the abstraction),
+`packages/services/src/persistence/schema.sql` (Invoice, Installment, Payment, Commission,
 Receipt, Reconciliation, LedgerEntry).
 
 ## Guardrails
