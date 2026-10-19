@@ -29,7 +29,7 @@ Run and pass **all** before committing:
 2. **Build** against the matching skill (product / underwriting / policy /
    claims / billing / compliance), routing all data access through the
    tenant-scoped client (`tenancy-guard`).
-3. **Test**: add/extend `packages/core` tests for new domain logic. Core logic
+3. **Test**: add/extend `packages/domain` tests for new domain logic. Core logic
    is pure and must have tests; keep them green.
 4. **Verify**: run every gate command; fix until all pass.
 5. **Document**: update `README.md`, the backlog, and the dated decision log in

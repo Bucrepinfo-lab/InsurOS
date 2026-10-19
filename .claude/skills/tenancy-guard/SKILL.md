@@ -11,7 +11,7 @@ tenant) and at the database (Postgres Row-Level Security) — so a single missed
 `where` cannot leak data.
 
 ## When to use
-- Creating or altering any table, Prisma model, query, or API route.
+- Creating or altering any table, schema.sql definition, query, or API route.
 - Reviewing whether a change is tenant-safe.
 - Setting up or extending the geo hierarchy or RLS policies.
 
@@ -30,7 +30,7 @@ and data-residency rules key off this chain; isolation keys off `tenantId`.
    rows to the current tenant, e.g. keyed on a session setting
    `app.current_tenant_id` set per request.
 4. **Tenant-scoped client** — all access goes through the factory in
-   `packages/db/src/client.ts`, which sets the RLS session variable and applies a
+   `packages/services/src/persistence/ports.ts`, which sets the RLS session variable and applies a
    default `tenantId` filter. No raw unscoped client in app code.
 5. **No cross-tenant joins** except through explicitly reviewed
    platform/admin paths that set no tenant context deliberately.
@@ -46,9 +46,9 @@ and data-residency rules key off this chain; isolation keys off `tenantId`.
    rows even if B's id is supplied.
 
 ## Intended paths
-`packages/db/prisma/schema.prisma` (Continent, Country, County, Tenant +
-`tenantId` on owned tables), `packages/db/src/client.ts` (scoped factory),
-`packages/db/prisma/migrations/*` (RLS policies).
+`packages/services/src/persistence/schema.sql` (Continent, Country, County, Tenant +
+`tenantId` on owned tables), `packages/services/src/persistence/ports.ts` (scoped factory),
+`packages/services/src/persistence/schema.sql` (RLS policies).
 
 ## Guardrails
 - **Two-layer isolation is mandatory**: query-layer scoping AND Postgres RLS.

@@ -15,7 +15,7 @@ versioned, and premium impacts flow to billing.
 - Modelling the policy schema, documents, or transition rules.
 
 ## Lifecycle state machine (intended)
-In `packages/core/src/policy.ts`:
+In `packages/domain/src/policy.ts` + `policy-workflow.ts`:
 ```
 QUOTE ──bind──▶ BOUND ──issue──▶ ISSUED (in force)
   ISSUED ──endorse──▶ ISSUED (new endorsement version)
@@ -46,7 +46,7 @@ QUOTE ──bind──▶ BOUND ──issue──▶ ISSUED (in force)
 6. **Record** every transition immutably for audit.
 
 ## Intended paths
-`packages/core/src/policy.ts`, `packages/db/prisma/schema.prisma`
+`packages/domain/src/policy.ts` + `policy-workflow.ts`, `packages/services/src/persistence/schema.sql`
 (Policy, PolicyVersion, Endorsement, PolicyDocument, Transition).
 
 ## Guardrails

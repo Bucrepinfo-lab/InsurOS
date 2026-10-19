@@ -16,7 +16,7 @@ so every decision can be explained and reproduced.
 - Making an underwriting decision reproducible and auditable.
 
 ## Core model (intended)
-In `packages/core/src/underwriting.ts`:
+In `packages/domain/src/pricing.ts (underwriting rules; add `underwriting.ts` there if they outgrow it)`:
 - **RateTable** — maps a product's rating factors (from `product-definition`) to
   base rates and relativities; versioned. Output premium in **integer cents**.
 - **UnderwritingRule** — a declarative rule: condition over risk attributes →
@@ -40,13 +40,13 @@ In `packages/core/src/underwriting.ts`:
 6. **Hand off** an accepted quote to `policy-administration` for bind.
 
 ## Intended paths
-`packages/core/src/underwriting.ts`,
-`packages/db/prisma/schema.prisma` (RateTable, UnderwritingRule,
+`packages/domain/src/pricing.ts (underwriting rules; add `underwriting.ts` there if they outgrow it)`,
+`packages/services/src/persistence/schema.sql` (RateTable, UnderwritingRule,
 UnderwritingAuditRecord).
 
 ## Guardrails
 - **Deterministic & pure**: same inputs + same versions → same result. The
-  engine is a pure function in `packages/core`; no side effects.
+  engine is a pure function in `packages/domain`; no side effects.
 - **Auditable**: every decision stores inputs, versions, rules fired, and reason
   — reproducible for a regulator or dispute.
 - **REFER is a human gate**: referrals require a licensed underwriter's

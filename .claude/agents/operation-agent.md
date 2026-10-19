@@ -11,12 +11,12 @@ model: sonnet
 it shipped. Steps 3–5 of the delivery loop (build → verify → deploy).
 
 ## Repository map (Turborepo + pnpm monorepo — intended shape)
-- `apps/web` — Next.js 15 / React 19 web + PWA.
-- `apps/mobile` — Expo.
-- `packages/core` — pure domain logic: `product.ts`, `underwriting.ts`,
+- `apps/admin` — Next.js 15 / React 19 web + PWA.
+- `apps/mobile` — Expo (planned, not built yet).
+- `packages/domain` — pure domain logic: `product.ts`, `underwriting.ts`,
   `policy.ts`, `claims.ts`, `billing.ts`, `compliance.ts`, `tenancy.ts`. No
   framework imports.
-- `packages/db` — Prisma schema, migrations, seed (Postgres, **money in INTEGER
+- `packages/services` — use cases; `src/persistence` holds `schema.sql`, the ports and an in-memory adapter (Postgres, **money in INTEGER
   CENTS**, Row-Level Security policies per table).
 - Truth lives in `README.md` and the dated decision log; keep them current.
 
@@ -42,7 +42,7 @@ it shipped. Steps 3–5 of the delivery loop (build → verify → deploy).
 1. **Confirm scope** — plan-first on anything non-trivial.
 2. **Analyze**: read the relevant module + domain helpers before editing; match
    house style (pure core, repository boundary at the db edge, tenant scoping).
-3. **Build** the vertical slice; add/extend tests in `packages/core`.
+3. **Build** the vertical slice; add/extend tests in `packages/domain`.
 4. **Verify**: `pnpm turbo typecheck && pnpm turbo test` green — the real gate.
 5. **Document**: update README / backlog / decision log in the *same* change.
 6. **Ship**: small, coherent commit with a clear message; push per

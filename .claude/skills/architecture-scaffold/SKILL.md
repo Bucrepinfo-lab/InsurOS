@@ -1,7 +1,9 @@
 ---
 name: architecture-scaffold
-description: Use when standing up the InsurOS monorepo from scratch, or adding a missing structural piece (a new app, package, or the tenancy/RLS/auth/payments foundation). Triggers — "scaffold the repo", "set up the monorepo", "there's no code yet", "add packages/core", "wire Supabase OTP", "add the M-Pesa provider abstraction".
+description: Use when standing up the InsurOS monorepo from scratch, or adding a missing structural piece (a new app, package, or the tenancy/RLS/auth/payments foundation). Triggers — "scaffold the repo", "set up the monorepo", "there's no code yet", "add packages/domain", "wire Supabase OTP", "add the M-Pesa provider abstraction".
 ---
+
+> **Current layout (19/10/26):** `apps/admin` (Next.js), `packages/domain` (pure types and rules), `packages/services` (use cases; persistence in `src/persistence`: `schema.sql`, `ports.ts`, `memory-adapter.ts`), `packages/ui`, `packages/mocks`. No Prisma and no mobile app yet; the tree below is the target, not what exists.
 
 # architecture-scaffold
 
@@ -38,20 +40,20 @@ tsconfig.base.json
 1. **Root workspace.** Create `pnpm-workspace.yaml` (`apps/*`, `packages/*`),
    root `package.json` (private, packageManager pnpm), `turbo.json` with
    `build`, `typecheck`, `test`, `lint` pipelines, and `tsconfig.base.json`.
-2. **`packages/core`.** Pure TypeScript, zero framework/db imports. Add
+2. **`packages/domain`.** Pure TypeScript, zero framework/db imports. Add
    `money.ts` first: a `Cents` integer type and helpers — money is **integer
    cents**, never a float. Stub one exported function per domain module so
    typecheck passes.
-3. **`packages/db`.** Prisma + Postgres. Model the geo hierarchy
+3. **`packages/services/src/persistence`.** Postgres via `schema.sql`, behind the ports in `ports.ts` (an in-memory adapter exists for dev). Model the geo hierarchy
    (`Continent → Country → County → Tenant`) and give every tenant-owned table a
    non-null `tenantId`. Add a tenant-scoped client factory that always sets the
    RLS session variable (see `tenancy-guard`).
-4. **`apps/web`.** Next.js 15 / React 19 / TS, PWA-ready; imports domain only
-   from `packages/core`, data only through `packages/db`.
-5. **`apps/mobile`.** Expo app sharing `packages/core`.
+4. **`apps/admin`.** Next.js 15 / React 19 / TS, PWA-ready; imports domain only
+   from `packages/domain`, data only through `packages/services/src/persistence`.
+5. **`apps/mobile`** (not built yet). Expo app sharing `packages/domain`.
 6. **Auth.** Supabase phone-OTP. Reference `SUPABASE_URL`,
    `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` as env var **names** only.
-7. **Payments.** Define a `PaymentProvider` interface in `packages/core` with a
+7. **Payments.** Define a `PaymentProvider` interface in `packages/domain` with a
    manual/dev adapter as default and an M-Pesa (Daraja / Africa's Talking)
    adapter selected by `PAYMENT_PROVIDER`. No gateway is a hard dependency.
 8. **Subscription.** Model first-month-free then ~10 local-currency-units/month
@@ -61,12 +63,12 @@ tsconfig.base.json
    scaffold.
 
 ## Intended paths
-`packages/core/src/*`, `packages/db/prisma/schema.prisma`,
-`packages/db/src/client.ts`, `apps/web`, `apps/mobile`, `turbo.json`,
+`packages/domain/src/*`, `packages/services/src/persistence/schema.sql`,
+`packages/services/src/persistence/ports.ts`, `apps/admin`, `apps/mobile`, `turbo.json`,
 `pnpm-workspace.yaml`, `.env.example`.
 
 ## Guardrails
-- Domain core stays pure — no Next/Expo/Prisma imports in `packages/core`.
+- Domain core stays pure — no Next/Expo/database imports in `packages/domain`.
 - **Money is integer cents** from the first commit; never floating point.
 - Every tenant-owned table carries `tenantId` and an RLS policy from day one.
 - Secrets are env var **names** only; never commit real values.

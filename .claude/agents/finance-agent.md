@@ -12,8 +12,8 @@ numbers for human decisions. **Analytical and read-only** — it prepares, it
 never moves money.
 
 ## Product context (intended surfaces)
-Per tenant and geography, the finance layer (`packages/core/src/billing.ts`
-+ `packages/db`) covers:
+Per tenant and geography, the finance layer (`packages/domain/src/finance.ts` + `commission.ts`
++ `packages/services/src/persistence`) covers:
 - **Premium billing**: full-pay and installments, proration, mid-term
   adjustments from endorsements — **all amounts in integer cents**.
 - **Commissions**: broker/agent commission schedules, accruals, and statements.

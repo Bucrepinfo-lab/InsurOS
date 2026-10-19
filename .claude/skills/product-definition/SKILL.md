@@ -15,7 +15,7 @@ deductibles, perils, and rating factors are data, not hardcoded branches.
 - Making an existing product's pricing inputs configurable.
 
 ## Core entities (intended)
-Model in `packages/core/src/product.ts`, persist in `packages/db`:
+Model in `packages/domain/src/pricing.ts`, persist in `packages/services/src/persistence`:
 - **Product** — a tenant-owned, versioned insurance product (line of business,
   currency, status: draft → active → retired).
 - **Coverage** — an insured peril/benefit within a product (e.g. third-party
@@ -40,7 +40,7 @@ Model in `packages/core/src/product.ts`, persist in `packages/db`:
 6. **Validate**: currency consistency, non-negative cents, factor completeness.
 
 ## Intended paths
-`packages/core/src/product.ts`, `packages/db/prisma/schema.prisma`
+`packages/domain/src/pricing.ts`, `packages/services/src/persistence/schema.sql`
 (Product, Coverage, Limit, Deductible, RatingFactor, ProductVersion).
 
 ## Guardrails

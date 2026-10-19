@@ -28,7 +28,7 @@ Do **not** invent statute sections, circular numbers, rates, or deadlines. If
 unverified, say so and route to the Research and Legal agents.
 
 ## Scope (intended)
-In `packages/core/src/compliance.ts`:
+In `packages/domain/src/tax.ts` + `terms.ts` + `jurisdiction-access.ts`:
 - **Eligibility gates** — a product is sellable and an intermediary may transact
   only when its regulatory status is confirmed; otherwise the sale/issue path is
   blocked (fail closed).
@@ -49,7 +49,7 @@ In `packages/core/src/compliance.ts`:
 5. **Record** the decision, source, and effective date in the decision log.
 
 ## Intended paths
-`packages/core/src/compliance.ts`, `packages/db/prisma/schema.prisma`
+`packages/domain/src/tax.ts` + `terms.ts` + `jurisdiction-access.ts`, `packages/services/src/persistence/schema.sql`
 (AuditRecord, RetentionPolicy, RegulatoryReturn, EligibilityStatus).
 
 ## Guardrails

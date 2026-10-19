@@ -15,7 +15,7 @@ human authorizes every payout. The engine assesses and prepares; it never pays.
 - Fraud/irregularity flagging and referral.
 
 ## Lifecycle (intended)
-In `packages/core/src/claims.ts`:
+In `packages/domain/src/claim.ts` + `claim-workflow.ts`:
 ```
 REPORTED ─▶ UNDER_REVIEW ─▶ ADJUDICATED ─▶ APPROVED ─▶ SETTLED
                      │              │            └▶ (human authorizes payout)
@@ -50,7 +50,7 @@ REPORTED ─▶ UNDER_REVIEW ─▶ ADJUDICATED ─▶ APPROVED ─▶ SETTLED
 6. **Record** every state change immutably.
 
 ## Intended paths
-`packages/core/src/claims.ts`, `packages/db/prisma/schema.prisma`
+`packages/domain/src/claim.ts` + `claim-workflow.ts`, `packages/services/src/persistence/schema.sql`
 (Claim, Reserve, Adjudication, FraudFlag, SettlementAuthorization).
 
 ## Guardrails
