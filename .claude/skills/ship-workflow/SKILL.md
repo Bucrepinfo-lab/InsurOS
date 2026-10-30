@@ -51,3 +51,4 @@ Run and pass **all** before committing:
   regulatory claims. Treat them as acceptance criteria in review.
 - No secrets in commits — env var names only; verify no `.env` or key is staged.
 - Keep commits free of line-ending-only churn.
+- Owner standing rules (`docs/STANDING_RULES.md`) apply to every change: live stays live; fix once, fix everywhere; escalate, don't fix, in protected areas or after three failed attempts (`health-audit-guard` checks `fix/health-audit-*` PRs); never weaken a test; merge only green at the exact head SHA, confirm the health endpoint, and name the screens to retest (incl. 375 px).
