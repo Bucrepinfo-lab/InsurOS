@@ -36,3 +36,12 @@ export function mapAtPaymentStatus(atStatus: string): PaymentStatus {
   if (value === "failed") return "FAILED";
   return "PENDING";
 }
+
+/**
+ * v1 kill-switch for money movement. InsurOS v1 (the Play app) is a staff/agency
+ * operations tool: premium checkout to the public and any automatic claim payout
+ * are OFF unless PAYMENTS_ENABLED is exactly "true". Default: off.
+ */
+export function isPaymentsEnabled(value: string | undefined): boolean {
+  return (value ?? "").trim().toLowerCase() === "true";
+}

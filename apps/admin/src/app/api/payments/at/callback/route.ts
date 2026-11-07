@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { reconcile } from "@/lib/payments";
+import { paymentsEnabled } from "@/lib/payments-gate";
 
 /**
  * Africa's Talking Payments async callback. Set this URL as the AT payment
@@ -9,6 +10,11 @@ import { reconcile } from "@/lib/payments";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
+  // v1: no checkout is ever started, so there is nothing to reconcile.
+  if (!paymentsEnabled()) {
+    return NextResponse.json({ error: "payments_disabled" }, { status: 403 });
+  }
+
   const expected = process.env.AT_PAYMENTS_CALLBACK_SECRET;
   const token =
     new URL(req.url).searchParams.get("token") ?? req.headers.get("x-at-callback-secret");

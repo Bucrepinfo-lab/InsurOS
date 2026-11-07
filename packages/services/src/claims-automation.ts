@@ -46,6 +46,11 @@ export interface SubmitFnolOptions {
    * Omit for the free deterministic template.
    */
   messageGenerate?: ClaimMessageGenerate;
+  /**
+   * Straight-through auto-approval (and its payout SLA). Defaults to FALSE:
+   * v1 routes every claim to an adjuster; pass the PAYMENTS_ENABLED gate.
+   */
+  allowAutoApprove?: boolean;
 }
 
 export class ClaimsAutomationService {
@@ -97,7 +102,9 @@ export class ClaimsAutomationService {
     fnol.status = "Scored";
 
     const rules = await this.db.adjudicationRules.findAll();
-    const decisionData = adjudicate(fnol, assessment, rules);
+    const decisionData = adjudicate(fnol, assessment, rules, {
+      allowAutoApprove: options.allowAutoApprove ?? false
+    });
 
     const decision = await this.db.adjudicationDecisions.insert({
       id: `adj-dec-${Date.now()}`,
