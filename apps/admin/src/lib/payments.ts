@@ -2,6 +2,7 @@ import { isValidPaymentAmount, mapAtPaymentStatus, type PaymentStatus } from "@i
 import { PaymentLedgerService, type PaymentTxnView } from "@insuros/services";
 import { mobileCheckout } from "@/lib/africastalking/payments";
 import { paymentsEnabled } from "@/lib/payments-gate";
+import "@/lib/tenant-context";
 
 /**
  * Premium payment service — M-Pesa via Africa's Talking, recorded in the

@@ -12,6 +12,7 @@
 #   DATABASE_URL                   PostgreSQL connection string (REQUIRED; fails closed without)
 #   PLATFORM_OWNER_PHONES          comma-separated E.164 phones bootstrapped as platform owner
 #   SUPABASE_SERVICE_ROLE_KEY      server-only; deletes a user's auth account on request
+#   PLAY_REVIEW_PHONE, PLAY_REVIEW_CODE  Play reviewer demo access (both or neither)
 #   SUPABASE_SEND_SMS_HOOK_SECRET  Supabase Auth -> Hooks -> Send SMS shared secret
 #   AT_USERNAME, AT_API_KEY, AT_SENDER_ID   Africa's Talking (SMS OTP)
 app = "insuros"
