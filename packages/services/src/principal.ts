@@ -188,6 +188,50 @@ export class PrincipalService {
   }
 
   /**
+   * Account deletion: erase a person's personal data from our store.
+   * Their appointments and role grants are revoked and de-identified (name,
+   * email, phone removed); the rows themselves remain as a non-personal audit
+   * stub so history stays consistent. Returns how many rows were changed.
+   */
+  async erasePersonalData(identity: { phone?: string | null; email?: string | null }): Promise<number> {
+    const phone = identity.phone ? toE164(identity.phone) ?? undefined : undefined;
+    const email = identity.email?.toLowerCase() || undefined;
+    if (!phone && !email) return 0;
+
+    const appointments = await this.db.appointments.findWhere(
+      (item) =>
+        (phone !== undefined && item.phone === phone) ||
+        (email !== undefined && item.email.toLowerCase() === email) ||
+        (phone !== undefined && item.email.toLowerCase() === `${phone}@phone.insuros`.toLowerCase())
+    );
+
+    let changed = 0;
+    for (const appointment of appointments) {
+      const stub = `deleted-${appointment.id}`;
+      await this.db.appointments.update(appointment.id, {
+        userName: "Deleted user",
+        email: `${stub}@deleted.insuros`,
+        phone: undefined,
+        status: "Revoked"
+      });
+      changed += 1;
+
+      const grants = await this.db.jurisdictionAssignments.findWhere(
+        (item) => item.userId === appointment.userId
+      );
+      for (const grant of grants) {
+        await this.db.jurisdictionAssignments.update(grant.id, {
+          userName: "Deleted user",
+          status: "Revoked"
+        });
+        changed += 1;
+      }
+    }
+
+    return changed;
+  }
+
+  /**
    * Resolve a signed-in Clerk user (by email) to a SessionPrincipal with
    * jurisdiction assignments, effective permissions, and territory.
    * Unmatched users get an empty, clearly-flagged principal.

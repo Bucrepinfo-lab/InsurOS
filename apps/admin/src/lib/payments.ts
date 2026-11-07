@@ -88,3 +88,20 @@ export function reconcile(providerTxnId: string, status: string, raw: unknown): 
   ledger.set(txn.id, txn);
   return true;
 }
+
+/**
+ * Account deletion: de-identify a payer's ledger rows. Rows are RETAINED
+ * (append-only financial record, never deleted) but the phone and raw provider
+ * payload (which can echo the phone) are removed. Returns rows changed.
+ */
+export function deidentifyPayer(phone: string): number {
+  let changed = 0;
+  for (const txn of ledger.values()) {
+    if (txn.phone !== phone) continue;
+    txn.phone = "redacted";
+    txn.rawCallback = undefined;
+    txn.updatedAt = new Date().toISOString();
+    changed += 1;
+  }
+  return changed;
+}
