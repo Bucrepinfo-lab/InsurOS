@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toE164 } from "@insuros/domain";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { reviewerSignIn } from "@/lib/reviewer-sign-in";
 
 /**
  * Phone → SMS-OTP auth. One flow covers sign-up AND sign-in (Supabase creates the
@@ -46,10 +47,16 @@ export function PhoneAuth({ afterAuthUrl = "/dashboard" }: { afterAuthUrl?: stri
     setError(null);
     setLoading(true);
     const { error } = await supabase.auth.verifyOtp({ phone, token: code.trim(), type: "sms" });
-    setLoading(false);
     if (error) {
-      setError(error.message);
-      return;
+      // Store-review access (only active when configured on the server).
+      const review = await reviewerSignIn(phone, code).catch(() => ({ ok: false }));
+      setLoading(false);
+      if (!review.ok) {
+        setError(error.message);
+        return;
+      }
+    } else {
+      setLoading(false);
     }
     router.push(next);
     router.refresh();

@@ -10,8 +10,10 @@ import {
 } from "@insuros/domain";
 import { PrincipalService } from "@insuros/services";
 import { fail, type ActionResult } from "../action-result";
-import { createSupabaseServerClient } from "../supabase/server";
+import { isPlayReviewPhone } from "../play-review";
+import "../tenant-context";
 import { getAuthMode } from "./config";
+import { getSupabaseUser } from "./session-user";
 
 /**
  * Server-side session + authorization. Every dashboard layout, server action and
@@ -40,15 +42,18 @@ const LOCAL_DEV_PRINCIPAL: SessionPrincipal = {
   isPlatformOwner: true
 };
 
-/** Supabase user for this request (or null). Only valid in "supabase" mode. */
-export const getSupabaseUser = cache(async () => {
-  if (getAuthMode() !== "supabase") return null;
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-  return user ?? null;
-});
+export { getSupabaseUser };
+
+/**
+ * Store reviewer (Google Play): read-mostly demo access, routed to the isolated
+ * demo tenant by lib/tenant-context.ts. No identity/platform administration.
+ */
+const PLAY_REVIEWER_PERMISSIONS = [
+  "Claims:View", "Claims:Create",
+  "Policies:View", "Policies:Create",
+  "Customers:View", "Customers:Create",
+  "Marketplace:View", "Finance:View", "Operations:View"
+];
 
 export const getAuthState = cache(async (): Promise<AuthState> => {
   const mode = getAuthMode();
@@ -57,6 +62,22 @@ export const getAuthState = cache(async (): Promise<AuthState> => {
 
   const user = await getSupabaseUser();
   if (!user) return { status: "signed-out" };
+
+  if (isPlayReviewPhone(user.phone)) {
+    return {
+      status: "active",
+      principal: {
+        clerkUserId: user.id,
+        email: "play-review@demo.insuros",
+        phone: toE164(user.phone ?? "") ?? undefined,
+        name: "Store reviewer (demo data)",
+        assignments: [],
+        permissions: PLAY_REVIEWER_PERMISSIONS,
+        accessibleRegionIds: [],
+        isUnmapped: false
+      }
+    };
+  }
 
   const principal = await principals.resolveForSession(
     {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { sendSms } from "@/lib/africastalking/sms";
+import { isPlayReviewPhone } from "@/lib/play-review";
 
 /**
  * Supabase Send-SMS hook → Africa's Talking. Configure this URL as the Send-SMS
@@ -52,6 +53,11 @@ export async function POST(req: Request) {
   const otp = payload.sms?.otp;
   if (!phone || !otp) {
     return NextResponse.json({ error: "missing phone or otp" }, { status: 400 });
+  }
+
+  // Store-review phone signs in with its configured code; no SMS is sent to it.
+  if (isPlayReviewPhone(phone)) {
+    return NextResponse.json({});
   }
 
   const result = await sendSms(phone, `${otp} is your InsurOS verification code. It expires in 10 minutes. Do not share it.`);

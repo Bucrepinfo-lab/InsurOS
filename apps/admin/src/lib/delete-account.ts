@@ -6,6 +6,7 @@ import { getAuthMode } from "@/lib/auth/config";
 import { deidentifyPayer } from "@/lib/payments";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import "@/lib/tenant-context";
 
 export type DeleteAccountResult =
   | { ok: true }
