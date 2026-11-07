@@ -15,6 +15,22 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, "../../"),
   // Workspace packages ship as TypeScript source (main: src/index.ts),
   // so Next must transpile them.
+  async rewrites() {
+    // Digital Asset Links for the Android TWA, generated from env at request time.
+    return [{ source: '/.well-known/assetlinks.json', destination: '/api/assetlinks' }];
+  },
+  async headers() {
+    return [
+      {
+        // The service worker must never be served stale.
+        source: '/sw.js',
+        headers: [
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          { key: 'Content-Type', value: 'application/javascript; charset=utf-8' }
+        ]
+      }
+    ];
+  },
   transpilePackages: [
     "@insuros/ui",
     "@insuros/services",
