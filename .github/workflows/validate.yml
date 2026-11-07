@@ -47,7 +47,8 @@ jobs:
       - name: Unit and contract tests (memory + Postgres)
         env:
           DATABASE_URL: postgres://insuros:insuros@localhost:5432/insuros_test
-        run: pnpm test --reporter=default --reporter=json --outputFile=vitest-report.json
+        # pnpm has its own --reporter flag, so call vitest directly.
+        run: pnpm exec vitest run --reporter=default --reporter=json --outputFile=vitest-report.json
 
       - name: Report test counts
         if: always()
