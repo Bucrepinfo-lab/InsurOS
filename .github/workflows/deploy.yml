@@ -1,0 +1,71 @@
+name: Deploy (Fly)
+
+# Deploys main to the Fly app "insuros" — only after Validate passed on main,
+# and only when the FLY_API_TOKEN repository secret exists (otherwise the job
+# reports "skipped: no token" and does nothing). Secret NAMES used:
+#   FLY_API_TOKEN, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
+# Runtime secrets live in Fly (`fly secrets set ...`), never here.
+on:
+  workflow_run:
+    workflows: [Validate]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-fly
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+    steps:
+      - name: Check for deploy token
+        id: gate
+        run: |
+          if [ -z "$FLY_API_TOKEN" ]; then
+            echo "FLY_API_TOKEN is not set — deploy skipped (not shipped)."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+        if: steps.gate.outputs.enabled == 'true'
+
+      - name: Deploy
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          flyctl deploy --remote-only --app insuros \
+            --build-arg NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL" \
+            --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY"
+
+      - name: Confirm /api/health
+        if: steps.gate.outputs.enabled == 'true'
+        run: |
+          for i in $(seq 1 10); do
+            body=$(curl -fsS https://insuros.fly.dev/api/health || true)
+            echo "$body"
+            echo "$body" | grep -q '"status":"ok"' && exit 0
+            sleep 15
+          done
+          echo "::error::/api/health did not report ok"; exit 1

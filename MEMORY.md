@@ -9,6 +9,7 @@ change as the work (docs/STANDING_RULES.md §5).
 - #10 Account deletion: Supabase admin delete (`SUPABASE_SERVICE_ROLE_KEY`) + staff profile erasure + ledger de-identification (rows kept); public `/delete-account`.
 - #11 Public `/privacy` (KDPA 2019), `/terms` (from docs/TERMS_AND_CONDITIONS.md v1.1), landing `/`.
 - PWA: manifest (start `/?source=twa`), icons from `scripts/generate-icons.py`, `sw.js` (never caches pages/API), `/offline.html`, `/.well-known/assetlinks.json` from `ANDROID_CERT_FINGERPRINTS`; package `com.telpen.insuros`.
+- CI: Validate = frozen install -> typecheck -> vitest (`packages/*/test`) -> lint (admin) -> build. `Lockfile sync` workflow refreshes pnpm-lock.yaml on non-main branches when a package.json changes. `Deploy (Fly)` runs after green Validate on main only when the `FLY_API_TOKEN` secret exists, then checks `/api/health`.
 - Process note: #10 was merged a few seconds before its CI finished (CI then passed green on that SHA); all later merges wait for green at the exact head SHA.
 
 ## 2026-10-25 — Owner standing rules adopted

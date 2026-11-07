@@ -5,6 +5,9 @@ on:
     branches: ["**"]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     name: Typecheck & Build
@@ -13,17 +16,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # pnpm version comes from package.json "packageManager" (same as the Dockerfile).
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
 
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+      # Frozen, exactly like the Docker build. If package.json changed, the
+      # "Lockfile sync" workflow refreshes pnpm-lock.yaml on the branch.
+      - name: Install dependencies (frozen lockfile)
+        run: pnpm install --frozen-lockfile
 
-      - name: Typecheck all packages and build admin app
-        run: pnpm validate
+      - name: Typecheck all packages
+        run: pnpm -r typecheck
+
+      - name: Unit and contract tests
+        run: pnpm test
+
+      - name: Lint (admin)
+        run: pnpm lint
+
+      - name: Build admin app
+        run: pnpm -r build

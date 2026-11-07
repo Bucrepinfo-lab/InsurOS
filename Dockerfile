@@ -1,5 +1,6 @@
 # InsurOS admin — Fly.io image (Next.js 16 standalone, pnpm workspace monorepo)
 FROM node:22-alpine AS base
+# pnpm version matches package.json "packageManager" (CI uses the same).
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 WORKDIR /app
 
