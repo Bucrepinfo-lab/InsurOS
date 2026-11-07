@@ -47,7 +47,16 @@ jobs:
       - name: Unit and contract tests (memory + Postgres)
         env:
           DATABASE_URL: postgres://insuros:insuros@localhost:5432/insuros_test
-        run: pnpm test
+        run: pnpm test --reporter=default --reporter=json --outputFile=vitest-report.json
+
+      - name: Report test counts
+        if: always()
+        run: |
+          node -e '
+            const r = require("./vitest-report.json");
+            const msg = `tests passed=${r.numPassedTests} failed=${r.numFailedTests} skipped=${r.numPendingTests + r.numTodoTests} total=${r.numTotalTests}`;
+            console.log(`::notice title=Vitest::${msg}`);
+          ' || true
 
       - name: Lint (admin)
         run: pnpm lint
