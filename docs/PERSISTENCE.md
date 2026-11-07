@@ -1,27 +1,59 @@
 # InsurOS Persistence
 
-**Decision (2026-07-06):** PostgreSQL on DigitalOcean Managed Databases, accessed via Drizzle ORM. Until the database is provisioned, an in-memory adapter over the mock datasets is the default backend — behaviour is identical, nothing persists across restarts.
+**Decision (07/11/26):** PostgreSQL via **postgres.js** (lightest path; no ORM),
+behind the existing persistence ports. Supersedes the earlier DigitalOcean +
+Drizzle plan (DigitalOcean is retired for this portfolio).
 
 ## Architecture
 
-Services depend on persistence **ports**, never on a concrete backend:
-
 ```text
-Service → getPersistence() → PersistenceAdapter (ports.ts)
-                               ├── memory-adapter.ts   (default; wraps @insuros/mocks)
-                               └── postgres adapter    (Drizzle; lands with provisioning)
+Service → getPersistence() → tenant-routing adapter
+                               ├── memory   (DATABASE_URL unset; dev/tests only)
+                               └── postgres (DATABASE_URL set; REQUIRED in production)
 ```
 
-`getPersistence()` in `packages/services/src/persistence/` selects the backend: `DATABASE_URL` unset → memory; set → PostgreSQL (once the Drizzle adapter is wired). `AdminHierarchyService` is the reference migration — every other service should be moved off direct mock imports the same way.
+- Every call resolves the request's tenant through `setTenantResolver` (the app
+  reads it from the **server session**, never from client input) and delegates
+  to that tenant's store. No resolver → tenant `default`.
+- Production without `DATABASE_URL` fails closed (503, `/api/health` unhealthy).
 
-## Schema
+## Tables (`persistence/migrations.ts`, additive only)
 
-`packages/services/src/persistence/schema.sql` holds the full DDL: regions, appointments, jurisdiction assignments, tax jurisdictions/rules/remittances, sales agents/assignments, commission schedules/accruals, terms documents/acceptances — with FK integrity, status CHECKs, and hot-path indexes. Drizzle table definitions will be derived from this DDL.
+| Table | Purpose |
+|---|---|
+| `insuros_documents` | Every repository (tenants, regions, appointments = users, jurisdiction assignments = role mappings, policies, claims, customers, …) as a JSONB collection keyed by `(tenant_id, collection, id)`. `FORCE ROW LEVEL SECURITY` on `app.current_tenant_id`; queries also filter `tenant_id`. |
+| `payment_ledger_entries` | Append-only payment ledger: one row per status change. A trigger rejects DELETE/TRUNCATE and any UPDATE other than payer de-identification (phone → `redacted`, raw → null). Tenant RLS as above. |
+| `insuros_schema_migrations` | Applied migration versions. |
+| `insuros_tenant_seeds` | Which datasets were seeded per tenant (platform metadata). |
 
-## Provisioning steps (when ready)
+Migrations run automatically on first use, in one transaction under an advisory
+lock. Never edit an applied migration — append a new one (new tables / nullable
+columns only).
 
-1. Create a DO Managed PostgreSQL cluster; note the connection string.
-2. Apply `schema.sql`; seed from `@insuros/mocks` via a one-off script.
-3. `pnpm add drizzle-orm pg` in `packages/services`; implement `postgres-adapter.ts` against the ports.
-4. Set `DATABASE_URL` in the deployment environment (never commit it).
-5. Migrate remaining services from mock imports to `getPersistence()`.
+## Seeding
+
+- **Reference** datasets (regions, tax tables, adjudication rules, product
+  catalogue, subscription plans, terms) → every tenant, once.
+- **Sample** datasets (people, policies, claims, …) → only the demo tenant
+  `play-review` (store reviewers). A production tenant starts empty.
+
+## Durable vs not (as of 07/11/26)
+
+Durable with `DATABASE_URL`: everything reached through `getPersistence()` —
+tenants, staff appointments and role grants, policies, claims, customers, the
+payment ledger, FNOL/adjudication, tax remittances, commissions, subscriptions,
+micro-insurance, KPI snapshots, scene photos, OCR extractions, marketing content.
+
+Still mock-only (read from `@insuros/mocks` directly, lost on restart if
+mutated): workflows (policy/claim/customer/finance/marketplace), marketplace
+products, comments, attachments, audit events, notifications, platform settings,
+feature flags, roles catalogue (code-defined, by design). Move each to
+`getPersistence()` by adding a dataset in `persistence/datasets.ts`.
+
+## Tests
+
+`packages/services/test/persistence-contract.ts` is the backend contract (CRUD,
+erasure, tenant isolation, seeding, append-only ledger). It runs on memory
+always and on PostgreSQL when `DATABASE_URL` is set (CI uses a throwaway
+`postgres:16` service; the suite also checks RLS with a non-superuser role and
+the ledger trigger).

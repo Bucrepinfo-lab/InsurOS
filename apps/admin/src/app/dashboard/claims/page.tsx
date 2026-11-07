@@ -5,13 +5,11 @@
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
-import { mockClaims } from '@insuros/mocks';
+import { ClaimService } from '@insuros/services';
 import { ActionButton } from '@/components/ActionButton';
 import { registerDemoClaim } from '@/app/dashboard/actions';
 
-const claims = mockClaims;
-
-type ClaimRow = (typeof claims)[number];
+type ClaimRow = Awaited<ReturnType<ClaimService['getClaims']>>[number];
 
 const columns: DataTableColumn<ClaimRow>[] = [
   { key: 'claimNumber', header: 'Claim No.' },
@@ -25,7 +23,8 @@ const columns: DataTableColumn<ClaimRow>[] = [
   }
 ];
 
-export default function ClaimsPage() {
+export default async function ClaimsPage() {
+  const claims = await new ClaimService().getClaims();
   return (
     <DomainModulePage
       title='Claims Management'

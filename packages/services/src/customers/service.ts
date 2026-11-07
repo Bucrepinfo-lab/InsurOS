@@ -1,12 +1,14 @@
-﻿import { mockCustomerWorkflows, mockCustomers } from "@insuros/mocks";
+﻿import { mockCustomerWorkflows } from "@insuros/mocks";
+import { getPersistence } from "../persistence";
 
 export class CustomerService {
+  /** Durable when DATABASE_URL is set (tenant-scoped). */
   async getCustomers() {
-    return mockCustomers;
+    return getPersistence().customers.findAll();
   }
 
   async getCustomer(id: string) {
-    return mockCustomers.find((customer) => customer.id === id);
+    return getPersistence().customers.findById(id);
   }
 
   async getCustomerWorkflows() {

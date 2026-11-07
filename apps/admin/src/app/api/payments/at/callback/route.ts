@@ -33,6 +33,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "missing transactionId" }, { status: 400 });
   }
 
-  reconcile(body.transactionId, body.status ?? "", body);
+  await reconcile(body.transactionId, body.status ?? "", body);
   return NextResponse.json({ status: "Success" });
 }

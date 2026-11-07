@@ -1,3 +1,7 @@
+-- NOTE (07/11/26): the LIVE schema is the versioned, additive migrations in
+-- persistence/migrations.ts (JSONB document store + append-only payment ledger,
+-- tenant_id + FORCE RLS). This file remains the target relational design for
+-- promoting hot collections to dedicated tables in later additive migrations.
 -- InsurOS PostgreSQL schema (target: DigitalOcean Managed PostgreSQL 16+)
 -- Mirrors the domain contracts in @insuros/domain. Drizzle table
 -- definitions will be generated from this DDL when DATABASE_URL is

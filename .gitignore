@@ -24,3 +24,4 @@ npm-debug.log*
 
 # NOTE: .claude/agents and .claude/skills are intentionally NOT ignored —
 # the agents and skills are committed source of truth.
+vitest-report.json

@@ -1,12 +1,14 @@
-﻿import { mockClaimWorkflows, mockClaims } from "@insuros/mocks";
+﻿import { mockClaimWorkflows } from "@insuros/mocks";
+import { getPersistence } from "../persistence";
 
 export class ClaimService {
+  /** Durable when DATABASE_URL is set (tenant-scoped). */
   async getClaims() {
-    return mockClaims;
+    return getPersistence().claims.findAll();
   }
 
   async getClaim(id: string) {
-    return mockClaims.find((claim) => claim.id === id);
+    return getPersistence().claims.findById(id);
   }
 
   async getClaimWorkflows() {

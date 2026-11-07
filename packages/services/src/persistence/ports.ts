@@ -4,9 +4,11 @@ import type {
   AdminAppointment,
   AdminRegion,
   AffordabilityBand,
+  Claim,
   CommissionAccrual,
   CommissionSchedule,
   CompetitorBenchmark,
+  Customer,
   EngagementItem,
   FnolSubmission,
   KpiSnapshot,
@@ -15,8 +17,11 @@ import type {
   MicroPolicy,
   MicroProduct,
   MobileMoneyProvider,
+  NewPaymentLedgerEntry,
   NewsletterIssue,
   OcrExtraction,
+  PaymentLedgerEntry,
+  Policy,
   RenewalAlert,
   RiskFactor,
   ScenePhoto,
@@ -29,6 +34,7 @@ import type {
   SubnationalTaxRule,
   TaxJurisdiction,
   TaxRemittance,
+  Tenant,
   TermsAcceptance,
   TermsDocument
 } from "@insuros/domain";
@@ -48,8 +54,29 @@ export interface Repository<T extends { id: string }> {
 
 export type PersistenceKind = "memory" | "postgres";
 
+/**
+ * Append-only payment ledger. No update or delete of financial facts; the only
+ * permitted change is de-identifying a payer (phone + raw payload removed).
+ */
+export interface PaymentLedgerPort {
+  append(entry: NewPaymentLedgerEntry): Promise<PaymentLedgerEntry>;
+  /** All entries of a transaction, oldest first. */
+  history(txnId: string): Promise<PaymentLedgerEntry[]>;
+  /** Latest entry of the transaction that carries this provider id. */
+  latestByProviderTxnId(providerTxnId: string): Promise<PaymentLedgerEntry | undefined>;
+  /** Replace the payer phone with "redacted" and drop raw payloads. Returns rows changed. */
+  deidentifyPhone(phone: string): Promise<number>;
+}
+
 export interface PersistenceAdapter {
   kind: PersistenceKind;
+  /** Tenant this adapter instance is bound to. */
+  tenantId: string;
+  tenants: Repository<Tenant>;
+  policies: Repository<Policy>;
+  claims: Repository<Claim>;
+  customers: Repository<Customer>;
+  paymentLedger: PaymentLedgerPort;
   regions: Repository<AdminRegion>;
   appointments: Repository<AdminAppointment>;
   jurisdictionAssignments: Repository<JurisdictionAssignment>;

@@ -1,12 +1,14 @@
-﻿import { mockPolicies, mockPolicyWorkflows } from "@insuros/mocks";
+﻿import { mockPolicyWorkflows } from "@insuros/mocks";
+import { getPersistence } from "../persistence";
 
 export class PolicyService {
+  /** Durable when DATABASE_URL is set (tenant-scoped). */
   async getPolicies() {
-    return mockPolicies;
+    return getPersistence().policies.findAll();
   }
 
   async getPolicy(id: string) {
-    return mockPolicies.find((policy) => policy.id === id);
+    return getPersistence().policies.findById(id);
   }
 
   async getPolicyWorkflows() {
