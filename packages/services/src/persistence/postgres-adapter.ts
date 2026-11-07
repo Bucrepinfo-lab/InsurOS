@@ -256,16 +256,22 @@ export class PostgresDatabase {
 
   constructor(readonly sql: SqlClient) {}
 
-  ready(tenantId: string): Promise<void> {
+  /** Apply migrations once per process. */
+  ensureMigrated(): Promise<unknown> {
     if (!this.migrated) {
       this.migrated = migrate(this.sql).catch((error) => {
         this.migrated = undefined;
         throw error;
       });
     }
+    return this.migrated;
+  }
+
+  ready(tenantId: string): Promise<void> {
+    const migrated = this.ensureMigrated();
     let seed = this.seeded.get(tenantId);
     if (!seed) {
-      seed = this.migrated.then(() => seedTenant(this.sql, tenantId));
+      seed = migrated.then(() => seedTenant(this.sql, tenantId));
       seed.catch(() => this.seeded.delete(tenantId));
       this.seeded.set(tenantId, seed);
     }

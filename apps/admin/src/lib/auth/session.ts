@@ -13,7 +13,8 @@ import { fail, type ActionResult } from "../action-result";
 import { isPlayReviewPhone } from "../play-review";
 import "../tenant-context";
 import { getAuthMode } from "./config";
-import { getSupabaseUser } from "./session-user";
+import { getSessionIdentity } from "./session-user";
+import { getDeviceAuth } from "./device-auth";
 
 /**
  * Server-side session + authorization. Every dashboard layout, server action and
@@ -22,6 +23,8 @@ import { getSupabaseUser } from "./session-user";
 export type AuthState =
   | { status: "misconfigured" }
   | { status: "signed-out" }
+  /** Verified by SMS, but must choose a 4-digit PIN before using the app. */
+  | { status: "needs-pin" }
   | { status: "pending"; principal: SessionPrincipal }
   | { status: "active"; principal: SessionPrincipal };
 
@@ -42,7 +45,7 @@ const LOCAL_DEV_PRINCIPAL: SessionPrincipal = {
   isPlatformOwner: true
 };
 
-export { getSupabaseUser };
+export { getSessionIdentity };
 
 /**
  * Store reviewer (Google Play): read-mostly demo access, routed to the isolated
@@ -60,16 +63,16 @@ export const getAuthState = cache(async (): Promise<AuthState> => {
   if (mode === "misconfigured") return { status: "misconfigured" };
   if (mode === "open-dev") return { status: "active", principal: LOCAL_DEV_PRINCIPAL };
 
-  const user = await getSupabaseUser();
+  const user = await getSessionIdentity();
   if (!user) return { status: "signed-out" };
 
   if (isPlayReviewPhone(user.phone)) {
     return {
       status: "active",
       principal: {
-        clerkUserId: user.id,
+        clerkUserId: user.userId,
         email: "play-review@demo.insuros",
-        phone: toE164(user.phone ?? "") ?? undefined,
+        phone: user.phone,
         name: "Store reviewer (demo data)",
         assignments: [],
         permissions: PLAY_REVIEWER_PERMISSIONS,
@@ -79,13 +82,10 @@ export const getAuthState = cache(async (): Promise<AuthState> => {
     };
   }
 
+  if (!(await getDeviceAuth().hasPin(user.userId))) return { status: "needs-pin" };
+
   const principal = await principals.resolveForSession(
-    {
-      userId: user.id,
-      phone: user.phone || null,
-      email: user.email || null,
-      displayName: (user.user_metadata?.full_name as string | undefined) || undefined
-    },
+    { userId: user.userId, phone: user.phone },
     platformOwnerPhones()
   );
 
@@ -118,6 +118,9 @@ export async function authorizeAction(
   }
   if (state.status === "signed-out") {
     return { ok: false, result: fail("Sign in required", "Your session has ended — sign in again.") };
+  }
+  if (state.status === "needs-pin") {
+    return { ok: false, result: fail("Set your PIN", "Choose a 4-digit PIN to finish signing in.") };
   }
   if (state.status === "pending") {
     return { ok: false, result: fail("Access pending", "An administrator has not granted you a role yet.") };
@@ -152,6 +155,7 @@ export async function authorizeRequest(
   const state = await getAuthState();
   if (state.status === "misconfigured") return { ok: false, status: 503, error: "auth_not_configured" };
   if (state.status === "signed-out") return { ok: false, status: 401, error: "unauthenticated" };
+  if (state.status === "needs-pin") return { ok: false, status: 401, error: "pin_required" };
   if (state.status === "pending") return { ok: false, status: 403, error: "access_pending" };
   if (scope && !principalCan(state.principal, scope, action)) {
     return { ok: false, status: 403, error: "forbidden" };

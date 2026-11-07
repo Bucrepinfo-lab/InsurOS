@@ -4,10 +4,14 @@ import { toE164 } from "@insuros/domain";
 /**
  * Google Play reviewer access. Active ONLY when BOTH PLAY_REVIEW_PHONE and
  * PLAY_REVIEW_CODE are set (names only; values live in Fly secrets and in the
- * Play Console "App access" section). The reviewer signs in with that phone and
- * code (no SMS needed) and lands in the isolated demo tenant with sample data —
- * never in a real organisation's data.
+ * Play Console "App access" section). The reviewer enters that phone, then that
+ * 6-digit code in place of the SMS code (no SMS is sent), and lands in the
+ * isolated demo tenant with sample data — never in a real organisation's data.
+ * On the reviewer's device they may set a PIN or skip it.
  */
+/** Stable identity of the store reviewer (no Supabase account is created). */
+export const PLAY_REVIEW_USER_ID = "play-review";
+
 export interface PlayReviewConfig {
   phone: string;
   code: string;
@@ -16,7 +20,7 @@ export interface PlayReviewConfig {
 export function playReviewConfig(): PlayReviewConfig | null {
   const phone = toE164(process.env.PLAY_REVIEW_PHONE ?? "");
   const code = (process.env.PLAY_REVIEW_CODE ?? "").trim();
-  if (!phone || code.length < 6) return null;
+  if (!phone || !/^\d{6}$/.test(code)) return null;
   return { phone, code };
 }
 
@@ -33,14 +37,4 @@ export function matchesPlayReview(phone: string, code: string): boolean {
   const a = crypto.createHash("sha256").update(`${toE164(phone) ?? ""}|${code.trim()}`).digest();
   const b = crypto.createHash("sha256").update(`${config.phone}|${config.code}`).digest();
   return crypto.timingSafeEqual(a, b);
-}
-
-/** Password for the reviewer's Supabase user, derived server-side (never stored or shown). */
-export function reviewerPassword(serviceRoleKey: string): string | null {
-  const config = playReviewConfig();
-  if (!config) return null;
-  return crypto
-    .createHmac("sha256", serviceRoleKey)
-    .update(`insuros-play-review|${config.phone}|${config.code}`)
-    .digest("base64url");
 }

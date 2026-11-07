@@ -58,3 +58,4 @@ export * from "./phone";
 export * from "./payments";
 export * from "./tenant";
 export * from "./payment-ledger";
+export * from "./device-auth";

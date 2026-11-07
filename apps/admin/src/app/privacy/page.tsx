@@ -38,9 +38,16 @@ export default function PrivacyPage() {
       <H>2. What we collect</H>
       <ul className="list-disc space-y-1 pl-6">
         <li>
-          <strong>Account data (staff and agents):</strong> mobile phone number (your sign-in), the
-          one-time SMS code used to sign in, your name, your role and the region you are assigned
-          to, who granted that access and when, and a session cookie that keeps you signed in.
+          <strong>Account data (staff and agents):</strong> mobile phone number (your sign-in), your
+          name, your role and the region you are assigned to, and who granted that access and when.
+        </li>
+        <li>
+          <strong>Sign-in security data:</strong> a one-time 6-digit SMS code when you sign in on a
+          new device (valid 5 minutes, used once; we do not store the code); your 4-digit PIN, stored
+          only as a salted, peppered hash; a random trusted-device identifier kept in a secure cookie
+          on your device, with a short device label (e.g. “Android app”) and when it was last used;
+          a session cookie; and, to stop abuse, the phone number or IP address and time of sign-in
+          attempts.
         </li>
         <li>
           <strong>Work records you create or view:</strong> customer details (such as name and phone
@@ -97,6 +104,7 @@ export default function PrivacyPage() {
       <H>6. How long we keep it</H>
       <ul className="list-disc space-y-1 pl-6">
         <li>Account data: while your account is active. When you delete your account it is erased straight away (see below).</li>
+        <li>Sign-in attempt records (phone number or IP address and time): 7 days. Trusted devices: until you sign out of them, an administrator revokes them, 180 days without use, or you delete your account. PIN hash: until you change it, it is locked after 5 wrong tries, or you delete your account.</li>
         <li>Organisation records (customers, policies, claims, evidence): for as long as the organisation instructs and insurance and tax law require; then deleted.</li>
         <li>Payment-ledger entries (if payments are ever enabled): kept as financial records, with personal details removed when you delete your account.</li>
         <li>Deleted data may remain in encrypted backups until they rotate out.</li>
@@ -123,7 +131,9 @@ export default function PrivacyPage() {
       <p>
         Data is encrypted in transit (HTTPS). Access is role-based and enforced on our servers:
         each person sees only their own department’s work; administrators have the overall view.
-        Sign-in uses one-time SMS codes.
+        Sign-in uses a one-time SMS code on a new device and a 4-digit PIN on a trusted device; 5
+        wrong PINs lock the PIN until a new SMS code is verified, and administrators can revoke a
+        staff member’s devices at any time.
       </p>
 
       <H>10. Children</H>

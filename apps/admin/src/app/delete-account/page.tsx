@@ -41,7 +41,7 @@ export default async function DeleteAccountInfoPage({
           <Link href="/sign-in?next=/account/delete" className="underline">
             Sign in
           </Link>{" "}
-          with your phone number and the SMS code.
+          with your phone number and the SMS code (or your PIN on a trusted device).
         </li>
         <li>
           Open <strong>Delete account</strong> (top bar, or go to{" "}
@@ -70,6 +70,7 @@ export default async function DeleteAccountInfoPage({
       <ul className="list-disc space-y-1 pl-6">
         <li>Your sign-in account (phone number and login record).</li>
         <li>Your staff profile: name, phone number and role/jurisdiction grants.</li>
+        <li>Your PIN and every trusted device you signed in on.</li>
       </ul>
 
       <h2 className="text-lg font-semibold text-slate-900">What is kept, and why</h2>

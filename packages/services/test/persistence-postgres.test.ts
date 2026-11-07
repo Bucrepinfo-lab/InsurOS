@@ -1,5 +1,6 @@
 import { afterAll, describe, expect, it } from "vitest";
-import { PostgresDatabase, createSqlClient, migrate, type SqlClient } from "../src";
+import { PostgresAuthStore, PostgresDatabase, createSqlClient, migrate, type SqlClient } from "../src";
+import { deviceAuthContract } from "./device-auth-contract";
 import { persistenceContract } from "./persistence-contract";
 
 /**
@@ -17,8 +18,9 @@ describe.runIf(Boolean(url))("postgres adapter", () => {
   });
 
   persistenceContract("postgres", (tenantId) => database.adapter(tenantId));
+  deviceAuthContract("postgres store", () => new PostgresAuthStore(sql, () => database.ensureMigrated()));
 
-  it("migrations are idempotent", async () => {
+  it("migrations are idempotent (v2 sign-in tables included)", async () => {
     await migrate(sql);
     expect(await migrate(sql)).toEqual([]);
   });

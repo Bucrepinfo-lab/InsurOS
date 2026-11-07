@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { toE164 } from "@insuros/domain";
 import { supabaseEnabled } from "@/lib/supabase-enabled";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requestPremiumCheckout } from "@/lib/payments";
 import { paymentsEnabled } from "@/lib/payments-gate";
 import { authorizeRequest } from "@/lib/auth/session";
@@ -30,11 +29,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "auth_not_configured" }, { status: 401 });
   }
 
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-  const phone = user?.phone ? toE164(user.phone) : null;
+  // The payer is the verified session phone (never a phone from the request).
+  const phone = auth.principal.phone ? toE164(auth.principal.phone) : null;
   if (!phone) {
     return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
   }

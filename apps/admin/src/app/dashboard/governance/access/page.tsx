@@ -6,7 +6,7 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { STAFF_ROLES } from '@insuros/domain';
-import { GrantStaffAccessForm, RevokeStaffAccessForm } from '@/components/staff-access-forms';
+import { GrantStaffAccessForm, RevokeStaffAccessForm, RevokeStaffDevicesForm } from '@/components/staff-access-forms';
 import { getAuthState, principalCan } from '@/lib/auth/session';
 import type { ScopedAccessRequest } from '@insuros/services';
 import {
@@ -163,6 +163,7 @@ export default async function JurisdictionAccessPage() {
             />
           ) : null}
           {canRevoke ? <RevokeStaffAccessForm /> : null}
+          {canRevoke ? <RevokeStaffDevicesForm /> : null}
         </div>
       ) : null}
       <div className='mb-6 grid gap-4 md:grid-cols-3'>

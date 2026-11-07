@@ -3,6 +3,14 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-07 — Sign-in: phone + SMS code + PIN on trusted devices (owner standing rule, all apps)
+- Phone → 6-digit SMS code (≤5 min, single use; server rate limits per number + per IP, plus per-number limit in the Send-SMS hook) on first sign-in on a device; then 4-digit PIN on that trusted device. New device / forgotten PIN / 5 wrong PINs → SMS again (lock clears the PIN; user chooses a new one). No email.
+- Supabase only sends/verifies the code (no Supabase browser session). Identity = InsurOS signed app session (12 h, httpOnly) valid only with its trusted-device cookie (180 days sliding, SHA-256 of secret stored, revocable). Owners revoke a staff member's devices at Governance -> Jurisdiction Access; revoking access also revokes devices; account deletion revokes all devices and deletes the PIN.
+- Migration v2: `auth_rate_events` (7-day retention), `auth_user_pins` (peppered bcrypt), `auth_trusted_devices` — platform-level identity tables (no tenant_id by design).
+- Existing users: first sign-in after this change verifies by SMS, then must set a PIN (`needs-pin` state blocks every page/action until set).
+- Reviewer: PLAY_REVIEW_PHONE + 6-digit PLAY_REVIEW_CODE typed as the SMS code; demo tenant only; PIN set or skip. No Supabase account is created for the reviewer.
+- New required env: `AUTH_SECRET`.
+
 ## 2026-11-07 — Play-readiness blocks (owner goal: closed testing ~05/01/27, production ~30/01/27)
 - #8 Auth: no admin fallback; unmapped users -> /access-pending; least-privilege staff roles (`packages/domain/src/access-control.ts`) enforced server-side in section layouts (ScopeGate), every server action and route handlers; first owner via `PLATFORM_OWNER_PHONES`; staff grant/revoke by phone at Governance -> Jurisdiction Access; production fails closed without Supabase (503 + unhealthy `/api/health`); Dockerfile/fly.toml use Supabase build args.
 - #9 Money gate: `PAYMENTS_ENABLED` (default off) -> checkout + AT callback 403; claims auto-approval/payout off (adjuster decides). v1 = staff/agency tool, no public selling (owner-approved scope cut).

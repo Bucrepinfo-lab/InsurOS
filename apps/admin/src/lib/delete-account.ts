@@ -1,11 +1,12 @@
 "use server";
 
-import { toE164 } from "@insuros/domain";
 import { PrincipalService } from "@insuros/services";
 import { getAuthMode } from "@/lib/auth/config";
+import { clearDeviceCookie, clearSessionCookie, getDeviceAuth } from "@/lib/auth/device-auth";
+import { getSessionIdentity } from "@/lib/auth/session-user";
 import { deidentifyPayer } from "@/lib/payments";
+import { PLAY_REVIEW_USER_ID } from "@/lib/play-review";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import "@/lib/tenant-context";
 
 export type DeleteAccountResult =
@@ -16,35 +17,33 @@ export type DeleteAccountResult =
  * Google Play account deletion — really deletes the account:
  *
  * 1. Erase the person's personal data in our store (staff appointment + role
- *    grants revoked and de-identified).
+ *    grants revoked and de-identified; PIN deleted; every trusted device revoked).
  * 2. De-identify their payment-ledger rows (rows retained, append-only).
  * 3. Delete the Supabase auth user via the admin API (service-role key,
- *    server-only), then end the session.
+ *    server-only), then end the session on this device.
  *
- * Policies and claims an insurer holds about its customers are the insurer's
- * records (retention per the privacy policy), not this user's account.
- * The user id comes from the server session only — never from the client.
+ * The user id comes from the verified server session only — never the client.
  */
 export async function deleteMyAccount(): Promise<DeleteAccountResult> {
   if (getAuthMode() !== "supabase") return { ok: false, reason: "not_configured" };
 
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-  if (!user) return { ok: false, reason: "unauthenticated" };
+  const identity = await getSessionIdentity();
+  if (!identity) return { ok: false, reason: "unauthenticated" };
 
+  const isReviewer = identity.userId === PLAY_REVIEW_USER_ID;
   const admin = createSupabaseAdminClient();
-  if (!admin) return { ok: false, reason: "not_configured" };
+  if (!admin && !isReviewer) return { ok: false, reason: "not_configured" };
 
-  const phone = user.phone ? toE164(user.phone) : null;
+  await new PrincipalService().erasePersonalData({ phone: identity.phone });
+  await deidentifyPayer(identity.phone);
 
-  await new PrincipalService().erasePersonalData({ phone, email: user.email || null });
-  if (phone) await deidentifyPayer(phone);
+  if (!isReviewer && admin) {
+    const { error } = await admin.auth.admin.deleteUser(identity.userId);
+    if (error) return { ok: false, reason: "provider_error" };
+  }
 
-  const { error } = await admin.auth.admin.deleteUser(user.id);
-  if (error) return { ok: false, reason: "provider_error" };
-
-  await supabase.auth.signOut().catch(() => undefined);
+  await getDeviceAuth().forgetUser(identity.userId);
+  await clearSessionCookie();
+  await clearDeviceCookie();
   return { ok: true };
 }

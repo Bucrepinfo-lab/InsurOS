@@ -25,7 +25,8 @@ Copy `.env.example` to `apps/admin/.env.local` and fill in the Supabase keys. Wi
 
 ## Access control (v1)
 
-- Sign-in is Supabase phone OTP. Production **fails closed** without `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` (503, `/api/health` unhealthy). Open dev mode exists only when `NODE_ENV` is not `production`.
+- Sign-in (owner rule 07/11/26): **phone number → 6-digit SMS code** on the first sign-in on a device (code valid ≤5 min, single use, rate-limited per number and per IP), then a **4-digit PIN** on that trusted device. New device, forgotten PIN or 5 wrong PINs → new SMS code. No email. Supabase only sends/verifies the SMS code; InsurOS issues its own signed, httpOnly app session bound to a revocable trusted-device cookie (`packages/services/src/auth/`, `apps/admin/src/lib/auth/`). PINs are peppered + bcrypt-hashed in Postgres.
+- Production **fails closed** without `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `AUTH_SECRET` or `DATABASE_URL` (503, `/api/health` unhealthy). Open dev mode exists only when `NODE_ENV` is not `production`.
 - The first platform owner is bootstrapped from `PLATFORM_OWNER_PHONES` (comma-separated E.164). Everyone else lands on **Access pending** until an owner grants a role at *Governance → Jurisdiction Access*.
 - Roles are least-privilege (`packages/domain/src/access-control.ts`): Platform Admin, Claims Manager, Claims Officer, Underwriter, Agent, Finance Manager, Operations. Each dashboard section layout, server action and API route checks the permission **on the server**; menus only mirror it.
 

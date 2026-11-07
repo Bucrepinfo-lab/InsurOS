@@ -16,6 +16,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   if (state.status === 'misconfigured') return <ServiceUnavailable />;
   if (state.status === 'signed-out') redirect('/sign-in?next=/dashboard');
   // No role yet -> no data. Least privilege: unmapped users get nothing.
+  if (state.status === 'needs-pin') redirect('/set-pin');
   if (state.status === 'pending') redirect('/access-pending');
 
   const { principal } = state;

@@ -9,6 +9,7 @@
 # Without them the server fails closed (/api/health = 503, no dashboard).
 #
 # Runtime secrets (names only — set with `fly secrets set NAME=... --app insuros`):
+#   AUTH_SECRET                    ≥32 random chars; signs sessions, peppers PIN hashes (REQUIRED)
 #   DATABASE_URL                   PostgreSQL connection string (REQUIRED; fails closed without)
 #   PLATFORM_OWNER_PHONES          comma-separated E.164 phones bootstrapped as platform owner
 #   SUPABASE_SERVICE_ROLE_KEY      server-only; deletes a user's auth account on request

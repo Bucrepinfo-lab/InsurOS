@@ -13,6 +13,7 @@ export async function ScopeGate({ scope, children }: { scope: PermissionScope; c
   const state = await getAuthState();
   if (state.status === "misconfigured") return <ServiceUnavailable />;
   if (state.status === "signed-out") redirect("/sign-in");
+  if (state.status === "needs-pin") redirect("/set-pin");
   if (state.status === "pending") redirect("/access-pending");
 
   if (!principalCan(state.principal, scope, "View")) {

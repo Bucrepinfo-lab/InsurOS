@@ -12,9 +12,11 @@
   "dependencies": {
     "@insuros/domain": "workspace:*",
     "@insuros/mocks": "workspace:*",
-    "postgres": "^3.4.5"
+    "postgres": "^3.4.5",
+    "bcryptjs": "^3.0.2"
   },
   "devDependencies": {
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "@types/node": "^20"
   }
 }
