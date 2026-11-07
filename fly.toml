@@ -10,6 +10,7 @@
 #
 # Runtime secrets (names only — set with `fly secrets set NAME=... --app insuros`):
 #   PLATFORM_OWNER_PHONES          comma-separated E.164 phones bootstrapped as platform owner
+#   SUPABASE_SERVICE_ROLE_KEY      server-only; deletes a user's auth account on request
 #   SUPABASE_SEND_SMS_HOOK_SECRET  Supabase Auth -> Hooks -> Send SMS shared secret
 #   AT_USERNAME, AT_API_KEY, AT_SENDER_ID   Africa's Talking (SMS OTP)
 app = "insuros"
