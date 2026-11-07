@@ -3,6 +3,7 @@ import {
   ALL_PERMISSION_KEYS,
   CLERK_ORG_ROLE_BY_LEVEL,
   findStaffRole,
+  isGrantableRegion,
   rolePermissionKeys,
   toE164
 } from "@insuros/domain";
@@ -131,6 +132,10 @@ export class PrincipalService {
     if (!role) return { ok: false, error: "Unknown role." };
     const region = await this.db.regions.findById(input.regionId);
     if (!region) return { ok: false, error: "Unknown region." };
+    // Owner-approved 07/11/26: no new grants in a region that is not Active.
+    if (!isGrantableRegion(region)) {
+      return { ok: false, error: `${region.name} is ${region.status.toLowerCase()} — choose an active region.` };
+    }
 
     const now = new Date().toISOString();
     const [existing] = await this.db.appointments.findWhere(

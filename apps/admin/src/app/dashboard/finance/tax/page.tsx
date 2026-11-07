@@ -107,7 +107,7 @@ export default async function TaxRemittancePage() {
   return (
     <DomainModulePage
       title='Tax Remittance'
-      description='Statutory tax computation and remittance per country. Rates verified 2026-07-06 — always re-verify with the named authority before filing.'
+      description='Statutory tax computation and remittance per country. Rates verified 06/07/26 — always re-verify with the named authority before filing.'
       actions={<ActionButton label='Compute remittance' action={computeDemoRemittance} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-4'>

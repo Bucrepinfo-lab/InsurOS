@@ -5,7 +5,7 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
-import { STAFF_ROLES } from '@insuros/domain';
+import { STAFF_ROLES, isGrantableRegion } from '@insuros/domain';
 import { GrantStaffAccessForm, RevokeStaffAccessForm, RevokeStaffDevicesForm } from '@/components/staff-access-forms';
 import { getAuthState, principalCan } from '@/lib/auth/session';
 import type { ScopedAccessRequest } from '@insuros/services';
@@ -158,7 +158,7 @@ export default async function JurisdictionAccessPage() {
             <GrantStaffAccessForm
               roles={STAFF_ROLES.map((role) => ({ id: role.id, name: role.name }))}
               regions={regions
-                .filter((region) => region.status === 'Active')
+                .filter(isGrantableRegion)
                 .map((region) => ({ id: region.id, name: `${region.name} (${region.level})` }))}
             />
           ) : null}
