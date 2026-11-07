@@ -5,3 +5,4 @@ export * from './FilterBar';
 export * from './Pagination';
 export * from './ExportCsvButton';
 export * from './TableShell';
+export * from './filter-rows';

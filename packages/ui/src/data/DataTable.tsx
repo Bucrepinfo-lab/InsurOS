@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Card, CardContent } from '../components/Card';
+import { displayValue } from '../utils/date-format';
 
 export interface DataTableColumn<TData> {
   key: keyof TData | string;
@@ -46,9 +47,9 @@ export function DataTable<TData>({
                 <tr key={rowIndex} className='group border-b border-line transition-colors duration-150 last:border-0 hover:bg-sealsoft/40'>
                   {columns.map((column) => (
                     <td key={String(column.key)} className='py-3.5 pr-4 text-[13px] leading-relaxed text-ink/80'>
-                     {column.render
-  ? column.render(row)
-  : String((row as Record<string, unknown>)[String(column.key)] ?? '')}
+                      {column.render
+                        ? column.render(row)
+                        : displayValue((row as Record<string, unknown>)[String(column.key)])}
                     </td>
                   ))}
                 </tr>

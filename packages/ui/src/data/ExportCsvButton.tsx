@@ -1,5 +1,7 @@
 'use client';
 
+import { displayValue } from '../utils/date-format';
+
 export interface ExportColumn {
   key: string;
   header: string;
@@ -12,33 +14,39 @@ export interface ExportCsvButtonProps {
 }
 
 function cell(value: unknown): string {
-  const text =
-    value === null || value === undefined
-      ? ''
-      : typeof value === 'object'
-        ? JSON.stringify(value)
-        : String(value);
-
-  return `"${text.replace(/"/g, '""')}"`;
+  return `"${displayValue(value).replace(/"/g, '""')}"`;
 }
 
-/** Downloads the table's current data as CSV. Works fully client-side. */
+/** CSV text from a header row and already-formatted cell rows. */
+export function toCsv(headers: readonly string[], rows: readonly (readonly string[])[]): string {
+  return [headers, ...rows].map((line) => line.map(cell).join(',')).join('\n');
+}
+
+/** Starts a browser download of CSV text (UTF-8 with BOM so Excel keeps accents). */
+export function downloadCsv(filename: string, csv: string): void {
+  const blob = new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${filename}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Downloads the given rows as CSV (dates day-first). Lists built with
+ * DomainEntityList export through TableShell instead, so the file always
+ * matches the rows the search currently shows.
+ */
 export function ExportCsvButton({ filename, columns, rows }: ExportCsvButtonProps) {
   const handleExport = () => {
-    const header = columns.map((column) => cell(column.header)).join(',');
-    const body = rows
-      .map((row) => columns.map((column) => cell(row[column.key])).join(','))
-      .join('\n');
-
-    const blob = new Blob([`${header}\n${body}`], {
-      type: 'text/csv;charset=utf-8;'
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${filename}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadCsv(
+      filename,
+      toCsv(
+        columns.map((column) => column.header),
+        rows.map((row) => columns.map((column) => displayValue(row[column.key])))
+      )
+    );
   };
 
   return (

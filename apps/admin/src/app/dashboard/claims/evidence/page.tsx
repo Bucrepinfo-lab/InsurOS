@@ -5,6 +5,7 @@ import {
   DomainModulePage,
   KPICard,
   MarketingBanner,
+  formatDateTime,
   type DataTableColumn
 } from '@insuros/ui';
 import { ActionButton } from '@/components/ActionButton';
@@ -66,7 +67,7 @@ export default async function SceneEvidencePage() {
           ? `${row.photo.latitude}, ${row.photo.longitude} (±${row.photo.geoAccuracyMeters}m)`
           : '—'
     },
-    { key: 'capturedAt', header: 'Captured', render: (row) => row.photo.capturedAt },
+    { key: 'capturedAt', header: 'Captured', render: (row) => formatDateTime(row.photo.capturedAt) },
     {
       key: 'checks',
       header: 'Integrity Checks',

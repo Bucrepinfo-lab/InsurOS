@@ -6,5 +6,6 @@ export * from './platform';
 export * from './data';
 export * from './domain';
 export * from './utils/cn';
+export * from './utils/date-format';
 export * from './theme';
 export * from './layouts';
