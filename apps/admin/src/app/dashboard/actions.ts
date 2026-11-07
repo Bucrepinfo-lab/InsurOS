@@ -447,10 +447,21 @@ export async function queueDemoRequest(label: string): Promise<ActionResult> {
   });
 }
 
+/** Insert a copy of the first sample row (durable when DATABASE_URL is set). */
+async function cloneIntoStore<T extends { id: string }>(
+  repository: { findAll(): Promise<T[]>; insert(entity: T): Promise<T> },
+  sample: T[]
+): Promise<T> {
+  const existing = await repository.findAll();
+  const template = existing[0] ?? sample[0];
+  const row = JSON.parse(JSON.stringify({ ...template, id: `${template.id.split('-d')[0]}-d${Date.now() % 1_000_000}` })) as T;
+  return repository.insert(row);
+}
+
 export async function registerDemoClaim(): Promise<ActionResult> {
   const denied = await denyUnless('Claims', 'Create');
   if (denied) return denied;
-  const row = cloneRow(mockClaims);
+  const row = await cloneIntoStore(getPersistence().claims, mockClaims);
   revalidatePath('/dashboard/claims');
   return ok('Claim registered', 'New claim opened from template — visible on the register below', { reference: row.id });
 }
@@ -458,7 +469,7 @@ export async function registerDemoClaim(): Promise<ActionResult> {
 export async function issueDemoPolicy(): Promise<ActionResult> {
   const denied = await denyUnless('Policies', 'Create');
   if (denied) return denied;
-  const row = cloneRow(mockPolicies);
+  const row = await cloneIntoStore(getPersistence().policies, mockPolicies);
   revalidatePath('/dashboard/policies');
   return ok('Policy issued', 'Policy issued from template — schedule and coverages attached', { reference: row.id });
 }
@@ -466,7 +477,7 @@ export async function issueDemoPolicy(): Promise<ActionResult> {
 export async function addDemoCustomer(): Promise<ActionResult> {
   const denied = await denyUnless('Customers', 'Create');
   if (denied) return denied;
-  const row = cloneRow(mockCustomers);
+  const row = await cloneIntoStore(getPersistence().customers, mockCustomers);
   revalidatePath('/dashboard/customers');
   return ok('Customer added', 'Customer record created — KYC checks queued', { reference: row.id });
 }

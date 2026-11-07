@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { persistenceKind } from "@insuros/services";
 import { getAuthMode, missingAuthEnvNames } from "@/lib/auth/config";
 
 // Public health endpoint for Fly's load-balancer check.
@@ -14,6 +15,7 @@ export function GET() {
       status: healthy ? "ok" : "misconfigured",
       service: "insuros-admin",
       auth,
+      persistence: persistenceKind(),
       ...(healthy ? {} : { missing: missingAuthEnvNames() }),
       timestamp: new Date().toISOString()
     },

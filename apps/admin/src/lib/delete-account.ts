@@ -39,7 +39,7 @@ export async function deleteMyAccount(): Promise<DeleteAccountResult> {
   const phone = user.phone ? toE164(user.phone) : null;
 
   await new PrincipalService().erasePersonalData({ phone, email: user.email || null });
-  if (phone) deidentifyPayer(phone);
+  if (phone) await deidentifyPayer(phone);
 
   const { error } = await admin.auth.admin.deleteUser(user.id);
   if (error) return { ok: false, reason: "provider_error" };
