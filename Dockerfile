@@ -16,17 +16,23 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-# NEXT_PUBLIC_* must exist at BUILD time (baked into the client bundle).
-ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-ENV NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-ENV NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
-ENV NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+# NEXT_PUBLIC_* must exist at BUILD time (baked into the client AND server bundles).
+# The Supabase URL + anon key are public by design; pass them as build args:
+#   fly deploy --build-arg NEXT_PUBLIC_SUPABASE_URL=... --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+# (the deploy workflow does this from GitHub secrets of the same names).
+# Built without them, the production server FAILS CLOSED: /dashboard answers 503
+# and /api/health reports 503, so Fly will not promote the release.
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm --filter @insuros/admin build
 
 # ---- runtime ----
 FROM base AS runner
 ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=8080
 ENV HOSTNAME=0.0.0.0
 # Monorepo standalone output already contains the traced node_modules + server.

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { fail, ok, type ActionResult } from '@/lib/action-result';
+import { authorizeAction, denyUnless } from '@/lib/auth/session';
 import {
   AdminHierarchyService,
   ClaimsAutomationService,
@@ -13,11 +14,15 @@ import {
   SceneCaptureService,
   SubscriptionService,
   TaxRemittanceService,
+  PrincipalService,
   TermsService,
   getPersistence
 } from '@insuros/services';
 
 /**
+ * Every action below is authorised on the server first (denyUnless /
+ * authorizeAction) — the button being visible is never the check.
+ *
  * Demo actions: every primary button runs its real engine against the
  * in-memory dataset, then refreshes the page. When PostgreSQL lands these
  * same paths persist for real.
@@ -35,6 +40,8 @@ function randomMsisdn(): string {
 }
 
 export async function submitDemoFnol(): Promise<ActionResult> {
+  const denied = await denyUnless('Claims', 'Create');
+  if (denied) return denied;
   const service = new ClaimsAutomationService();
   const clean = Math.random() > 0.35;
 
@@ -67,6 +74,8 @@ export async function submitDemoFnol(): Promise<ActionResult> {
 }
 
 export async function registerDemoSceneCapture(): Promise<ActionResult> {
+  const denied = await denyUnless('Claims', 'Create');
+  if (denied) return denied;
   const claims = new ClaimsAutomationService();
   const scenes = new SceneCaptureService();
   const fnols = await claims.getFnols();
@@ -89,6 +98,8 @@ export async function registerDemoSceneCapture(): Promise<ActionResult> {
 }
 
 export async function enrolDemoMicroPolicy(): Promise<ActionResult> {
+  const denied = await denyUnless('Policies', 'Create');
+  if (denied) return denied;
   const service = new MicroinsuranceService();
   const products = await service.getProducts();
   const product = products[Math.floor(Math.random() * products.length)];
@@ -108,6 +119,8 @@ export async function enrolDemoMicroPolicy(): Promise<ActionResult> {
 }
 
 export async function addDemoSubscriber(): Promise<ActionResult> {
+  const denied = await denyUnless('Customers', 'Create');
+  if (denied) return denied;
   const service = new SubscriptionService();
   const name = randomName();
 
@@ -122,6 +135,8 @@ export async function addDemoSubscriber(): Promise<ActionResult> {
 }
 
 export async function appointDemoAdmin(): Promise<ActionResult> {
+  const denied = await denyUnless('Identity', 'Create');
+  if (denied) return denied;
   const service = new AdminHierarchyService();
   const regions = await service.getRegions();
   const candidates = regions.filter(
@@ -146,6 +161,8 @@ export async function appointDemoAdmin(): Promise<ActionResult> {
 }
 
 export async function createDemoRegion(): Promise<ActionResult> {
+  const denied = await denyUnless('Platform', 'Create');
+  if (denied) return denied;
   const db = getPersistence();
   const n = 100 + Math.floor(Math.random() * 900);
 
@@ -164,27 +181,9 @@ export async function createDemoRegion(): Promise<ActionResult> {
   return ok('Region registered', `Demo Ward ${n} created under Nairobi County — jurisdiction chain resolves to Global`, { reference: `KE-047-D${n}` });
 }
 
-export async function grantDemoAccess(): Promise<ActionResult> {
-  const db = getPersistence();
-  const name = randomName();
-  const grantId = `jgrant-${Date.now()}`;
-
-  await db.jurisdictionAssignments.insert({
-    id: grantId,
-    userId: `user-${Date.now()}`,
-    userName: name,
-    roleId: 'role-finance-manager',
-    regionId: 'region-ke-047',
-    assignedBy: 'user-super-admin',
-    assignedAt: new Date().toISOString(),
-    status: 'Active'
-  });
-
-  revalidatePath('/dashboard/governance/access');
-  return ok('Access granted', `${name} holds Finance Manager across Nairobi County and all descendants`, { reference: grantId });
-}
-
 export async function recordDemoAcceptance(): Promise<ActionResult> {
+  const denied = await denyUnless('Platform', 'Update');
+  if (denied) return denied;
   const service = new TermsService();
   const name = randomName();
 
@@ -195,6 +194,8 @@ export async function recordDemoAcceptance(): Promise<ActionResult> {
 }
 
 export async function computeDemoRemittance(): Promise<ActionResult> {
+  const denied = await denyUnless('Finance', 'Execute');
+  if (denied) return denied;
   const service = new TaxRemittanceService();
   const db = getPersistence();
   const jurisdictions = await service.getJurisdictions();
@@ -215,6 +216,8 @@ export async function computeDemoRemittance(): Promise<ActionResult> {
 }
 
 export async function addDemoRegionalRule(): Promise<ActionResult> {
+  const denied = await denyUnless('Finance', 'Create');
+  if (denied) return denied;
   const db = getPersistence();
   const n = Math.floor(Math.random() * 47) + 1;
   const ruleId = `sub-ke-demo-${Date.now()}`;
@@ -241,6 +244,8 @@ export async function addDemoRegionalRule(): Promise<ActionResult> {
 }
 
 export async function captureDemoBenchmark(): Promise<ActionResult> {
+  const denied = await denyUnless('Marketplace', 'Create');
+  if (denied) return denied;
   const db = getPersistence();
   const price = 3_500 + Math.floor(Math.random() * 1_500);
   const benchId = `bench-${Date.now()}`;
@@ -260,6 +265,8 @@ export async function captureDemoBenchmark(): Promise<ActionResult> {
 }
 
 export async function nameDemoAgent(): Promise<ActionResult> {
+  const denied = await denyUnless('Marketplace', 'Create');
+  if (denied) return denied;
   const db = getPersistence();
   const name = randomName();
   const agentId = `sales-agent-${Date.now()}`;
@@ -280,6 +287,8 @@ export async function nameDemoAgent(): Promise<ActionResult> {
 }
 
 export async function createDemoAssignment(): Promise<ActionResult> {
+  const denied = await denyUnless('Marketplace', 'Update');
+  if (denied) return denied;
   const service = new SalesHierarchyService();
 
   const result = await service.createAssignment({
@@ -299,6 +308,8 @@ export async function createDemoAssignment(): Promise<ActionResult> {
 }
 
 export async function accrueDemoPremium(): Promise<ActionResult> {
+  const denied = await denyUnless('Finance', 'Create');
+  if (denied) return denied;
   const service = new CommissionService();
 
   const created = await service.accruePremium({
@@ -315,6 +326,8 @@ export async function accrueDemoPremium(): Promise<ActionResult> {
 }
 
 export async function ingestDemoDocument(): Promise<ActionResult> {
+  const denied = await denyUnless('Operations', 'Create');
+  if (denied) return denied;
   const service = new DocumentIntelligenceService();
   const strong = Math.random() > 0.4;
   const confidence = strong ? 0.93 + Math.random() * 0.06 : 0.45 + Math.random() * 0.3;
@@ -336,6 +349,8 @@ export async function ingestDemoDocument(): Promise<ActionResult> {
 }
 
 export async function createDemoContent(): Promise<ActionResult> {
+  const denied = await denyUnless('Operations', 'Create');
+  if (denied) return denied;
   const db = getPersistence();
 
   const contentId = `mkt-demo-${Date.now()}`;
@@ -358,6 +373,8 @@ export async function createDemoContent(): Promise<ActionResult> {
 }
 
 export async function recordDemoSnapshot(): Promise<ActionResult> {
+  const denied = await denyUnless('Finance', 'Create');
+  if (denied) return denied;
   const db = getPersistence();
   const snapshots = await db.kpiSnapshots.findAll();
   const latest = snapshots[snapshots.length - 1];
@@ -381,6 +398,8 @@ export async function recordDemoSnapshot(): Promise<ActionResult> {
 }
 
 export async function refreshClerkPlan(): Promise<ActionResult> {
+  const denied = await denyUnless('Identity', 'Update');
+  if (denied) return denied;
   revalidatePath('/dashboard/identity/clerk-sync');
   return fail('Key required to execute', 'Plan refreshed, but running it needs CLERK_SECRET_KEY — provision it and this button goes live', { reference: 'CLERK_SECRET_KEY' });
 }
@@ -410,6 +429,8 @@ function cloneRow<T extends { id: string }>(rows: T[], overrides: Partial<T> = {
  * receipted into the audit trail so nothing pressed ever vanishes.
  */
 export async function queueDemoRequest(label: string): Promise<ActionResult> {
+  const denied = await denyUnless(null, 'View');
+  if (denied) return denied;
   const entry = cloneRow(mockAuditEvents as unknown as { id: string }[]) as Record<string, unknown>;
   if ('description' in entry) entry.description = `${label} requested from the console`;
   if ('action' in entry) entry.action = label;
@@ -423,49 +444,96 @@ export async function queueDemoRequest(label: string): Promise<ActionResult> {
 }
 
 export async function registerDemoClaim(): Promise<ActionResult> {
+  const denied = await denyUnless('Claims', 'Create');
+  if (denied) return denied;
   const row = cloneRow(mockClaims);
   revalidatePath('/dashboard/claims');
   return ok('Claim registered', 'New claim opened from template — visible on the register below', { reference: row.id });
 }
 
 export async function issueDemoPolicy(): Promise<ActionResult> {
+  const denied = await denyUnless('Policies', 'Create');
+  if (denied) return denied;
   const row = cloneRow(mockPolicies);
   revalidatePath('/dashboard/policies');
   return ok('Policy issued', 'Policy issued from template — schedule and coverages attached', { reference: row.id });
 }
 
 export async function addDemoCustomer(): Promise<ActionResult> {
+  const denied = await denyUnless('Customers', 'Create');
+  if (denied) return denied;
   const row = cloneRow(mockCustomers);
   revalidatePath('/dashboard/customers');
   return ok('Customer added', 'Customer record created — KYC checks queued', { reference: row.id });
 }
 
 export async function createDemoProduct(): Promise<ActionResult> {
+  const denied = await denyUnless('Marketplace', 'Create');
+  if (denied) return denied;
   const row = cloneRow(mockProducts);
   revalidatePath('/dashboard/marketplace');
   return ok('Product created', 'Draft product cloned — set pricing before publishing', { reference: row.id });
 }
 
 export async function addDemoComment(): Promise<ActionResult> {
+  const denied = await denyUnless('Operations', 'Create');
+  if (denied) return denied;
   const row = cloneRow(mockComments);
   revalidatePath('/dashboard/comments');
   return ok('Comment receipted', 'Operational note recorded against the thread', { reference: row.id });
 }
 
 export async function uploadDemoAttachment(): Promise<ActionResult> {
+  const denied = await denyUnless('Operations', 'Create');
+  if (denied) return denied;
   const row = cloneRow(mockAttachments);
   revalidatePath('/dashboard/attachments');
   return ok('Attachment receipted', 'File registered — OCR intake picks it up next', { reference: row.id });
 }
 
 export async function createDemoSetting(): Promise<ActionResult> {
+  const denied = await denyUnless('Platform', 'Update');
+  if (denied) return denied;
   const row = cloneRow(mockPlatformSettings);
   revalidatePath('/dashboard/operations/settings');
   return ok('Setting registered', 'Runtime setting created — takes effect on next read', { reference: row.id });
 }
 
 export async function createDemoFlag(): Promise<ActionResult> {
+  const denied = await denyUnless('Platform', 'Update');
+  if (denied) return denied;
   const row = cloneRow(mockFeatureFlags);
   revalidatePath('/dashboard/operations/feature-flags');
   return ok('Flag registered', 'Feature flag created — disabled until you switch it on', { reference: row.id });
+}
+
+/* ── Staff access: grant / revoke a role for a login phone ── */
+
+export async function grantStaffAccess(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  const auth = await authorizeAction('Identity', 'Create');
+  if (!auth.ok) return auth.result;
+
+  const result = await new PrincipalService().grantStaffAccess({
+    phone: String(formData.get('phone') ?? ''),
+    name: String(formData.get('name') ?? ''),
+    roleId: String(formData.get('roleId') ?? ''),
+    regionId: String(formData.get('regionId') ?? ''),
+    grantedBy: auth.principal.phone ?? auth.principal.email
+  });
+
+  revalidatePath('/dashboard/governance/access');
+  return result.ok
+    ? ok('Access granted', `${result.appointment.userName} can sign in with ${result.appointment.phone} and sees only their role's areas`, { reference: result.appointment.id })
+    : fail('Access not granted', result.error);
+}
+
+export async function revokeStaffAccess(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  const auth = await authorizeAction('Identity', 'Delete');
+  if (!auth.ok) return auth.result;
+
+  const revoked = await new PrincipalService().revokeStaffAccess(String(formData.get('phone') ?? ''));
+  revalidatePath('/dashboard/governance/access');
+  return revoked > 0
+    ? ok('Access revoked', `${revoked} role grant(s) revoked — effective on the user's next request`)
+    : fail('Nothing to revoke', 'No active access was found for that phone number');
 }

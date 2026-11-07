@@ -1,54 +1,50 @@
-import { AdminWorkspaceShell, PlatformProvider } from '@insuros/ui';
-import { PrincipalService } from '@insuros/services';
-import { toE164 } from '@insuros/domain';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { supabaseEnabled } from '../../lib/supabase-enabled';
-import { createSupabaseServerClient } from '../../lib/supabase/server';
+import { AdminWorkspaceShell, PlatformProvider } from '@insuros/ui';
+import { ServiceUnavailable } from '@/components/auth/service-unavailable';
+import { SignOutButton } from '@/components/sign-out-button';
+import { getAuthMode, isProductionRuntime } from '@/lib/auth/config';
+import { getAuthState } from '@/lib/auth/session';
 
-const principalService = new PrincipalService();
+// Per-request: the principal comes from the session cookie on every render.
+export const dynamic = 'force-dynamic';
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  // Phone-OTP identity via Supabase. The verified phone is the login (and M-Pesa)
-  // identity; principals are still resolved by email, so phone-only users map to a
-  // stable synthetic address until an appointment is created for them.
-  let email = 'dev@insuros.local';
-  let userId: string | undefined;
-  let displayName: string | undefined;
+  const state = await getAuthState();
 
-  if (supabaseEnabled) {
-    const supabase = await createSupabaseServerClient();
-    const {
-      data: { user }
-    } = await supabase.auth.getUser();
-    if (user) {
-      const phone = user.phone ? toE164(user.phone) : null;
-      email = user.email ?? (phone ? `${phone}@phone.insuros` : email);
-      userId = user.id;
-      displayName =
-        (user.user_metadata?.full_name as string | undefined) ?? phone ?? undefined;
-    }
-  }
+  if (state.status === 'misconfigured') return <ServiceUnavailable />;
+  if (state.status === 'signed-out') redirect('/sign-in?next=/dashboard');
+  // No role yet -> no data. Least privilege: unmapped users get nothing.
+  if (state.status === 'pending') redirect('/access-pending');
 
-  const principal = await principalService.resolveByEmail(email, userId, displayName);
-
-  // Unmapped users keep full access in development; in production this
-  // should fall back to an access-request screen instead.
-  const permissions = principal.isUnmapped
-    ? ['platform.manage']
-    : ['platform.manage', ...principal.permissions];
+  const { principal } = state;
 
   return (
     <PlatformProvider
       user={{
-        id: principal.clerkUserId ?? principal.assignments[0]?.userId,
-        name: principal.name === email ? 'Admin User' : principal.name,
-        email: principal.email
+        id: principal.clerkUserId,
+        name: principal.name,
+        email: principal.phone ?? principal.email
       }}
-      tenant={{ name: 'InsurOS Internal' }}
-      environment='development'
-      permissions={permissions}
+      tenant={{ name: 'InsurOS' }}
+      environment={isProductionRuntime ? 'production' : 'development'}
+      permissions={principal.permissions}
     >
-      <AdminWorkspaceShell>{children}</AdminWorkspaceShell>
+      <AdminWorkspaceShell
+        userActions={
+          getAuthMode() === 'supabase' ? (
+            <div className='flex items-center gap-2'>
+              <Link href='/account/delete' className='hidden text-xs text-slate-500 underline sm:inline'>
+                Delete account
+              </Link>
+              <SignOutButton />
+            </div>
+          ) : null
+        }
+      >
+        {children}
+      </AdminWorkspaceShell>
     </PlatformProvider>
   );
 }

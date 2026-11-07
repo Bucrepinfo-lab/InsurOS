@@ -49,6 +49,8 @@ export interface AdminAppointment {
   userId: string;
   userName: string;
   email: string;
+  /** Login phone (E.164) — the identity staff sign in with (phone OTP). */
+  phone?: string;
   regionId: EntityId;
   level: AdminLevel;
   roleId: string;

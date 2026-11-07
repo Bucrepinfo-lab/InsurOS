@@ -1,13 +1,13 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
-import { ActionButton } from '@/components/ActionButton';
-import { grantDemoAccess } from '@/app/dashboard/actions';
+import { STAFF_ROLES } from '@insuros/domain';
+import { GrantStaffAccessForm, RevokeStaffAccessForm } from '@/components/staff-access-forms';
+import { getAuthState, principalCan } from '@/lib/auth/session';
 import type { ScopedAccessRequest } from '@insuros/services';
 import {
   AdminHierarchyService,
@@ -64,6 +64,9 @@ export default async function JurisdictionAccessPage() {
   const assignments = await authorizationService.getAssignments();
   const regions = await adminHierarchyService.getRegions();
   const roles = await roleService.getRoles();
+  const auth = await getAuthState();
+  const canGrant = auth.status === 'active' && principalCan(auth.principal, 'Identity', 'Create');
+  const canRevoke = auth.status === 'active' && principalCan(auth.principal, 'Identity', 'Delete');
 
   const decisions = await Promise.all(
     previewRequests.map(async (request) => ({
@@ -148,8 +151,20 @@ export default async function JurisdictionAccessPage() {
     <DomainModulePage
       title='Jurisdiction Access'
       description='Region-bound RBAC: a role acts only inside its assigned jurisdiction and descendants. Foundation for Clerk production role mapping.'
-      actions={<ActionButton label='Grant access' action={grantDemoAccess} />}
     >
+      {canGrant || canRevoke ? (
+        <div className='mb-8 grid gap-4'>
+          {canGrant ? (
+            <GrantStaffAccessForm
+              roles={STAFF_ROLES.map((role) => ({ id: role.id, name: role.name }))}
+              regions={regions
+                .filter((region) => region.status === 'Active')
+                .map((region) => ({ id: region.id, name: `${region.name} (${region.level})` }))}
+            />
+          ) : null}
+          {canRevoke ? <RevokeStaffAccessForm /> : null}
+        </div>
+      ) : null}
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard
           title='Scoped Assignments'
@@ -177,7 +192,6 @@ export default async function JurisdictionAccessPage() {
           data={assignments}
           emptyTitle='No assignments'
           emptyDescription='No jurisdiction-scoped roles have been granted.'
-          emptyAction={<Button>Grant Access</Button>}
         />
       </div>
 
