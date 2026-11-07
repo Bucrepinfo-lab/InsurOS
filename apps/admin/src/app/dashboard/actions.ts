@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { fail, ok, type ActionResult } from '@/lib/action-result';
 import { authorizeAction, denyUnless } from '@/lib/auth/session';
 import { paymentsEnabled } from '@/lib/payments-gate';
+import { getDeviceAuth } from '@/lib/auth/device-auth';
+import { toE164 } from '@insuros/domain';
 import {
   AdminHierarchyService,
   ClaimsAutomationService,
@@ -546,9 +548,25 @@ export async function revokeStaffAccess(_prev: ActionResult | null, formData: Fo
   const auth = await authorizeAction('Identity', 'Delete');
   if (!auth.ok) return auth.result;
 
-  const revoked = await new PrincipalService().revokeStaffAccess(String(formData.get('phone') ?? ''));
+  const phone = toE164(String(formData.get('phone') ?? ''));
+  if (!phone) return fail('Nothing to revoke', 'Enter a valid phone number');
+  const revoked = await new PrincipalService().revokeStaffAccess(phone);
+  const devices = await getDeviceAuth().revokeAllForPhone(phone);
   revalidatePath('/dashboard/governance/access');
-  return revoked > 0
-    ? ok('Access revoked', `${revoked} role grant(s) revoked — effective on the user's next request`)
+  return revoked + devices > 0
+    ? ok('Access revoked', `${revoked} role grant(s) and ${devices} signed-in device(s) revoked — effective immediately`)
     : fail('Nothing to revoke', 'No active access was found for that phone number');
+}
+
+/** Owner: sign a staff member out of every device (role kept; next sign-in needs an SMS code). */
+export async function revokeStaffDevices(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  const auth = await authorizeAction('Identity', 'Delete');
+  if (!auth.ok) return auth.result;
+
+  const phone = toE164(String(formData.get('phone') ?? ''));
+  if (!phone) return fail('Nothing to revoke', 'Enter a valid phone number');
+  const devices = await getDeviceAuth().revokeAllForPhone(phone);
+  return devices > 0
+    ? ok('Devices signed out', `${devices} trusted device(s) revoked — the next sign-in needs a new SMS code`)
+    : fail('No devices', 'No trusted devices were found for that phone number');
 }

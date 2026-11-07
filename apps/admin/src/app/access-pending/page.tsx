@@ -15,6 +15,7 @@ export default async function AccessPendingPage() {
   const state = await getAuthState();
   if (state.status === "misconfigured") return <ServiceUnavailable />;
   if (state.status === "signed-out") redirect("/sign-in");
+  if (state.status === "needs-pin") redirect("/set-pin");
   if (state.status === "active") redirect("/dashboard");
 
   const { principal } = state;

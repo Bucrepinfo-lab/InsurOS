@@ -97,3 +97,45 @@ CREATE TABLE IF NOT EXISTS insuros_tenant_seeds (
 `
   }
 ];
+
+/**
+ * v2 (07/11/26): phone + SMS code + PIN on trusted devices. Platform-level
+ * identity tables (no tenant_id by design — see services/src/auth/store.ts).
+ * No PINs or codes are stored in clear: PIN = peppered bcrypt hash; device
+ * secret = SHA-256; SMS codes are never stored (Supabase verifies them).
+ */
+MIGRATIONS.push({
+  version: 2,
+  name: "auth_pin_trusted_devices",
+  sql: `
+CREATE TABLE IF NOT EXISTS auth_rate_events (
+  id         bigserial   PRIMARY KEY,
+  kind       text        NOT NULL,
+  key        text        NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS auth_rate_events_lookup ON auth_rate_events (kind, key, created_at);
+
+CREATE TABLE IF NOT EXISTS auth_user_pins (
+  user_id         text        PRIMARY KEY,
+  phone           text        NOT NULL,
+  pin_hash        text,
+  failed_attempts integer     NOT NULL DEFAULT 0,
+  locked_at       timestamptz,
+  updated_at      timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS auth_trusted_devices (
+  id           text        PRIMARY KEY,
+  user_id      text        NOT NULL,
+  phone        text        NOT NULL,
+  secret_hash  text        NOT NULL,
+  label        text        NOT NULL DEFAULT '',
+  created_at   timestamptz NOT NULL DEFAULT now(),
+  last_used_at timestamptz NOT NULL DEFAULT now(),
+  revoked_at   timestamptz
+);
+CREATE INDEX IF NOT EXISTS auth_trusted_devices_user ON auth_trusted_devices (user_id);
+CREATE INDEX IF NOT EXISTS auth_trusted_devices_phone ON auth_trusted_devices (phone);
+`
+});

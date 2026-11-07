@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { sendSms } from "@/lib/africastalking/sms";
+import { toE164 } from "@insuros/domain";
+import { getDeviceAuth } from "@/lib/auth/device-auth";
 import { isPlayReviewPhone } from "@/lib/play-review";
 
 /**
@@ -60,7 +62,17 @@ export async function POST(req: Request) {
     return NextResponse.json({});
   }
 
-  const result = await sendSms(phone, `${otp} is your InsurOS verification code. It expires in 10 minutes. Do not share it.`);
+  // Per-number limit on EVERY path that asks Supabase for a code (including
+  // direct API calls with the public key). Supabase surfaces the refusal.
+  const e164 = toE164(phone) ?? phone;
+  if (!(await getDeviceAuth().consume("sms_hook_phone", e164))) {
+    return NextResponse.json(
+      { error: { http_code: 429, message: "Too many codes requested for this number. Try again later." } },
+      { status: 429 }
+    );
+  }
+
+  const result = await sendSms(phone, `${otp} is your InsurOS sign-in code. It expires in 5 minutes. Do not share it.`);
   if (!result.ok) {
     return NextResponse.json({ error: "sms_send_failed", detail: result.raw }, { status: 502 });
   }

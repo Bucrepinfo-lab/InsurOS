@@ -4,11 +4,14 @@ import { createMemoryAdapter } from "./memory-adapter";
 import { PostgresDatabase, createSqlClient } from "./postgres-adapter";
 import type { PaymentLedgerPort, PersistenceAdapter, PersistenceKind } from "./ports";
 import { resolveTenantId } from "./tenant-context";
+import { MemoryAuthStore, type AuthStore } from "../auth/store";
+import { PostgresAuthStore } from "./postgres-auth-store";
 
 export * from "./ports";
 export { createMemoryAdapter, MemoryPaymentLedger, MemoryRepository } from "./memory-adapter";
 export { PostgresDatabase, createSqlClient, migrate, seedTenant, type SqlClient } from "./postgres-adapter";
 export { MIGRATIONS } from "./migrations";
+export { PostgresAuthStore } from "./postgres-auth-store";
 export { DATASETS, REPOSITORY_KEYS, type DatasetKind, type RepositoryKey } from "./datasets";
 export { resolveTenantId, setTenantResolver, type TenantResolver } from "./tenant-context";
 
@@ -24,6 +27,8 @@ export function persistenceKind(): PersistenceKind {
 interface Backend {
   kind: PersistenceKind;
   forTenant(tenantId: string): PersistenceAdapter;
+  /** Platform-level sign-in store (PINs, trusted devices, rate limits). */
+  authStore: AuthStore;
 }
 
 function createBackend(): Backend {
@@ -33,6 +38,7 @@ function createBackend(): Backend {
     const adapters = new Map<string, PersistenceAdapter>();
     return {
       kind: "postgres",
+      authStore: new PostgresAuthStore(database.sql, () => database.ensureMigrated()),
       forTenant(tenantId) {
         let adapter = adapters.get(tenantId);
         if (!adapter) {
@@ -47,6 +53,7 @@ function createBackend(): Backend {
   const adapters = new Map<string, PersistenceAdapter>();
   return {
     kind: "memory",
+    authStore: new MemoryAuthStore(),
     forTenant(tenantId) {
       let adapter = adapters.get(tenantId);
       if (!adapter) {
@@ -96,13 +103,22 @@ type Holder = { [KEY]?: { backend: Backend; adapter: PersistenceAdapter } };
  * Services must obtain repositories here so backends can be swapped without
  * touching business logic. Kept on globalThis so every server bundle shares it.
  */
-export function getPersistence(): PersistenceAdapter {
+function holderState() {
   const holder = globalThis as Holder;
   if (!holder[KEY]) {
     const backend = createBackend();
     holder[KEY] = { backend, adapter: createRoutingAdapter(backend) };
   }
-  return holder[KEY].adapter;
+  return holder[KEY];
+}
+
+export function getPersistence(): PersistenceAdapter {
+  return holderState().adapter;
+}
+
+/** Platform-level sign-in store (same database as getPersistence). */
+export function getAuthStore(): AuthStore {
+  return holderState().backend.authStore;
 }
 
 /** Test helper: drop the process-wide adapter (next call re-reads env). */

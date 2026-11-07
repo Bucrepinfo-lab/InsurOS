@@ -2,7 +2,7 @@ import { DEFAULT_TENANT_ID, DEMO_TENANT_ID } from "@insuros/domain";
 import { setTenantResolver } from "@insuros/services";
 import { getAuthMode } from "./auth/config";
 import { isPlayReviewPhone } from "./play-review";
-import { getSupabaseUser } from "./auth/session-user";
+import { getSessionIdentity } from "./auth/session-user";
 
 /**
  * Registers the request → tenant resolver used by persistence. The tenant is
@@ -13,7 +13,7 @@ import { getSupabaseUser } from "./auth/session-user";
 setTenantResolver(async () => {
   if (getAuthMode() !== "supabase") return DEFAULT_TENANT_ID;
   try {
-    const user = await getSupabaseUser();
+    const user = await getSessionIdentity();
     return isPlayReviewPhone(user?.phone) ? DEMO_TENANT_ID : DEFAULT_TENANT_ID;
   } catch {
     return DEFAULT_TENANT_ID;

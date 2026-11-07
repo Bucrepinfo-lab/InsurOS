@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react';
 import type { ActionResult } from '@/lib/action-result';
-import { grantStaffAccess, revokeStaffAccess } from '@/app/dashboard/actions';
+import { grantStaffAccess, revokeStaffAccess, revokeStaffDevices } from '@/app/dashboard/actions';
 
 interface Option {
   id: string;
@@ -74,6 +74,23 @@ export function RevokeStaffAccessForm() {
       </label>
       <button type='submit' disabled={pending} className='rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 disabled:opacity-60'>
         {pending ? 'Revoking…' : 'Revoke'}
+      </button>
+      <Receipt result={result} />
+    </form>
+  );
+}
+
+/** Sign a staff member out of all their trusted devices (role kept). */
+export function RevokeStaffDevicesForm() {
+  const [result, action, pending] = useActionState(revokeStaffDevices, null);
+  return (
+    <form action={action} className='flex flex-wrap items-end gap-3 rounded-2xl border border-ink/10 bg-sheet/60 p-5'>
+      <label className='min-w-56 flex-1 text-sm text-ink/70'>
+        Sign out all devices for phone
+        <input name='phone' required inputMode='tel' placeholder='0712 345 678' className={field} />
+      </label>
+      <button type='submit' disabled={pending} className='rounded-lg border border-ink/20 px-4 py-2 text-sm font-medium text-ink disabled:opacity-60'>
+        {pending ? 'Revoking…' : 'Revoke devices'}
       </button>
       <Receipt result={result} />
     </form>

@@ -45,7 +45,7 @@ Use the custom domain instead of `insuros.fly.dev` everywhere below if one is at
 > • Policies and customers — keep policy and customer records for your organisation in one place.
 > • Finance and tax views — invoices, reconciliation, commissions and statutory tax summaries for your finance team.
 > • Role-based access — claims officers, underwriters, agents, finance and operations staff each see their own work; administrators keep the overall view. Access is enforced on our servers, not just hidden in menus.
-> • Phone sign-in — sign in with your mobile number and a one-time SMS code.
+> • Phone sign-in — your mobile number and a one-time SMS code on a new device, then a 4-digit PIN on your trusted device. Administrators can sign a staff member out of all devices at once.
 >
 > InsurOS does not sell insurance to the public and does not take payments in the app.
 >
@@ -55,12 +55,13 @@ Use the custom domain instead of `insuros.fly.dev` everywhere below if one is at
 
 ## App access (reviewer instructions)
 
-Set Fly secrets `PLAY_REVIEW_PHONE` and `PLAY_REVIEW_CODE` (6+ characters), plus `SUPABASE_SERVICE_ROLE_KEY`. Then in Play Console → App content → App access → "All or some functionality is restricted":
+Set Fly secrets `PLAY_REVIEW_PHONE` and `PLAY_REVIEW_CODE` (exactly **6 digits**). Then in Play Console → App content → App access → "All or some functionality is restricted":
 
 > 1. Open the app and tap **Sign in with your phone**.
-> 2. Enter phone number: `<PLAY_REVIEW_PHONE>` and tap **Send code**.
-> 3. Enter code: `<PLAY_REVIEW_CODE>` and tap **Verify**.
-> You are signed in to a demo organisation with sample data. No SMS is needed.
+> 2. Enter phone number: `<PLAY_REVIEW_PHONE>` and tap **Send code**. (No SMS is sent to this number.)
+> 3. Enter the 6-digit code: `<PLAY_REVIEW_CODE>` and tap **Verify & continue**.
+> 4. You may choose a 4-digit PIN for faster sign-in on this device, or tap **Skip for now (demo access)**.
+> You are signed in to a demo organisation with sample data only. If you chose a PIN and later forget it, tap **Forgot PIN? Get an SMS code** and repeat steps 2–3.
 
 (**OWNER** fills the two placeholders in Play Console only — never in the repo.)
 
@@ -74,14 +75,14 @@ Set Fly secrets `PLAY_REVIEW_PHONE` and `PLAY_REVIEW_CODE` (6+ characters), plus
 | Data type | Collected | Optional? | Purposes | Notes |
 |---|---|---|---|---|
 | Personal info → **Name** | Yes | Required | App functionality, Account management | Staff name set by the administrator |
-| Personal info → **Phone number** | Yes | Required | App functionality, Account management, Fraud prevention/security | Sign-in identity; SMS one-time code |
+| Personal info → **Phone number** | Yes | Required | App functionality, Account management, Fraud prevention/security | Sign-in identity; 6-digit SMS code on a new device; 4-digit PIN (stored only as a salted, peppered hash) on a trusted device |
 | Personal info → **Other info** | Yes | Required | App functionality | Role and assigned region |
 | **Photos** | Yes | Optional | App functionality | Claim scene evidence attached by staff |
 | Location → **Precise location** | Yes | Optional | App functionality | Only the GPS stamp on claim evidence photos; never in the background |
 | App activity → **Other user-generated content** | Yes | Required | App functionality | Policy/claim/customer records staff enter for their organisation |
 | App activity → **Other actions** | Yes | Required | App functionality, Security | Audit trail of who did what |
 | Financial info | **No** | — | — | Payments are switched off in v1 (`PAYMENTS_ENABLED` unset) |
-| Device or other IDs | **No** | — | — | No advertising ID, no analytics SDK |
+| **Device or other IDs** | Yes | Required | App functionality, Fraud prevention/security | Random trusted-device identifier set by the app after SMS verification (revocable). No advertising ID, no hardware IDs, no analytics SDK |
 
 Data is processed ephemerally? **No** (stored). Collection is not used for advertising or analytics.
 
@@ -98,6 +99,7 @@ v1 offers **no consumer financial features**: no payments, no premium collection
 
 ## Server checklist before the first build (**OWNER**)
 
-Fly app `insuros` secrets (names only): `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_SEND_SMS_HOOK_SECRET`, `AT_USERNAME`, `AT_API_KEY`, `AT_SENDER_ID`, `PLATFORM_OWNER_PHONES`, `PLAY_REVIEW_PHONE`, `PLAY_REVIEW_CODE`, `ANDROID_CERT_FINGERPRINTS`. Leave `PAYMENTS_ENABLED` unset.
+Fly app `insuros` secrets (names only): `AUTH_SECRET`, `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_SEND_SMS_HOOK_SECRET`, `AT_USERNAME`, `AT_API_KEY`, `AT_SENDER_ID`, `PLATFORM_OWNER_PHONES`, `PLAY_REVIEW_PHONE`, `PLAY_REVIEW_CODE`, `ANDROID_CERT_FINGERPRINTS`. Leave `PAYMENTS_ENABLED` unset.
+Supabase (Auth → Providers → Phone): **SMS OTP expiry ≤ 300 seconds**, OTP length **6**, Send-SMS hook pointed at `/api/auth/send-sms`. Email sign-in is not used.
 GitHub repo secrets for the deploy workflow: `FLY_API_TOKEN`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 Then confirm `https://insuros.fly.dev/api/health` returns `"status":"ok"` with `"persistence":"postgres"`.
