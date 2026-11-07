@@ -2,8 +2,8 @@
 
 import { useState, type ReactNode } from 'react';
 import { WorkspaceLayout } from '../layouts';
-import { SidebarNav, adminNavigation } from '../navigation';
-import { useEnvironment, useTenant, useUser } from '../platform';
+import { SidebarNav, adminNavigation, filterNavigationByPermissions } from '../navigation';
+import { useEnvironment, usePermissions, useTenant, useUser } from '../platform';
 import {
   EnvironmentBadge,
   GlobalSearch,
@@ -13,25 +13,32 @@ import {
   WorkspaceTopbar
 } from './index';
 
-const navItems = adminNavigation.flatMap((section) => section.items).map((item) => ({
-  label: item.label,
-  href: item.href,
-  isActive: item.id === 'dashboard'
-}));
-
 export interface AdminWorkspaceShellProps {
   children: ReactNode;
   notificationCount?: number;
+  /** Extra controls beside the user (e.g. sign out). */
+  userActions?: ReactNode;
 }
 
 export function AdminWorkspaceShell({
   children,
-  notificationCount = 0
+  notificationCount = 0,
+  userActions
 }: AdminWorkspaceShellProps) {
   const tenant = useTenant();
   const environment = useEnvironment();
   const user = useUser();
+  const { permissions } = usePermissions();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Menus mirror the server-side permission checks (they never replace them).
+  const navItems = filterNavigationByPermissions(adminNavigation, { permissions })
+    .flatMap((section) => section.items)
+    .map((item) => ({
+      label: item.label,
+      href: item.href,
+      isActive: item.id === 'dashboard'
+    }));
 
   return (
     <>
@@ -59,7 +66,7 @@ export function AdminWorkspaceShell({
               <>
                 <EnvironmentBadge environment={environment} />
                 <NotificationBell count={notificationCount} />
-                <UserMenu name={user.name} email={user.email} />
+                <UserMenu name={user.name} email={user.email} actions={userActions} />
               </>
             }
           />

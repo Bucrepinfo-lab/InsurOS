@@ -1,27 +1,10 @@
 import type { Role } from "@insuros/domain";
-import { mockPermissions } from "./permissions";
+import { STAFF_ROLES, rolePermissions } from "@insuros/domain";
 
-export const mockRoles: Role[] = [
-  {
-    id: "role-platform-admin",
-    name: "Platform Admin",
-    description: "Full platform administration access.",
-    permissions: mockPermissions
-  },
-  {
-    id: "role-claims-manager",
-    name: "Claims Manager",
-    description: "Can view and approve claim workflows.",
-    permissions: mockPermissions.filter(
-      (permission) => permission.scope === "Claims"
-    )
-  },
-  {
-    id: "role-finance-manager",
-    name: "Finance Manager",
-    description: "Can execute finance workflow actions.",
-    permissions: mockPermissions.filter(
-      (permission) => permission.scope === "Finance"
-    )
-  }
-];
+/** Staff roles — generated from the v1 least-privilege catalog in the domain. */
+export const mockRoles: Role[] = STAFF_ROLES.map((role) => ({
+  id: role.id,
+  name: role.name,
+  description: role.description,
+  permissions: rolePermissions(role)
+}));
