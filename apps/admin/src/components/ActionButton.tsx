@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
+import { formatTime } from '@insuros/ui';
 import type { ActionResult } from '@/lib/action-result';
 
 export interface ActionButtonProps {
@@ -116,7 +117,7 @@ export function ActionButton({ label, action, variant = 'primary' }: ActionButto
             </span>
             <span className='mt-0.5 block text-[12.5px] text-white/80'>{result.message}</span>
             <span className='mt-1.5 block text-[10px] uppercase tracking-[0.16em] text-white/45'>
-              {result.ok ? 'Receipt' : 'Attention'} · {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {result.ok ? 'Receipt' : 'Attention'} · {formatTime(new Date())}
             </span>
           </span>
           <button

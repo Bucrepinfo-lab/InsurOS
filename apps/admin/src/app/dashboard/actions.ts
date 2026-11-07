@@ -5,9 +5,11 @@ import { fail, ok, type ActionResult } from '@/lib/action-result';
 import { authorizeAction, denyUnless } from '@/lib/auth/session';
 import { paymentsEnabled } from '@/lib/payments-gate';
 import { getDeviceAuth } from '@/lib/auth/device-auth';
+import { actorIdFor, reachFor } from '@/lib/record-scope';
 import { toE164 } from '@insuros/domain';
 import {
   AdminHierarchyService,
+  ClaimService,
   ClaimsAutomationService,
   createClaimMessageGenerator,
   CommissionService,
@@ -17,6 +19,7 @@ import {
   SceneCaptureService,
   SubscriptionService,
   TaxRemittanceService,
+  PolicyService,
   PrincipalService,
   TermsService,
   getPersistence
@@ -452,34 +455,47 @@ export async function queueDemoRequest(label: string): Promise<ActionResult> {
 /** Insert a copy of the first sample row (durable when DATABASE_URL is set). */
 async function cloneIntoStore<T extends { id: string }>(
   repository: { findAll(): Promise<T[]>; insert(entity: T): Promise<T> },
-  sample: T[]
+  sample: T[],
+  overrides: Record<string, unknown> = {}
 ): Promise<T> {
   const existing = await repository.findAll();
   const template = existing[0] ?? sample[0];
-  const row = JSON.parse(JSON.stringify({ ...template, id: `${template.id.split('-d')[0]}-d${Date.now() % 1_000_000}` })) as T;
+  const row = JSON.parse(JSON.stringify({ ...template, ...overrides, id: `${template.id.split('-d')[0]}-d${Date.now() % 1_000_000}` })) as T;
   return repository.insert(row);
 }
 
 export async function registerDemoClaim(): Promise<ActionResult> {
-  const denied = await denyUnless('Claims', 'Create');
-  if (denied) return denied;
-  const row = await cloneIntoStore(getPersistence().claims, mockClaims);
+  const auth = await authorizeAction('Claims', 'Create');
+  if (!auth.ok) return auth.result;
+  const principal = auth.principal;
+  const policiesReach = reachFor(principal, 'Policies');
+  // Only in-force policies this user may see; the service re-checks the pick.
+  const [option] = await new PolicyService().getClaimablePolicyOptions(policiesReach);
+  if (!option) return fail('No policy to claim against', 'None of your policies is in force');
+  const result = await new ClaimService().registerClaim({
+    claimsReach: reachFor(principal, 'Claims'),
+    policiesReach,
+    registeredByUserId: actorIdFor(principal),
+    policyId: option.id,
+    template: (await getPersistence().claims.findAll())[0] ?? mockClaims[0]
+  });
+  if (!result.ok) return fail('Claim not registered', result.error);
   revalidatePath('/dashboard/claims');
-  return ok('Claim registered', 'New claim opened from template — visible on the register below', { reference: row.id });
+  return ok('Claim registered', `New claim on ${option.policyNumber} — visible on the register below`, { reference: result.claim.id });
 }
 
 export async function issueDemoPolicy(): Promise<ActionResult> {
-  const denied = await denyUnless('Policies', 'Create');
-  if (denied) return denied;
-  const row = await cloneIntoStore(getPersistence().policies, mockPolicies);
+  const auth = await authorizeAction('Policies', 'Create');
+  if (!auth.ok) return auth.result;
+  const row = await cloneIntoStore(getPersistence().policies, mockPolicies, { ownerUserId: actorIdFor(auth.principal) });
   revalidatePath('/dashboard/policies');
   return ok('Policy issued', 'Policy issued from template — schedule and coverages attached', { reference: row.id });
 }
 
 export async function addDemoCustomer(): Promise<ActionResult> {
-  const denied = await denyUnless('Customers', 'Create');
-  if (denied) return denied;
-  const row = await cloneIntoStore(getPersistence().customers, mockCustomers);
+  const auth = await authorizeAction('Customers', 'Create');
+  if (!auth.ok) return auth.result;
+  const row = await cloneIntoStore(getPersistence().customers, mockCustomers, { ownerUserId: actorIdFor(auth.principal) });
   revalidatePath('/dashboard/customers');
   return ok('Customer added', 'Customer record created — KYC checks queued', { reference: row.id });
 }

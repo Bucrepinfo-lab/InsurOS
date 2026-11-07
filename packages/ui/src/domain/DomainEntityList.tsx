@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { DataTable, ExportCsvButton, TableShell, TableToolbar, type DataTableColumn } from '../data';
+import { DataTable, TableShell, TableToolbar, type DataTableColumn } from '../data';
+import { filterRows, listParamName, rowCells } from '../data/filter-rows';
 import { EmptyState } from '../enterprise/EmptyState';
 
 export interface DomainEntityListProps<TData> {
@@ -12,6 +13,16 @@ export interface DomainEntityListProps<TData> {
   emptyDescription?: string;
   emptyAction?: ReactNode;
   actions?: ReactNode;
+  /**
+   * Search text read from the URL by the page. When given, rows are filtered
+   * on the server with the same rule the page uses for its summary cards, and
+   * the CSV export contains exactly those rows.
+   */
+  query?: string;
+  /** URL param for this list's search (default: derived from the title). */
+  searchParam?: string;
+  /** Extra filter controls (named inputs) submitted with the search. */
+  filters?: ReactNode;
 }
 
 export function DomainEntityList<TData>({
@@ -23,9 +34,13 @@ export function DomainEntityList<TData>({
   emptyTitle,
   emptyDescription,
   emptyAction,
-  actions
+  actions,
+  query,
+  searchParam,
+  filters
 }: DomainEntityListProps<TData>) {
-  if (data.length === 0) {
+  const hasActiveFilter = Boolean(query) || Boolean(filters);
+  if (data.length === 0 && !hasActiveFilter) {
     return (
       <>
         <TableToolbar title={title} description={description} />
@@ -34,30 +49,34 @@ export function DomainEntityList<TData>({
     );
   }
 
+  const rows = query !== undefined ? filterRows(data, columns, query) : data;
+
   return (
     <>
       <TableToolbar title={title} description={description} />
 
       <TableShell
         searchPlaceholder={searchPlaceholder}
-        actions={
-          <>
-            {actions}
-            <ExportCsvButton
-              filename={title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
-              columns={columns.map((column) => ({
-                key: String(column.key),
-                header: column.header
-              }))}
-              rows={data as unknown as Record<string, unknown>[]}
-            />
-          </>
-        }
+        searchParam={searchParam ?? listParamName(title)}
+        initialQuery={query}
+        filters={filters}
+        actions={actions}
+        exportCsv={{
+          filename: listParamName(title),
+          headers: columns.map((column) => column.header),
+          rows: rows.map((row) => rowCells(row, columns))
+        }}
       >
         <DataTable
           columns={columns}
-          data={data}
-          empty={<EmptyState title={emptyTitle} description={emptyDescription} action={emptyAction} />}
+          data={rows}
+          empty={
+            hasActiveFilter ? (
+              <EmptyState title='No matches' description='Nothing matches these filters. Clear the search or change a filter.' />
+            ) : (
+              <EmptyState title={emptyTitle} description={emptyDescription} action={emptyAction} />
+            )
+          }
         />
       </TableShell>
     </>
