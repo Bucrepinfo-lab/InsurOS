@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { fail, ok, type ActionResult } from '@/lib/action-result';
 import { authorizeAction, denyUnless } from '@/lib/auth/session';
+import { paymentsEnabled } from '@/lib/payments-gate';
 import {
   AdminHierarchyService,
   ClaimsAutomationService,
@@ -58,6 +59,9 @@ export async function submitDemoFnol(): Promise<ActionResult> {
     policyAgeDays: clean ? 120 + Math.floor(Math.random() * 300) : 12,
     priorClaimsCount: clean ? 0 : 4
   }, {
+    // v1: no automatic approval/payout — every claim goes to an adjuster
+    // unless PAYMENTS_ENABLED=true (server-side gate).
+    allowAutoApprove: paymentsEnabled(),
     // Off unless CLAIM_MESSAGE_PROVIDER=anthropic and a key are set; one call per decision.
     messageGenerate: createClaimMessageGenerator({
       provider: process.env.CLAIM_MESSAGE_PROVIDER,

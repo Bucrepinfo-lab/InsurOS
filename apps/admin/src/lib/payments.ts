@@ -1,5 +1,6 @@
 import { isValidPaymentAmount, mapAtPaymentStatus, type PaymentStatus } from "@insuros/domain";
 import { mobileCheckout } from "@/lib/africastalking/payments";
+import { paymentsEnabled } from "@/lib/payments-gate";
 
 /**
  * Premium payment service — M-Pesa via Africa's Talking. Records every request to
@@ -31,7 +32,7 @@ export function findByProviderTxnId(providerTxnId: string): PaymentTxn | undefin
 
 export type CheckoutResult =
   | { ok: true; txnId: string; providerTxnId: string | null }
-  | { ok: false; reason: "invalid_amount" | "provider_error"; txnId?: string };
+  | { ok: false; reason: "invalid_amount" | "provider_error" | "payments_disabled"; txnId?: string };
 
 /** STK push to the signed-in policyholder's own phone (premium collection). */
 export async function requestPremiumCheckout(input: {
@@ -39,6 +40,10 @@ export async function requestPremiumCheckout(input: {
   amount: number;
   policyReference?: string;
 }): Promise<CheckoutResult> {
+  // Defence in depth: the route checks too, but no caller can bypass the gate.
+  if (!paymentsEnabled()) {
+    return { ok: false, reason: "payments_disabled" };
+  }
   if (!isValidPaymentAmount(input.amount)) {
     return { ok: false, reason: "invalid_amount" };
   }

@@ -139,12 +139,24 @@ export function assessFraud(fnol: FnolSubmission): FraudAssessment {
  * auto-approves; high fraud scores route to manual review, never silent
  * rejection — a human always owns a denial.
  */
+export interface AdjudicateOptions {
+  /**
+   * Allow straight-through auto-approval (which carries a payout SLA). Off in
+   * v1: every claim is routed to an adjuster and no payout is automatic.
+   * Defaults to true for backward compatibility of the pure engine; the
+   * service layer passes the PAYMENTS_ENABLED gate.
+   */
+  allowAutoApprove?: boolean;
+}
+
 export function adjudicate(
   fnol: FnolSubmission,
   assessment: FraudAssessment,
-  rules: AdjudicationRule[]
+  rules: AdjudicationRule[],
+  options: AdjudicateOptions = {}
 ): Omit<AdjudicationDecision, "id"> {
   const reasons: string[] = [];
+  const allowAutoApprove = options.allowAutoApprove ?? true;
 
   const candidateRules = rules.filter(
     (rule) =>
@@ -163,6 +175,13 @@ export function adjudicate(
 
     if (rule.requiresCompleteDocuments && !fnol.documentsComplete) {
       continue;
+    }
+
+    if (!allowAutoApprove) {
+      reasons.push(
+        `Matched rule "${rule.name}", but automatic approval and payout are disabled; an adjuster decides.`
+      );
+      break;
     }
 
     return {
@@ -184,7 +203,7 @@ export function adjudicate(
         .map((signal) => signal.code)
         .join(", ")}.`
     );
-  } else {
+  } else if (reasons.length === 0) {
     reasons.push("No auto-approval rule matched; routed to adjuster queue.");
   }
 

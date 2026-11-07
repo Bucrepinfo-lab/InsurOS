@@ -10,6 +10,7 @@ import {
 import { ActionButton } from '@/components/ActionButton';
 import { submitDemoFnol } from '@/app/dashboard/actions';
 import { ClaimsAutomationService, MarketingService, claimantMessageFor } from '@insuros/services';
+import { paymentsEnabled } from '@/lib/payments-gate';
 
 export const metadata = { title: 'Claims automation' };
 
@@ -108,7 +109,11 @@ export default async function ClaimsAutomationPage() {
   return (
     <DomainModulePage
       title='Claims Automation'
-      description='Straight-through processing: FNOL intake, explainable fraud scoring, and rules-based auto-adjudication. Denials are never automated — a human always owns them.'
+      description={
+        paymentsEnabled()
+          ? 'Straight-through processing: FNOL intake, explainable fraud scoring, and rules-based auto-adjudication. Denials are never automated — a human always owns them.'
+          : 'FNOL intake and explainable fraud scoring. Automatic approval and payouts are OFF in this release — every claim is decided by an adjuster.'
+      }
       actions={<ActionButton label='Submit FNOL' action={submitDemoFnol} />}
     >
       {banner ? (
