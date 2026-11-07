@@ -1,10 +1,15 @@
 # InsurOS Platform Terms & Conditions
 
-**Version:** 1.0.0
-**Effective Date:** 1 July 2026
-**Jurisdiction:** Global (multi-continental)
+**Version:** 1.1.0
+**Effective Date:** 07/11/26
+**Provider:** Telpen Systems Ltd, Kenya ("InsurOS", "we", "us")
+**Jurisdiction:** Kenya (multi-country operations as listed below)
 
 > These terms are binding on all users. Acceptance is recorded per user, per version, via click-wrap in the Legal & Terms module. This document is a template and must be reviewed by qualified counsel in each operating jurisdiction before production use.
+
+## 0. What InsurOS Is (v1 scope)
+
+InsurOS is an operations tool for insurance companies, agencies and their staff and agents. It is not a public insurance shop: the Platform does not sell, quote to the public, bind or issue insurance to members of the public, and in this version it does not collect premiums or make claim payouts. Insurance products, underwriting and claim decisions remain the responsibility of the licensed insurer or intermediary using the Platform.
 
 ## 1. Acceptance of Terms
 
@@ -60,7 +65,7 @@ You indemnify InsurOS against claims arising from your breach of these terms, yo
 
 ## 14. Governing Law and Dispute Resolution
 
-Local disputes are governed by the law of the operating national jurisdiction; cross-border disputes by the law of the Platform's seat of incorporation. Parties shall first attempt good-faith mediation before litigation or arbitration.
+Local disputes are governed by the law of the operating national jurisdiction; cross-border disputes by the laws of Kenya, the Platform provider's seat of incorporation. Parties shall first attempt good-faith mediation before litigation or arbitration.
 
 ## 15. Amendments
 
@@ -68,4 +73,6 @@ InsurOS may amend these terms with at least 30 days' notice for material changes
 
 ---
 
-*Recorded acceptances and version history are managed in the Legal & Terms module (`/dashboard/legal`).*
+Contact: telpeninfo@gmail.com · Privacy policy: `/privacy` · Account deletion: `/delete-account`
+
+*Recorded acceptances and version history are managed in the Legal & Terms module (`/dashboard/legal`). The public copy at `/terms` is generated from this file (`apps/admin/src/content/terms.ts`) — keep them in sync.*
