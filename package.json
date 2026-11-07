@@ -1,21 +1,25 @@
 {
-    "name":  "insuros",
-    "version":  "0.1.0",
-    "private":  true,
-    "scripts":  {
-                    "validate":  "pnpm -r typecheck \u0026\u0026 pnpm -r build",
-                    "repo:health":  "powershell -ExecutionPolicy Bypass -File scripts/repository-health.ps1",
-                    "build":  "pnpm -r build",
-                    "validate:domain":  "pnpm --filter @insuros/domain typecheck \u0026\u0026 pnpm --filter @insuros/mocks typecheck \u0026\u0026 pnpm --filter @insuros/services typecheck \u0026\u0026 pnpm --filter @insuros/admin build",
-                    "validate:services":  "pnpm --filter @insuros/services typecheck \u0026\u0026 pnpm --filter @insuros/admin build",
-                    "typecheck":  "pnpm -r typecheck",
-                    "validate:admin":  "pnpm --filter @insuros/admin build",
-                    "validate:ui":  "pnpm --filter @insuros/ui typecheck \u0026\u0026 pnpm --filter @insuros/admin build",
-                    "dev":  "echo root ready"
-                },
-    "devDependencies":  {
-                            "@types/react":  "^19.2.17",
-                            "@types/react-dom":  "^19.2.3",
-                            "typescript":  "^6.0.3"
-                        }
+  "name": "insuros",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "validate": "pnpm -r typecheck && pnpm test && pnpm -r build",
+    "repo:health": "powershell -ExecutionPolicy Bypass -File scripts/repository-health.ps1",
+    "build": "pnpm -r build",
+    "validate:domain": "pnpm --filter @insuros/domain typecheck && pnpm --filter @insuros/mocks typecheck && pnpm --filter @insuros/services typecheck && pnpm --filter @insuros/admin build",
+    "validate:services": "pnpm --filter @insuros/services typecheck && pnpm --filter @insuros/admin build",
+    "typecheck": "pnpm -r typecheck",
+    "validate:admin": "pnpm --filter @insuros/admin build",
+    "validate:ui": "pnpm --filter @insuros/ui typecheck && pnpm --filter @insuros/admin build",
+    "dev": "echo root ready",
+    "test": "vitest run",
+    "lint": "pnpm --filter @insuros/admin lint"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^6.0.3",
+    "vitest": "^3.2.4"
+  }
 }
