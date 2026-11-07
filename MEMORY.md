@@ -3,12 +3,18 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-07 — Escalation follow-ups approved by the owner (07/11/26)
+- Record-scope rules (`TENANT_WIDE_ROLES`, `packages/domain/src/record-scope.ts`) confirmed as they are; recorded as owner-approved in docs/PRD.md.
+- Jurisdiction grants: `PrincipalService.grantStaffAccess` refuses a region that is not Active (`isGrantableRegion` in `admin-hierarchy.ts`); the form shows "Access not granted — <region> is suspended — choose an active region"; the picker lists Active regions only. Owner approved this one check in the roles/tenancy area.
+- Finance → Tax and Regional tax descriptions now read 06/07/26 (copy only; no tax logic changed).
+- Backlog (docs/PRD.md): policy start/end/renewal dates with in-force derived from dates + status (protected); "assign claim to officer" action with audit trail.
+
 ## 2026-11-07 — Own-records pickers/lists, day-first dates, filters in the URL (ported from Telpen Edu fixes of 07/11/26)
 - Record-level least privilege on top of the #8 roles (role definitions unchanged): `packages/domain/src/record-scope.ts` (`recordReach`, `canSee*`, `claimablePolicyOptions`, `uniqueBy`). Agent -> own customers/policies (`ownerUserId`) + claims they registered or on their own policies; Claims Officer -> claims assigned to / registered by them; desk roles see their desk; owner/Platform Admin see all. Fails closed (no View, no active grant, no staff id -> nothing). Store reviewer keeps the demo tenant's full view (`apps/admin/src/lib/record-scope.ts`).
 - Server enforcement: `PolicyService/CustomerService/ClaimService.get*For(reach)`; `RecordGate` layouts on `claims/[claimId]`, `customers/[customerId]`, `policies/[policyId]`, `customers/[customerId]/policies/[policyId]` (404 when not yours); `ClaimService.registerClaim` re-checks the picked policy (exists, visible, in force). Demo policy/customer/claim actions stamp the creator's staff id.
 - Dates: one formatter `packages/ui/src/utils/date-format.ts` (dd/mm/yy, 24 h, Africa/Nairobi, never the device locale); `DataTable` and CSV exports format ISO values through it; toast time uses it. No native date inputs exist yet — any new one must show a dd/mm label or a day-first control.
 - Lists: search kept in the URL (`?q=` / per-list param); CSV exports exactly the rows the search shows (formatted cells). Policies, Claims, Customers: search + status filter applied on the server, same filtered set feeds table, summary cards and export. Customers page now reads the store (was a hard-coded list).
-- Open (escalated, protected areas): region option on Governance -> Jurisdiction Access grant is not re-checked as Active on the server (`principal.ts`); finance/tax page descriptions show ISO "2026-07-06" (`app/dashboard/finance/tax/`); Policy has no term dates (start/end/renewal), so "in force" is status-only; `Claim` type (protected `claim.ts`) carries ownership fields only via `OwnedClaim`. Detail pages still render hard-coded sample ids.
+- Escalated items (resolved 07/11/26, see entry above): region Active check on grants; finance/tax copy dates; Policy has no term dates (start/end/renewal), so "in force" is status-only; `Claim` type (protected `claim.ts`) carries ownership fields only via `OwnedClaim`. Detail pages still render hard-coded sample ids.
 
 ## 2026-11-07 — Sign-in: phone + SMS code + PIN on trusted devices (owner standing rule, all apps)
 - Phone → 6-digit SMS code (≤5 min, single use; server rate limits per number + per IP, plus per-number limit in the Send-SMS hook) on first sign-in on a device; then 4-digit PIN on that trusted device. New device / forgotten PIN / 5 wrong PINs → SMS again (lock clears the PIN; user chooses a new one). No email.

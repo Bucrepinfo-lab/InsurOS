@@ -42,6 +42,11 @@ export interface AdminRegion {
   status: "Active" | "Suspended";
 }
 
+/** Only Active regions can receive new staff grants (owner-approved 07/11/26). */
+export function isGrantableRegion(region: Pick<AdminRegion, "status">): boolean {
+  return region.status === "Active";
+}
+
 export type AdminAppointmentStatus = "Active" | "Pending" | "Revoked";
 
 export interface AdminAppointment {

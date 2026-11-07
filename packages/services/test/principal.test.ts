@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ALL_PERMISSION_KEYS } from "@insuros/domain";
-import { PrincipalService } from "../src";
+import { PrincipalService, getPersistence } from "../src";
 
 const service = new PrincipalService();
 const OWNER = "+254700000999";
@@ -47,6 +47,28 @@ describe("PrincipalService.resolveForSession (least privilege)", () => {
     expect((await service.grantStaffAccess({ ...base, phone: "abc" })).ok).toBe(false);
     expect((await service.grantStaffAccess({ ...base, roleId: "role-nope" })).ok).toBe(false);
     expect((await service.grantStaffAccess({ ...base, regionId: "region-nope" })).ok).toBe(false);
+  });
+
+  it("refuses a grant in a region that is not Active (server-side)", async () => {
+    await getPersistence().regions.insert({
+      id: "region-test-suspended",
+      name: "Suspended County",
+      code: "KE-T99",
+      level: "County",
+      parentRegionId: "region-ke",
+      countryCode: "KE",
+      continentCode: "AF",
+      status: "Suspended"
+    });
+    const phone = "0711000005";
+    const result = await service.grantStaffAccess({
+      phone, name: "Blocked Grant", roleId: "role-agent", regionId: "region-test-suspended", grantedBy: OWNER
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toContain("choose an active region");
+    const after = await service.resolveForSession({ userId: "u-5", phone }, [OWNER]);
+    expect(after.isUnmapped).toBe(true);
+    expect(after.permissions).toEqual([]);
   });
 
   it("account deletion erases the staff profile and access", async () => {

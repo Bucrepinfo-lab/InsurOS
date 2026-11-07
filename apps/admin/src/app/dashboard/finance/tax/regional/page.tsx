@@ -70,7 +70,7 @@ export default async function RegionalTaxPage() {
   return (
     <DomainModulePage
       title='Regional Tax Configuration'
-      description='Per-state and per-county statutory rules layered on national components. Representative rates compiled 2026-07-06 — re-verify with each authority before filing.'
+      description='Per-state and per-county statutory rules layered on national components. Representative rates compiled 06/07/26 — re-verify with each authority before filing.'
       actions={<ActionButton label='Add regional rule' action={addDemoRegionalRule} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
