@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const result = await sendSms(phone, `${otp} is your InsurOS sign-in code. It expires in 5 minutes. Do not share it.`);
+  const result = await sendSms(phone, `${otp} is your InsurOS sign-in code. It expires in 5 minutes. Do not share it.`, "otp");
   if (!result.ok) {
     return NextResponse.json({ error: "sms_send_failed", detail: result.raw }, { status: 502 });
   }
