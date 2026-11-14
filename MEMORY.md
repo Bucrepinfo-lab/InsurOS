@@ -3,6 +3,9 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-14 — SMS is transactional only (TELPEN sender)
+- Owner 14/11/26: the "TELPEN" sender ID is for transactional SMS only. `sendSms(to, message, purpose)` (apps/admin/src/lib/africastalking/sms.ts) requires `"otp" | "transactional"` (typecheck enforces it at every caller) and refuses anything else; promotion goes through in-app messaging.
+
 ## 2026-11-07 — Escalation follow-ups approved by the owner (07/11/26)
 - Record-scope rules (`TENANT_WIDE_ROLES`, `packages/domain/src/record-scope.ts`) confirmed as they are; recorded as owner-approved in docs/PRD.md.
 - Jurisdiction grants: `PrincipalService.grantStaffAccess` refuses a region that is not Active (`isGrantableRegion` in `admin-hierarchy.ts`); the form shows "Access not granted — <region> is suspended — choose an active region"; the picker lists Active regions only. Owner approved this one check in the roles/tenancy area.

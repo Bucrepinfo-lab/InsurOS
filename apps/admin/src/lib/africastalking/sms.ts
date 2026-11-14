@@ -8,7 +8,16 @@ export interface SendSmsResult {
   raw: unknown;
 }
 
-export async function sendSms(to: string, message: string): Promise<SendSmsResult> {
+/**
+ * TRANSACTIONAL ONLY (owner 14/11/26): the "TELPEN" sender ID is approved for
+ * transactional SMS only (sign-in codes, alerts about a person's own policy or
+ * claim). Promotion goes through the app's own messaging, never by SMS.
+ */
+export type SmsPurpose = "otp" | "transactional";
+export const SMS_PURPOSES: readonly SmsPurpose[] = ["otp", "transactional"];
+
+export async function sendSms(to: string, message: string, purpose: SmsPurpose): Promise<SendSmsResult> {
+  if (!SMS_PURPOSES.includes(purpose)) return { ok: false, raw: { error: "sms_transactional_only" } };
   const username = process.env.AT_USERNAME;
   const apiKey = process.env.AT_API_KEY;
   if (!username || !apiKey) {
