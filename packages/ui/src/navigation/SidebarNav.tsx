@@ -17,13 +17,15 @@ export interface SidebarNavGroup {
 }
 
 /** A link element: the app passes its router link so moving between sections does not reload the page. */
-export type NavLinkComponent = ComponentType<{
+export interface NavLinkProps {
   href: string;
   className?: string;
   children: ReactNode;
   'aria-current'?: 'page';
   onClick?: () => void;
-}>;
+}
+
+export type NavLinkComponent = ComponentType<NavLinkProps>;
 
 export interface SidebarNavProps {
   title?: string;
@@ -36,7 +38,7 @@ export interface SidebarNavProps {
   onNavigate?: () => void;
 }
 
-function PlainLink({ href, className, children, onClick, ...rest }: Parameters<NavLinkComponent>[0]) {
+function PlainLink({ href, className, children, onClick, ...rest }: NavLinkProps) {
   return (
     <a href={href} className={className} onClick={onClick} {...rest}>
       {children}
