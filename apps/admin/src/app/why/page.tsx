@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { publicStories, storyShareText, storyShareUrl } from '@insuros/domain';
+import { publicStories, publicStrengths, storyShareText, storyShareUrl } from '@insuros/domain';
 import { ACCENT_GRADIENT, ACCENT_SOLID, Motif } from '@/components/value/motif';
 import { ShareButton } from '@/components/value/share-button';
 import { SITE_URL } from '@/lib/site';
@@ -40,6 +40,7 @@ const FACTS: { figure: string; text: string; source: string; href: string }[] = 
 
 export default function WhyPage() {
   const stories = publicStories();
+  const strengths = publicStrengths();
   const pageText = `Why InsurOS: the problems insurance teams live with, and what one workspace does about each.\n\n${SITE_URL}/why`;
 
   return (
@@ -126,7 +127,9 @@ export default function WhyPage() {
                   <p className='text-xs font-semibold' style={{ color: ACCENT_SOLID[story.accent] }}>
                     What you get
                   </p>
-                  <p className='mt-1 flex-1 text-[15px] leading-relaxed text-ink'>{story.answer}</p>
+                  <p className='mt-1 text-[15px] leading-relaxed text-ink'>{story.answer}</p>
+                  <p className='mt-3 text-xs font-semibold text-dim'>What you gain</p>
+                  <p className='mt-1 flex-1 text-[15px] leading-relaxed text-ink'>{story.gain}</p>
                   <div className='mt-4'>
                     <ShareButton
                       tone='dark'
@@ -139,6 +142,43 @@ export default function WhyPage() {
               </li>
             ))}
           </ul>
+        </section>
+
+        <section aria-labelledby='gains' className='mt-12'>
+          <h2 id='gains' className='font-display text-[28px]'>
+            What good software gives a team, and where we stand
+          </h2>
+          <p className='mt-1 max-w-2xl text-sm text-dim'>
+            These are the things people praise most in reviews of established insurance systems. A system worth moving to
+            has to give you them as well as fix what hurts. Where something is only part-way, we say what is missing.
+          </p>
+          <ul className='mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+            {strengths.map((item) => (
+              <li key={item.id} id={`gain-${item.id}`} className='flex min-w-0 scroll-mt-6 flex-col rounded-2xl border border-line bg-sheet p-5'>
+                <p
+                  className={`self-start rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                    item.status === 'here' ? 'bg-sealsoft text-seal' : 'bg-warnink/10 text-warnink'
+                  }`}
+                >
+                  {item.status === 'here' ? 'Here today' : 'Part-way'}
+                </p>
+                <h3 className='mt-2.5 font-display text-[18px] leading-snug text-ink'>{item.strength}</h3>
+                <p className='mt-1.5 text-[15px] leading-relaxed text-ink'>{item.gain}</p>
+                <p className='mt-2.5 flex-1 border-t border-line pt-2.5 text-sm leading-relaxed text-dim'>{item.today}</p>
+              </li>
+            ))}
+          </ul>
+          <p className='mt-4 text-xs text-dim'>
+            Review themes from{' '}
+            <a href='https://www.g2.com/compare/applied-epic-vs-ezlynx-ezlynx-vs-hawksoft' target='_blank' rel='noopener noreferrer' className='underline underline-offset-2 hover:text-seal'>
+              G2
+            </a>{' '}
+            and{' '}
+            <a href='https://www.selecthub.com/p/insurance-agency-management-systems/ezlynx/' target='_blank' rel='noopener noreferrer' className='underline underline-offset-2 hover:text-seal'>
+              SelectHub
+            </a>
+            , read 17/11/26.
+          </p>
         </section>
 
         <section className='mt-12 rounded-2xl p-6 text-white sm:p-8' style={{ backgroundImage: ACCENT_GRADIENT.seal }}>

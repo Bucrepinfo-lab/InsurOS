@@ -124,6 +124,10 @@ export function ValueBanner({
           <div className='min-w-0 rounded-xl bg-white/10 p-4 backdrop-blur-[1px]'>
             <p className='text-xs font-semibold text-white/65'>What you get here</p>
             <p className='mt-1.5 text-[15px] leading-relaxed text-white/95'>{story.answer}</p>
+            <p className='mt-2.5 border-t border-white/15 pt-2.5 text-sm text-white/90'>
+              <span className='font-semibold text-white'>What you gain: </span>
+              {story.gain}
+            </p>
             <p className='mt-2.5 border-t border-white/15 pt-2.5 text-sm text-white/85'>
               <span className='font-semibold text-white'>Try it: </span>
               {story.doNow}
