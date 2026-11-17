@@ -1,17 +1,38 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 import { storyForPath, storyShareText, storyShareUrl } from '@insuros/domain';
 import { ACCENT_GRADIENT, Motif } from './motif';
 import { ShareButton } from './share-button';
 
 const HIDDEN_KEY = 'insuros.value.hidden';
 
-function readHidden(): string[] {
+// The folded banners, kept in this browser. Read through useSyncExternalStore
+// so the server render and the first client render agree (nothing folded).
+const listeners = new Set<() => void>();
+let memory: string | null = null;
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+function readRaw(): string {
   try {
-    const raw = window.localStorage.getItem(HIDDEN_KEY);
-    const parsed: unknown = raw ? JSON.parse(raw) : [];
+    return window.localStorage.getItem(HIDDEN_KEY) ?? memory ?? '[]';
+  } catch {
+    return memory ?? '[]';
+  }
+}
+
+const serverRaw = () => '[]';
+
+function parseHidden(raw: string): string[] {
+  try {
+    const parsed: unknown = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : [];
   } catch {
     return [];
@@ -19,11 +40,13 @@ function readHidden(): string[] {
 }
 
 function writeHidden(ids: string[]) {
+  memory = JSON.stringify(ids);
   try {
-    window.localStorage.setItem(HIDDEN_KEY, JSON.stringify(ids));
+    window.localStorage.setItem(HIDDEN_KEY, memory);
   } catch {
-    // Private window or blocked storage: the banner simply stays open next time.
+    // Private window or blocked storage: the choice lasts until the page is closed.
   }
+  listeners.forEach((listener) => listener());
 }
 
 /**
@@ -33,14 +56,13 @@ function writeHidden(ids: string[]) {
  */
 export function ValueBanner({ pathname, baseUrl }: { pathname: string; baseUrl: string }) {
   const story = storyForPath(pathname);
-  const [hidden, setHidden] = useState<string[]>([]);
-  useEffect(() => setHidden(readHidden()), []);
+  const raw = useSyncExternalStore(subscribe, readRaw, serverRaw);
+  const hidden = useMemo(() => parseHidden(raw), [raw]);
   if (!story) return null;
 
   const folded = hidden.includes(story.id);
   const toggle = () => {
     const next = folded ? hidden.filter((id) => id !== story.id) : [...hidden, story.id];
-    setHidden(next);
     writeHidden(next);
   };
   const shareUrl = storyShareUrl(story, baseUrl);
