@@ -18,6 +18,7 @@ export const adminNavigation: NavigationSection[] = [
     title: 'Platform',
     items: [
       { id: 'dashboard', label: 'Dashboard', href: '/dashboard' },
+      { id: 'follow-ups', label: 'Follow-ups', href: '/dashboard/follow-ups' },
       { id: 'tenants', label: 'Tenants', href: '/dashboard/tenants', requiredPermission: 'Platform:View' },
       { id: 'identity', label: 'Identity', href: '/dashboard/identity', requiredPermission: 'Identity:View' },
       {

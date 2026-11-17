@@ -111,3 +111,7 @@ Where the established systems are weak, by their own users' accounts, is where I
 Sources: [G2 comparison of Applied Epic, EZLynx and HawkSoft](https://www.g2.com/compare/applied-epic-vs-ezlynx-ezlynx-vs-hawksoft); [SelectHub on EZLynx](https://www.selecthub.com/p/insurance-agency-management-systems/ezlynx/); [Snapsheet claims software](https://www.snapsheetclaims.com/insurance-claims-management-software). Read 17/11/26. Review counts change; no figure from these pages is quoted in the product.
 
 Every value story also carries a **gain** line ("What you gain"), shown on the banner, on `/why` and in the share text.
+
+## 9. Order of events and escalation (added 17/11/26)
+
+Every section states its order of events on its banner. Where real records exist, the order is enforced by **follow-ups**: each step has an owner and a time to respond, and a step nobody answers goes to the supervisor and then to the administrator (see `packages/domain/src/follow-up.ts` and the MEMORY entry of 17/11/26). This is the product's answer to the main complaint in the research, delay and silence: the two-day acknowledgement in the claim flow follows the regulator's draft claims guidelines. In public copy we say "a step nobody answers goes to the supervisor"; we do not promise a time in which a claim is decided or paid.

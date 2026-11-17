@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { KPICard, WorkspaceHeader } from '@insuros/ui';
 import { VALUE_STORIES, storyForPath, type ValueStory } from '@insuros/domain';
-import { ClaimService, CustomerService, PolicyService } from '@insuros/services';
+import { ClaimService, CustomerService, FollowUpService, PolicyService } from '@insuros/services';
 import { ACCENT_SOLID, Motif } from '@/components/value/motif';
 import { getAuthState } from '@/lib/auth/session';
+import { followUpViewerFor } from '@/lib/follow-up-viewer';
 import { reachFor } from '@/lib/record-scope';
 
 export const metadata = { title: 'Home' };
@@ -35,6 +36,7 @@ export default async function DashboardHomePage() {
         can('Claims:View') ? new ClaimService().getClaimsFor(reachFor(principal, 'Claims')) : null
       ])
     : [null, null, null];
+  const owed = principal ? await new FollowUpService().counts(followUpViewerFor(principal)) : null;
   const openClaims = claims?.filter((claim) => claim.status === 'Open' || claim.status === 'In Review').length;
   const activePolicies = policies?.filter((policy) => policy.status === 'Active').length;
 
@@ -49,6 +51,24 @@ export default async function DashboardHomePage() {
         title={firstName ? `Welcome, ${firstName}` : 'Welcome'}
         description='Your records, and the path the work follows: customer, policy, claim, money, proof.'
       />
+
+      {owed && owed.yours + owed.escalated > 0 ? (
+        <Link
+          href='/dashboard/follow-ups'
+          className={`mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-5 py-4 transition focus-visible:outline-2 focus-visible:outline-seal ${
+            owed.escalated + owed.late > 0 ? 'border-red-300 bg-red-50 hover:border-red-400' : 'border-seal/30 bg-sealsoft hover:border-seal/60'
+          }`}
+        >
+          <span className='min-w-0 text-[15px] text-ink'>
+            <strong>
+              {owed.yours} {owed.yours === 1 ? 'step is' : 'steps are'} waiting on you
+            </strong>
+            {owed.late > 0 ? `, ${owed.late} past its time` : ''}
+            {owed.escalated > 0 ? `. ${owed.escalated} escalated to you by your team` : ''}.
+          </span>
+          <span className='text-sm font-semibold text-seal'>Open follow-ups</span>
+        </Link>
+      ) : null}
 
       {customers || policies || claims ? (
         <div className='mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>

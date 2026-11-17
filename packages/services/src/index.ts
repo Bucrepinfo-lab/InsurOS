@@ -48,6 +48,7 @@ export * from "./marketing";
 export * from "./subscriptions";
 export * from "./engagement";
 export * from "./usage-insight";
+export * from "./follow-ups";
 export { computePolicyHealth, evaluateSceneIntegrity } from "@insuros/domain";
 export type { ScopedAccessRequest, SceneIntegrityResult } from "@insuros/domain";
 export * from "./payment-ledger";

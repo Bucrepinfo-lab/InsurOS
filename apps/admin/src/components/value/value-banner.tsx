@@ -135,6 +135,20 @@ export function ValueBanner({
           </div>
         </div>
 
+        <div className='mt-4'>
+          <p className='text-xs font-semibold text-white/65'>The order of events here</p>
+          <ol className='mt-1.5 flex flex-wrap gap-x-2 gap-y-1.5 text-sm text-white/95'>
+            {story.flow.map((step, index) => (
+              <li key={step} className='inline-flex items-center gap-2'>
+                <span className='inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/20 font-mono text-[11px]'>
+                  {index + 1}
+                </span>
+                {step}
+              </li>
+            ))}
+          </ol>
+        </div>
+
         <div className='mt-5 flex flex-wrap items-center gap-2.5'>
           {story.next.map((link) => (
             <Link

@@ -63,7 +63,7 @@ describe("value story (owner brief 17/11/26): a pain and an answer on every sect
       /!/
     ];
     for (const story of VALUE_STORIES) {
-      const text = [story.area, story.pain, story.answer, story.gain, story.doNow, ...story.next.map((n) => n.label)].join(" ");
+      const text = [story.area, story.pain, story.answer, story.gain, ...story.flow, story.doNow, ...story.next.map((n) => n.label)].join(" ");
       for (const pattern of banned) expect(text, `${story.id} ${pattern}`).not.toMatch(pattern);
     }
     const claims = VALUE_STORIES.find((s) => s.id === "claims-intake")!;
@@ -82,6 +82,10 @@ describe("value story (owner brief 17/11/26): a pain and an answer on every sect
       expect(story.gain.length, story.id).toBeGreaterThan(30);
       expect(story.gain.length, story.id).toBeLessThanOrEqual(170);
       expect(story.gain, story.id).not.toMatch(/\d+ ?%|\b\d+x\b/);
+      // Every section has an order of events.
+      expect(story.flow.length, story.id).toBeGreaterThanOrEqual(3);
+      expect(story.flow.length, story.id).toBeLessThanOrEqual(5);
+      for (const step of story.flow) expect(step.length, `${story.id}: ${step}`).toBeLessThanOrEqual(40);
       expect(story.id).toMatch(/^[a-z][a-z-]+$/);
     }
   });
