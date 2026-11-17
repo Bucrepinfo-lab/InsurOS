@@ -30,7 +30,7 @@ async function freeNumber(
   taken: (id: string) => Promise<unknown>
 ): Promise<string> {
   const now = new Date();
-  let sequence = now.getTime() % 1_000_000;
+  const sequence = now.getTime() % 1_000_000;
   for (let attempt = 0; attempt < 20; attempt += 1) {
     const candidate = newRecordNumber(prefix, now, sequence + attempt * 7919);
     if (!(await taken(candidate))) return candidate;
