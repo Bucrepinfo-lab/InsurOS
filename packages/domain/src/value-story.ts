@@ -153,8 +153,8 @@ export const VALUE_STORIES: ValueStory[] = [
     motif: "ledger",
     area: "Documents",
     pain: "A claim stalls for days because one document was missing and nobody noticed until the file reached a manager's desk.",
-    answer: "Each document type has its required details. A record with a missing or doubtful detail is flagged for a person to review instead of moving on quietly.",
-    doNow: "Open the records marked for review and clear them.",
+    answer: "Each document type has its required details. Type them, or let your own phone read a photo and check what it found. A record with a missing detail is flagged for review instead of moving on quietly.",
+    doNow: "Record a document for an open claim, then clear the ones marked for review.",
     next: [
       { label: "Claim intake", href: "/dashboard/claims/automation" },
       { label: "Scene evidence", href: "/dashboard/claims/evidence" }
