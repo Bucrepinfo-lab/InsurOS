@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import {
   Badge,
   DomainEntityList,
@@ -9,9 +10,7 @@ import {
 } from '@insuros/ui';
 import type { OwnedPolicy, PolicyStatus } from '@insuros/domain';
 import { PolicyService } from '@insuros/services';
-import { ActionButton } from '@/components/ActionButton';
 import { StatusFilter, applyStatusFilter } from '@/components/list-filters';
-import { issueDemoPolicy } from '@/app/dashboard/actions';
 import { currentReach } from '@/lib/record-scope';
 
 export const metadata = { title: 'Policies' };
@@ -52,7 +51,11 @@ export default async function PoliciesPage({
     <DomainModulePage
       title='Policy Lifecycle'
       description='Manage policy issuance, servicing, endorsements, renewals, cancellations, and lifecycle operations.'
-      actions={<ActionButton label='Issue policy' action={issueDemoPolicy} />}
+      actions={
+        <Link href='/dashboard/policies/new' className='inline-flex items-center justify-center gap-2 rounded-lg bg-[linear-gradient(180deg,#22344f_0%,#1b2a41_100%)] px-4 py-2 text-sm font-medium text-paper shadow-[0_1px_2px_rgba(18,28,49,0.3),0_8px_20px_-10px_rgba(18,28,49,0.5)] transition-all duration-200 hover:-translate-y-px hover:bg-[linear-gradient(180deg,#128a6b_0%,#0f6e56_100%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal'>
+          Record policy
+        </Link>
+      }
     >
       <div className='mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
         <KPICard title='Policies' value={String(filtered.length)} change={reach.kind === 'own' ? 'Your book' : 'Matching filters'} />

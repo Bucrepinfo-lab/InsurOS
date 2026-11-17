@@ -3,6 +3,13 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-17 — Real forms for customers, policies and claims (owner: "fix all")
+- `/dashboard/customers/new`, `/dashboard/policies/new`, `/dashboard/claims/new` replace the three buttons that copied a sample row. Actions in `apps/admin/src/app/dashboard/record-actions.ts`: authorised on the server (`<Area>:Create`), every field re-checked by `packages/domain/src/record-forms.ts`, record stamped with the person who captured it. A policy's customer must be one the person may see; a claim goes through `ClaimService.registerClaim` (policy exists, visible, in force). No money moves; the premium and the claimed amount are records only.
+- New customer starts Pending; a new policy may start in force or pending only; numbers are `CUS-/POL-<year>-<6 digits>`, claims `CLM-<year>-d<6 digits>` (the claim service's own numbering).
+- `CreateGate` shows the form only to roles that may create; view-only roles get a plain note.
+- Removed `addDemoCustomer`, `issueDemoPolicy`, `registerDemoClaim`. The other sample-row actions (regions, benchmarks, settings and the like) remain and are listed in docs/VALUE_STRATEGY.md §7.
+- Copy on the claim settlement and payout detail pages no longer says money is paid to M-Pesa (payments are off): copy only, no settlement logic touched.
+
 ## 2026-11-17 — Usage insight: what people open, look for and click
 - Operations → **What people use** (`/dashboard/operations/insight`, Operations:View): most opened sections, next steps followed from banners, searches, searches that found nothing, shares; 7 / 30 / 90 days.
 - Counts only, per tenant per East Africa day: `UsageCounter` rows in the new JSON collection `usage_counters` (no migration; nothing seeded). `packages/domain/src/usage-insight.ts` turns whatever the browser reports into a fixed key or ignores it: a path becomes its section (never a record id), a click must be a control that exists on that banner, a search must be letters only, at most three words and 30 characters (anything with a digit is dropped). No person is stored.

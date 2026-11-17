@@ -8,7 +8,7 @@ export default function ClaimSettlementPage() {
   return (
     <DomainModulePage
       title={`Settlement · ${claimId}`}
-      description='Reserve, approved amount, and payout status — paid to the claimant’s M-Pesa number once approved.'
+      description='Reserve, approved amount and payout status, as recorded by your finance team. InsurOS keeps the record; it does not send the money.'
     >
       <div className='grid gap-4 lg:grid-cols-3'>
         <Card><CardContent><p className='text-sm text-slate-500'>Reserve</p><p className='mt-2 font-medium'>KES 120,000</p></CardContent></Card>
