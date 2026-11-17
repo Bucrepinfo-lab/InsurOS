@@ -86,9 +86,9 @@ export default function ClaimAssessmentPage() {
             </ul>
             <p className='mt-4 text-sm text-slate-500'>
               A person records the decision in the claim workflow.{' '}
-              <a href='/dashboard/claims/workflows' className='font-medium text-seal underline underline-offset-2'>
+              <Link href='/dashboard/claims/workflows' className='font-medium text-seal underline underline-offset-2'>
                 Open the claim workflow
-              </a>
+              </Link>
             </p>
           </CardContent>
         </Card>
