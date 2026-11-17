@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   type DataTableColumn
@@ -58,7 +57,6 @@ export default function PolicyCoveragesPage() {
         data={coverages}
         emptyTitle='No coverages'
         emptyDescription='Add coverage items to this policy.'
-        emptyAction={<Button>Add Coverage</Button>}
       />
     </DomainModulePage>
   );

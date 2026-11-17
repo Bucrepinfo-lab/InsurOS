@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -67,7 +66,6 @@ export default async function FeatureFlagsPage() {
         data={flags}
         emptyTitle='No feature flags'
         emptyDescription='No feature flags have been configured.'
-        emptyAction={<Button>Create Feature Flag</Button>}
       />
     </DomainModulePage>
   );

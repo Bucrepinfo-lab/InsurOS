@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -106,7 +105,6 @@ export default async function NotificationsPage() {
           data={events}
           emptyTitle='No notification events'
           emptyDescription='No platform notification events are currently available.'
-          emptyAction={<Button>Notification Rules</Button>}
         />
 
         <DomainEntityList
@@ -117,7 +115,6 @@ export default async function NotificationsPage() {
           data={notifications}
           emptyTitle='No notifications'
           emptyDescription='No platform notifications are currently available.'
-          emptyAction={<Button>Notification Rules</Button>}
         />
       </div>
     </DomainModulePage>

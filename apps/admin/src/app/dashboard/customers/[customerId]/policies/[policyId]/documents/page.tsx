@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   type DataTableColumn
@@ -52,7 +51,6 @@ export default function PolicyDocumentsPage() {
         data={documents}
         emptyTitle='No documents'
         emptyDescription='Upload or generate the first document for this policy.'
-        emptyAction={<Button>Upload Document</Button>}
       />
     </DomainModulePage>
   );

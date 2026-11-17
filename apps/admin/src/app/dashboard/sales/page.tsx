@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -98,7 +97,6 @@ export default async function SalesPortalPage() {
         data={agents}
         emptyTitle='No agents'
         emptyDescription='No sales agents have been named.'
-        emptyAction={<Button>Name New Agent</Button>}
       />
     </DomainModulePage>
   );

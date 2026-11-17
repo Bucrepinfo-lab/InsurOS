@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -64,7 +63,6 @@ export default async function WorkflowRulesPage() {
         data={rules}
         emptyTitle='No workflow rules'
         emptyDescription='No workflow transition rules have been configured yet.'
-        emptyAction={<Button>Create Rule</Button>}
       />
     </DomainModulePage>
   );

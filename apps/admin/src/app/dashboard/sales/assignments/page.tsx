@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -102,7 +101,6 @@ export default async function SalesAssignmentsPage() {
         data={assignments}
         emptyTitle='No assignments'
         emptyDescription='No sales assignments have been created.'
-        emptyAction={<Button>Create Assignment</Button>}
       />
     </DomainModulePage>
   );

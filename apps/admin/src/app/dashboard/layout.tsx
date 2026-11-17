@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { AdminWorkspaceShell, PlatformProvider } from '@insuros/ui';
+import { PlatformProvider } from '@insuros/ui';
+import { DashboardShell } from '@/components/dashboard-shell';
+import { SITE_URL } from '@/lib/site';
 import { ServiceUnavailable } from '@/components/auth/service-unavailable';
 import { SignOutButton } from '@/components/sign-out-button';
 import { getAuthMode, isProductionRuntime } from '@/lib/auth/config';
@@ -32,7 +34,8 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       environment={isProductionRuntime ? 'production' : 'development'}
       permissions={principal.permissions}
     >
-      <AdminWorkspaceShell
+      <DashboardShell
+        baseUrl={SITE_URL}
         userActions={
           getAuthMode() === 'supabase' ? (
             <div className='flex items-center gap-2'>
@@ -45,7 +48,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         }
       >
         {children}
-      </AdminWorkspaceShell>
+      </DashboardShell>
     </PlatformProvider>
   );
 }

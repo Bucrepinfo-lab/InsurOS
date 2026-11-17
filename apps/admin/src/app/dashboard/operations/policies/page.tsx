@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -81,7 +80,6 @@ export default async function WorkflowPoliciesPage() {
         data={policies}
         emptyTitle="No policies"
         emptyDescription="No workflow policies configured."
-        emptyAction={<Button>Create Policy</Button>}
       />
     </DomainModulePage>
   );

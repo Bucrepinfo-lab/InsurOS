@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -66,7 +65,6 @@ export default async function PlatformSettingsPage() {
         data={settings}
         emptyTitle='No settings'
         emptyDescription='No platform settings have been configured.'
-        emptyAction={<Button>Create Setting</Button>}
       />
     </DomainModulePage>
   );

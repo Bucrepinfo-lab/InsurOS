@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   Card,
   CardContent,
   DomainEntityList,
@@ -156,7 +155,6 @@ export default async function IdentityPage() {
           data={assignments}
           emptyTitle='No role assignments'
           emptyDescription='No role assignments are currently configured.'
-          emptyAction={<Button>Assign Role</Button>}
         />
 
         <DomainEntityList
@@ -167,7 +165,6 @@ export default async function IdentityPage() {
           data={roles}
           emptyTitle='No roles'
           emptyDescription='No platform roles are currently configured.'
-          emptyAction={<Button>Create Role</Button>}
         />
 
         <DomainEntityList
@@ -178,7 +175,6 @@ export default async function IdentityPage() {
           data={permissions}
           emptyTitle='No permissions'
           emptyDescription='No platform permissions are currently configured.'
-          emptyAction={<Button>Create Permission</Button>}
         />
 
         <DomainEntityList
@@ -189,7 +185,6 @@ export default async function IdentityPage() {
           data={users}
           emptyTitle='No users yet'
           emptyDescription='Invite the first administrator or operator to begin managing this tenant.'
-          emptyAction={<Button>Invite User</Button>}
         />
       </div>
     </DomainModulePage>

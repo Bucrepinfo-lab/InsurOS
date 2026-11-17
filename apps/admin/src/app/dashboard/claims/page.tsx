@@ -1,6 +1,5 @@
 ﻿import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -69,7 +68,6 @@ export default async function ClaimsPage({
         data={filtered}
         emptyTitle='No claims'
         emptyDescription='Register the first claim.'
-        emptyAction={<Button>Register Claim</Button>}
       />
     </DomainModulePage>
   );

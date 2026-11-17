@@ -34,4 +34,8 @@ Sidebar is ink-dark with a seal small-caps eyebrow and a seal left-rule on the a
 
 ## Voice pairing
 
-The system pairs with the CRM content voice: merits stated as engineered facts ("Claims paid in hours, not weeks"), reasons always attached, sentence case, no exclamation marks.
+The system pairs with the value-story voice (`docs/VALUE_STRATEGY.md`): the pain in the words of the people living it, then what the section does today, reasons always attached, sentence case, no exclamation marks, and no promise the product does not deliver.
+
+## Value-story accents (v1.2, 17/11/26)
+
+The value banner and the `/why` cards use six deep accents, one per theme, each a dark gradient that carries white text at AA contrast, with a matching solid for links and rules on paper (`apps/admin/src/components/value/motif.tsx`): seal (trust, records), gold (money), ocean (claims), coral (risk and evidence), violet (people and access), teal (products and operations). Each pairs with one line drawing (shield, ledger, clock, seal, people, chart). Accents belong to the value story only; tables, forms and status badges keep the ledger tokens.

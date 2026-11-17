@@ -1,28 +1,24 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
-  MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
 import { ActionButton } from '@/components/ActionButton';
 import { submitDemoFnol } from '@/app/dashboard/actions';
-import { ClaimsAutomationService, MarketingService, claimantMessageFor } from '@insuros/services';
+import { ClaimsAutomationService, claimantMessageFor } from '@insuros/services';
 import { paymentsEnabled } from '@/lib/payments-gate';
 
 export const metadata = { title: 'Claims automation' };
 
 const claimsAutomationService = new ClaimsAutomationService();
-const marketingService = new MarketingService();
 
 export default async function ClaimsAutomationPage() {
   const fnols = await claimsAutomationService.getFnols();
   const rules = await claimsAutomationService.getRules();
   const decisions = await claimsAutomationService.getDecisions();
   const stpRate = await claimsAutomationService.getStpRate();
-  const [banner] = await marketingService.getContentFor('ClaimsPortal');
 
   type DecisionRow = (typeof decisions)[number];
   type RuleRow = (typeof rules)[number];
@@ -116,14 +112,6 @@ export default async function ClaimsAutomationPage() {
       }
       actions={<ActionButton label='Submit FNOL' action={submitDemoFnol} />}
     >
-      {banner ? (
-        <MarketingBanner
-          headline={banner.headline}
-          body={banner.body}
-          cta={banner.cta}
-          ctaHref={banner.ctaHref}
-        />
-      ) : null}
 
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard
@@ -151,13 +139,12 @@ export default async function ClaimsAutomationPage() {
       <div className='mb-8'>
         <DomainEntityList
           title='Adjudication Rules'
-          description='Fast lanes by line: amount ceilings, fraud thresholds, payout SLAs.'
+          description='Review rules by line: amount ceilings and risk thresholds. Every claim goes to a person for the decision.'
           searchPlaceholder='Search rules...'
           columns={ruleColumns}
           data={rules}
           emptyTitle='No rules'
           emptyDescription='No adjudication rules configured.'
-          emptyAction={<Button>Create Rule</Button>}
         />
       </div>
 
@@ -169,7 +156,6 @@ export default async function ClaimsAutomationPage() {
         data={decisions}
         emptyTitle='No decisions'
         emptyDescription='No claims have been adjudicated.'
-        emptyAction={<Button>Submit FNOL</Button>}
       />
     </DomainModulePage>
   );

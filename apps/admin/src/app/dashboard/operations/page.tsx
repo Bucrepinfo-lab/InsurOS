@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -66,7 +65,6 @@ export default async function OperationsPage() {
         data={workflows}
         emptyTitle='No workflows'
         emptyDescription='No operational workflows are currently active.'
-        emptyAction={<Button>Create Workflow</Button>}
       />
     </DomainModulePage>
   );

@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -75,7 +74,6 @@ export default async function AuditCenterPage() {
           data={events}
           emptyTitle='No audit events'
           emptyDescription='No platform audit events have been generated yet.'
-          emptyAction={<Button>Export Audit Events</Button>}
         />
 
         <DomainEntityList
@@ -86,7 +84,6 @@ export default async function AuditCenterPage() {
           data={records}
           emptyTitle='No audit records'
           emptyDescription='No audit records have been generated yet.'
-          emptyAction={<Button>Export Audit Log</Button>}
         />
       </div>
     </DomainModulePage>

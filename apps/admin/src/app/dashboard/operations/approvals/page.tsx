@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -63,7 +62,6 @@ export default async function ApprovalQueuePage() {
         data={approvals}
         emptyTitle='No approvals'
         emptyDescription='No workflow approvals are currently pending.'
-        emptyAction={<Button>Configure Approvals</Button>}
       />
     </DomainModulePage>
   );

@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   type DataTableColumn
@@ -52,7 +51,6 @@ export default function PolicyPremiumPage() {
         data={premiums}
         emptyTitle='No premium schedule'
         emptyDescription='Create the first premium schedule for this policy.'
-        emptyAction={<Button>Create Schedule</Button>}
       />
     </DomainModulePage>
   );

@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   Card,
   CardContent,
   DomainEntityList,
@@ -78,7 +77,6 @@ export default async function MarketplacePage() {
         data={products}
         emptyTitle="No products"
         emptyDescription="Create the first marketplace product."
-        emptyAction={<Button>Create Product</Button>}
       />
     </DomainModulePage>
   );

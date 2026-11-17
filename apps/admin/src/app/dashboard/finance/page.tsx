@@ -1,6 +1,5 @@
 ﻿import {
   Badge,
-  Button,
   Card,
   CardContent,
   DomainEntityList,
@@ -76,7 +75,6 @@ export default async function FinancePage() {
         data={transactions}
         emptyTitle='No transactions'
         emptyDescription='Create the first invoice or payment record.'
-        emptyAction={<Button>Create Invoice</Button>}
       />
     </DomainModulePage>
   );

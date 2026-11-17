@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -62,7 +61,6 @@ export default async function WorkflowTransitionsPage() {
         data={transitions}
         emptyTitle='No transitions'
         emptyDescription='No workflow transitions have been recorded yet.'
-        emptyAction={<Button>Export History</Button>}
       />
     </DomainModulePage>
   );

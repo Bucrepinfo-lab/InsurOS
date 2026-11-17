@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -72,7 +71,6 @@ export default async function PoliciesPage({
         data={filtered}
         emptyTitle='No policies'
         emptyDescription='Issue the first insurance policy.'
-        emptyAction={<Button>Issue Policy</Button>}
       />
     </DomainModulePage>
   );
