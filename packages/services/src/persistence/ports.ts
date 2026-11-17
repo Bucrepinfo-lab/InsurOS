@@ -36,7 +36,8 @@ import type {
   TaxRemittance,
   Tenant,
   TermsAcceptance,
-  TermsDocument
+  TermsDocument,
+  UsageCounter
 } from "@insuros/domain";
 
 /**
@@ -109,4 +110,6 @@ export interface PersistenceAdapter {
   engagementItems: Repository<EngagementItem>;
   newsletterIssues: Repository<NewsletterIssue>;
   subscriberPrefs: Repository<SubscriberDashboardPrefs & { id: string }>;
+  /** Counts of section views, searches and banner clicks per day. Starts empty in every tenant. */
+  usageCounters: Repository<UsageCounter>;
 }

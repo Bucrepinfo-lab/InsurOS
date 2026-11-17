@@ -3,6 +3,12 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-17 — Usage insight: what people open, look for and click
+- Operations → **What people use** (`/dashboard/operations/insight`, Operations:View): most opened sections, next steps followed from banners, searches, searches that found nothing, shares; 7 / 30 / 90 days.
+- Counts only, per tenant per East Africa day: `UsageCounter` rows in the new JSON collection `usage_counters` (no migration; nothing seeded). `packages/domain/src/usage-insight.ts` turns whatever the browser reports into a fixed key or ignores it: a path becomes its section (never a record id), a click must be a control that exists on that banner, a search must be letters only, at most three words and 30 characters (anything with a digit is dropped). No person is stored.
+- Flow: `track()` in `apps/admin/src/lib/usage.ts` (sendBeacon, never waits, never throws) → `POST /api/usage` (signed-in staff, same-origin) → `UsageInsightService.record`.
+- Touches persistence (new port entry + dataset definition): owner-approved by the 17/11/26 brief ("most sorted, viewed, asked, clicked").
+
 ## 2026-11-17 — Value story: a pain and its answer on every section (owner brief)
 - Strategy and copy rules: `docs/VALUE_STRATEGY.md` (research with sources, the 12 earlier points checked against today's product and reconciled into 8 pillars, banned claims, audit findings).
 - Copy source: `packages/domain/src/value-story.ts` (20 stories, `storyForPath`, `publicStories`, share helpers). Guards: `packages/domain/test/value-story.test.ts` (every nav link has a story, every link is a real page, every story reachable from home, banned claims, lengths) and `no-dead-buttons.test.ts`.

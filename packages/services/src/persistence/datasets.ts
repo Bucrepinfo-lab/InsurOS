@@ -115,7 +115,9 @@ export const DATASETS: Record<RepositoryKey, DatasetDefinition> = {
     collection: "subscriber_prefs",
     kind: "sample",
     rows: () => mockSubscriberPrefs.map((prefs) => ({ id: prefs.subscriptionId, ...prefs }))
-  }
+  },
+  // Nothing is seeded: counts start at zero in every tenant.
+  usageCounters: { collection: "usage_counters", kind: "reference", rows: () => [] }
 };
 
 export const REPOSITORY_KEYS = Object.keys(DATASETS) as RepositoryKey[];

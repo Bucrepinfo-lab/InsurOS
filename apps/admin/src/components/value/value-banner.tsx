@@ -54,7 +54,16 @@ function writeHidden(ids: string[]) {
  * does about it, one thing to do now, and where the flow continues. It folds
  * to one line and remembers that per section on this device.
  */
-export function ValueBanner({ pathname, baseUrl }: { pathname: string; baseUrl: string }) {
+export function ValueBanner({
+  pathname,
+  baseUrl,
+  onUse
+}: {
+  pathname: string;
+  baseUrl: string;
+  /** Told which banner control was used, as `<story>><action or next link>`. */
+  onUse?: (value: string) => void;
+}) {
   const story = storyForPath(pathname);
   const raw = useSyncExternalStore(subscribe, readRaw, serverRaw);
   const hidden = useMemo(() => parseHidden(raw), [raw]);
@@ -63,6 +72,7 @@ export function ValueBanner({ pathname, baseUrl }: { pathname: string; baseUrl: 
   const folded = hidden.includes(story.id);
   const toggle = () => {
     const next = folded ? hidden.filter((id) => id !== story.id) : [...hidden, story.id];
+    onUse?.(`${story.id}>${folded ? 'show' : 'hide'}`);
     writeHidden(next);
   };
   const shareUrl = storyShareUrl(story, baseUrl);
@@ -126,6 +136,7 @@ export function ValueBanner({ pathname, baseUrl }: { pathname: string; baseUrl: 
             <Link
               key={link.href}
               href={link.href}
+              onClick={() => onUse?.(`${story.id}>${link.href}`)}
               className='inline-flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-ink shadow-[0_6px_18px_-8px_rgba(0,0,0,0.45)] transition hover:-translate-y-px hover:shadow-[0_10px_24px_-8px_rgba(0,0,0,0.5)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
             >
               {link.label}
@@ -134,7 +145,7 @@ export function ValueBanner({ pathname, baseUrl }: { pathname: string; baseUrl: 
               </svg>
             </Link>
           ))}
-          <ShareButton title={`InsurOS: ${story.area}`} text={storyShareText(story, baseUrl)} url={shareUrl} />
+          <ShareButton title={`InsurOS: ${story.area}`} text={storyShareText(story, baseUrl)} url={shareUrl} onShare={() => onUse?.(`${story.id}>share`)} />
         </div>
       </div>
     </section>
