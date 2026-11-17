@@ -18,7 +18,8 @@
     "@insuros/mocks": "workspace:*",
     "@insuros/services": "workspace:*",
     "@insuros/domain": "workspace:*",
-    "postgres": "^3.4.5"
+    "postgres": "^3.4.5",
+    "tesseract.js": "5.1.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

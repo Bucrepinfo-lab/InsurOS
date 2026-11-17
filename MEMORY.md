@@ -3,6 +3,14 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-17 — Documents: real entry, with a photo read on the device (owner chose "most suitable": on-device)
+- `/dashboard/operations/documents/new` replaces the "Scan document" button that filed a sample record. Types offered: repair invoice, medical receipt, police abstract, vehicle log book (identity documents are deliberately left out for now).
+- The person types the details, or picks/takes a photo: `tesseract.js` (5.1.1, Apache-2.0) reads it **in the browser**. The photo is never uploaded or stored. `suggestDocumentFields` offers only values with a recognisable shape (date, number plate, OB number, total); the person checks each, and only the confirmed details are saved through `recordDocument` (Operations:Create, fields re-checked by `checkDocumentForm`, claim must be one the person may see).
+- A missing required detail saves the record as "Needs review" instead of refusing it. `engine` records how it was captured; `verifiedBy` is the person who entered it.
+- Runtime note: the reader's worker, core and English data download from cdn.jsdelivr.net on first use (code and language data only; nothing about the document is sent). If that download fails the form says so and typing still works. Self-hosting those files under `public/` is the follow-up if the CDN proves unreliable on phones.
+- No per-page fee, no new provider, no storage bucket, no change to the Play data-safety answers (the photo is not collected).
+- **Not yet tested in a real browser** at the time of merge (no local install in the build sandbox, Chrome not connected): typing path is covered by tests; the photo reading needs a live check on a phone.
+
 ## 2026-11-17 — Real forms for customers, policies and claims (owner: "fix all")
 - `/dashboard/customers/new`, `/dashboard/policies/new`, `/dashboard/claims/new` replace the three buttons that copied a sample row. Actions in `apps/admin/src/app/dashboard/record-actions.ts`: authorised on the server (`<Area>:Create`), every field re-checked by `packages/domain/src/record-forms.ts`, record stamped with the person who captured it. A policy's customer must be one the person may see; a claim goes through `ClaimService.registerClaim` (policy exists, visible, in force). No money moves; the premium and the claimed amount are records only.
 - New customer starts Pending; a new policy may start in force or pending only; numbers are `CUS-/POL-<year>-<6 digits>`, claims `CLM-<year>-d<6 digits>` (the claim service's own numbering).

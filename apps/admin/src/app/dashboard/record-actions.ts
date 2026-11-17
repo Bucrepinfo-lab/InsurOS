@@ -2,9 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 import {
+  DOCUMENT_TYPE_LABELS,
   canSeeCustomer,
   checkClaimForm,
   checkCustomerForm,
+  checkDocumentForm,
   checkPolicyForm,
   formatKes,
   newRecordNumber,
@@ -12,7 +14,7 @@ import {
   type OwnedCustomer,
   type OwnedPolicy
 } from '@insuros/domain';
-import { ClaimService, getPersistence } from '@insuros/services';
+import { ClaimService, DocumentIntelligenceService, getPersistence } from '@insuros/services';
 import { fail, ok, type ActionResult } from '@/lib/action-result';
 import { authorizeAction } from '@/lib/auth/session';
 import { actorIdFor, reachFor } from '@/lib/record-scope';
@@ -131,4 +133,47 @@ export async function registerClaim(_prev: ActionResult | null, formData: FormDa
     `${result.claim.amount} claimed on ${result.claim.policyNumber} for ${result.claim.customer}. It is open and waiting for an owner.`,
     { reference: result.claim.claimNumber }
   );
+}
+
+/**
+ * Record a claim document's details. The photo, if one was used, was read on
+ * the person's own device and is not sent here: only the details they typed
+ * or confirmed arrive. A missing required detail sends the record to review.
+ */
+export async function recordDocument(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  const auth = await authorizeAction('Operations', 'Create');
+  if (!auth.ok) return auth.result;
+
+  const values: Record<string, unknown> = {};
+  for (const [key, value] of formData.entries()) {
+    if (key.startsWith('field.')) values[key.slice('field.'.length)] = value;
+  }
+  const checked = checkDocumentForm({
+    documentType: formData.get('documentType'),
+    claimReference: formData.get('claimReference'),
+    values
+  });
+  if (!checked.ok) return fail('Check the form', checked.error);
+
+  // A claim number, when given, must be a claim this person may see.
+  if (checked.claimReference) {
+    const claims = await new ClaimService().getClaimsFor(reachFor(auth.principal, 'Claims'));
+    if (!claims.some((claim) => claim.claimNumber === checked.claimReference)) {
+      return fail('Document not recorded', 'That claim is not one of yours.');
+    }
+  }
+
+  const reference = newRecordNumber('DOC', new Date(), Date.now());
+  const extraction = await new DocumentIntelligenceService().ingest({
+    attachmentReference: reference,
+    claimReference: checked.claimReference,
+    documentType: checked.documentType,
+    fields: checked.fields,
+    engine: formData.get('readOnDevice') === 'yes' ? 'read on device, confirmed by a person' : 'typed by a person',
+    enteredBy: actorIdFor(auth.principal)
+  });
+  revalidatePath('/dashboard/operations/documents');
+  return extraction.status === 'Verified'
+    ? ok('Document recorded', `${DOCUMENT_TYPE_LABELS[checked.documentType]}: every required detail is on record.`, { reference })
+    : ok('Document recorded, needs review', `${DOCUMENT_TYPE_LABELS[checked.documentType]}: a required detail is missing, so it is marked for review.`, { reference });
 }

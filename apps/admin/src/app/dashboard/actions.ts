@@ -11,7 +11,6 @@ import {
   ClaimsAutomationService,
   createClaimMessageGenerator,
   CommissionService,
-  DocumentIntelligenceService,
   MicroinsuranceService,
   SalesHierarchyService,
   SceneCaptureService,
@@ -329,29 +328,6 @@ export async function accrueDemoPremium(): Promise<ActionResult> {
 
   revalidatePath('/dashboard/sales/commissions');
   return ok('Commissions accrued', `${created.length} accruals cascaded up the override chain — every beneficiary named`, { reference: created[0]?.policyReference });
-}
-
-export async function ingestDemoDocument(): Promise<ActionResult> {
-  const denied = await denyUnless('Operations', 'Create');
-  if (denied) return denied;
-  const service = new DocumentIntelligenceService();
-  const strong = Math.random() > 0.4;
-  const confidence = strong ? 0.93 + Math.random() * 0.06 : 0.45 + Math.random() * 0.3;
-
-  const extraction = await service.ingest({
-    attachmentReference: `ATT-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, '0')}`,
-    documentType: 'RepairInvoice',
-    fields: [
-      { key: 'garage', value: 'Demo Motors Ltd', confidence },
-      { key: 'amount', value: String(10_000 + Math.floor(Math.random() * 90_000)), confidence },
-      { key: 'registrationNumber', value: 'KDX 001A', confidence }
-    ]
-  });
-
-  revalidatePath('/dashboard/operations/documents');
-  return extraction.status === 'Verified'
-    ? ok('Document auto-verified', `Read at ${Math.round(extraction.overallConfidence * 100)}% confidence — fields extracted and receipted`, { reference: extraction.attachmentReference })
-    : ok('Document receipted — needs review', `Confidence ${Math.round(extraction.overallConfidence * 100)}% — routed to a human, never silently decided`, { reference: extraction.attachmentReference });
 }
 
 export async function createDemoContent(): Promise<ActionResult> {

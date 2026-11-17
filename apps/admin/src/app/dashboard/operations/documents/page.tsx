@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import {
   Badge,
   DomainEntityList,
@@ -5,8 +6,7 @@ import {
   KPICard,
   type DataTableColumn
 } from '@insuros/ui';
-import { ActionButton } from '@/components/ActionButton';
-import { ingestDemoDocument } from '@/app/dashboard/actions';
+import { DOCUMENT_FIELD_LABELS, DOCUMENT_TYPE_LABELS } from '@insuros/domain';
 import { DocumentIntelligenceService } from '@insuros/services';
 
 export const metadata = { title: 'Document intelligence' };
@@ -19,18 +19,25 @@ export default async function DocumentIntelligencePage() {
   type ExtractionRow = (typeof extractions)[number];
 
   const columns: DataTableColumn<ExtractionRow>[] = [
-    { key: 'attachmentReference', header: 'Attachment' },
+    { key: 'attachmentReference', header: 'Reference' },
     {
       key: 'claimReference',
       header: 'Claim',
       render: (row) => row.claimReference ?? '—'
     },
-    { key: 'documentType', header: 'Document Type' },
+    {
+      key: 'documentType',
+      header: 'Document',
+      render: (row) => (DOCUMENT_TYPE_LABELS as Record<string, string>)[row.documentType] ?? row.documentType
+    },
+    { key: 'engine', header: 'How captured' },
     {
       key: 'fields',
       header: 'Extracted Fields',
       render: (row) =>
-        row.fields.map((field) => `${field.key}: ${field.value}`).join(' · ')
+        row.fields
+          .map((field) => `${(DOCUMENT_FIELD_LABELS[field.key] ?? field.key).replace(/ ?\(.*\)$|, in shillings$/, '')}: ${field.value || 'missing'}`)
+          .join('; ')
     },
     {
       key: 'overallConfidence',
@@ -64,7 +71,7 @@ export default async function DocumentIntelligencePage() {
                   : 'neutral'
           }
         >
-          {row.status}
+          {row.status === 'NeedsHumanReview' ? 'Needs review' : row.status}
         </Badge>
       )
     }
@@ -73,8 +80,12 @@ export default async function DocumentIntelligencePage() {
   return (
     <DomainModulePage
       title='Documents'
-      description='Document details per claim: required details are checked, and anything missing or doubtful goes to a person to review. Reading uploaded files automatically is not switched on in this release.'
-      actions={<ActionButton label='Scan document' action={ingestDemoDocument} />}
+      description='Document details per claim. Required details are checked, and anything missing goes to a person to review. A photo can be read on your own device to save typing; the photo itself is not stored.'
+      actions={
+        <Link href='/dashboard/operations/documents/new' className='inline-flex items-center justify-center gap-2 rounded-lg bg-[linear-gradient(180deg,#22344f_0%,#1b2a41_100%)] px-4 py-2 text-sm font-medium text-paper shadow-[0_1px_2px_rgba(18,28,49,0.3),0_8px_20px_-10px_rgba(18,28,49,0.5)] transition-all duration-200 hover:-translate-y-px hover:bg-[linear-gradient(180deg,#128a6b_0%,#0f6e56_100%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal'>
+          Record a document
+        </Link>
+      }
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard

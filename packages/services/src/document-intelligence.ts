@@ -7,6 +7,10 @@ export interface IngestDocumentInput {
   claimReference?: string;
   documentType: OcrDocumentType;
   fields: OcrField[];
+  /** How the details were captured. Defaults to the sample engine name. */
+  engine?: string;
+  /** Staff id of the person who typed or confirmed the details, when a person did. */
+  enteredBy?: string;
 }
 
 export class DocumentIntelligenceService {
@@ -44,7 +48,7 @@ export class DocumentIntelligenceService {
       attachmentReference: input.attachmentReference,
       claimReference: input.claimReference,
       documentType: input.documentType,
-      engine: "insuros-ocr-v1",
+      engine: input.engine ?? "insuros-ocr-v1",
       fields: input.fields,
       overallConfidence,
       status: "Extracted",
@@ -56,7 +60,7 @@ export class DocumentIntelligenceService {
       : "Verified";
 
     if (extraction.status === "Verified") {
-      extraction.verifiedBy = "system";
+      extraction.verifiedBy = input.enteredBy ?? "system";
     }
 
     return this.db.ocrExtractions.insert(extraction);

@@ -92,7 +92,7 @@ export function checkClaimForm(input: { policyId?: unknown; amount?: unknown }):
 }
 
 /** A record number such as POL-2026-048213: prefix, year (East Africa Time) and six digits. */
-export function newRecordNumber(prefix: "POL" | "CLM" | "CUS", now: Date, sequence: number): string {
+export function newRecordNumber(prefix: "POL" | "CLM" | "CUS" | "DOC", now: Date, sequence: number): string {
   const year = new Date(now.getTime() + 3 * 3_600_000).getUTCFullYear();
   return `${prefix}-${year}-${String(Math.abs(Math.trunc(sequence)) % 1_000_000).padStart(6, "0")}`;
 }
