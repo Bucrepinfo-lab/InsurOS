@@ -62,3 +62,4 @@ export * from "./payment-ledger";
 export * from "./device-auth";
 export * from "./value-story";
 export * from "./usage-insight";
+export * from "./record-forms";

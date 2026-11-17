@@ -6,7 +6,7 @@ const payoutId = 'PO-2026-0001';
 
 export default function PayoutDetailPage() {
   return (
-    <DomainModulePage title={`Payout ${payoutId}`} description='Claim disbursement paid out to the beneficiary’s M-Pesa number.'>
+    <DomainModulePage title={`Payout ${payoutId}`} description='A claim payment as recorded by your finance team. InsurOS keeps the record; it does not send the money.'>
       <div className='grid gap-4 lg:grid-cols-3'>
         <Card><CardContent><p className='text-sm text-slate-500'>Amount</p><p className='mt-2 font-medium'>KES 95,000</p></CardContent></Card>
         <Card><CardContent><p className='text-sm text-slate-500'>Beneficiary</p><p className='mt-2 font-medium'>+254 712 000 001</p></CardContent></Card>
