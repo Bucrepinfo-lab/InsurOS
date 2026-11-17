@@ -36,6 +36,9 @@ export default async function HomePage({
           <Link href='/sign-in' className='rounded-xl bg-slate-900 px-5 py-3 font-medium text-white'>
             Sign in with your phone
           </Link>
+          <Link href='/why' className='rounded-xl border border-slate-300 px-5 py-3 font-medium text-slate-800'>
+            Why teams use it
+          </Link>
           <a href='mailto:telpeninfo@gmail.com?subject=InsurOS' className='rounded-xl border border-slate-300 px-5 py-3 font-medium text-slate-800'>
             Contact us
           </a>

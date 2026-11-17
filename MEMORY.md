@@ -3,6 +3,15 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-17 — Value story: a pain and its answer on every section (owner brief)
+- Strategy and copy rules: `docs/VALUE_STRATEGY.md` (research with sources, the 12 earlier points checked against today's product and reconciled into 8 pillars, banned claims, audit findings).
+- Copy source: `packages/domain/src/value-story.ts` (20 stories, `storyForPath`, `publicStories`, share helpers). Guards: `packages/domain/test/value-story.test.ts` (every nav link has a story, every link is a real page, every story reachable from home, banned claims, lengths) and `no-dead-buttons.test.ts`.
+- Shell: `apps/admin/src/components/dashboard-shell.tsx` wraps `AdminWorkspaceShell` (grouped, collapsible sidebar with router links and active state; working section search; notifications link; no tenant "switcher" button). `ValueBanner` renders above every dashboard page; folded state per story in `localStorage` (`insuros.value.hidden`).
+- Home `/dashboard`: real counts through `*For(reach)` and role-filtered next-step cards (the hard-coded sample KPIs are gone). Public `/why`: sourced facts, story cards with anchors, share (device share sheet, else WhatsApp / email / copy).
+- Truth fixes: Documents page no longer says uploads are read (nothing is uploaded yet); micro page no longer says index covers pay automatically; sample CRM, engagement and newsletter copy rewritten (new tenants only: seeded reference rows in existing tenants are unchanged); `MarketingBanner` draws its call to action only when it has a link; `Tabs` draws only tabs that lead somewhere.
+- Removed 58 empty-state buttons and 2 assessment buttons that did nothing.
+- **Open (owner):** real upload + document reading (storage and reader choice); real data-entry forms in place of the sample-row actions; usage insight collection (persistence); refresh of seeded sample messages in existing tenants.
+
 ## 2026-11-17 — Production is live at https://getinsuros.com
 - Fly app `insuros` (fra) deployed by `Deploy (Fly)` run #10 after PR #21; `/api/health` → `{"status":"ok","auth":"supabase","persistence":"postgres"}` on getinsuros.com, www and insuros.fly.dev.
 - Domain decision (owner, 17/11/26): **getinsuros.com is the main address** (global .com, matches getstawi.com). **insuros.net** (bought 07/08/26) now 301-forwards to https://getinsuros.com at GoDaddy; its old Fly certificates can be removed once the forward's HTTPS is confirmed. All domains' registrant is Telpen Systems Ltd.

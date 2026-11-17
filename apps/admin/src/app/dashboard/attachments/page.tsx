@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -65,7 +64,6 @@ export default async function AttachmentsPage() {
         data={attachments}
         emptyTitle='No attachments'
         emptyDescription='No attachments have been uploaded yet.'
-        emptyAction={<Button>Upload Attachment</Button>}
       />
     </DomainModulePage>
   );

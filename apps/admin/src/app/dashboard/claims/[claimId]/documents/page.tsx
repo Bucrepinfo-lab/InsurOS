@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   type DataTableColumn
@@ -58,7 +57,6 @@ export default function ClaimDocumentsPage() {
         data={documents}
         emptyTitle='No documents'
         emptyDescription='Upload the first document for this claim.'
-        emptyAction={<Button>Upload Document</Button>}
       />
     </DomainModulePage>
   );

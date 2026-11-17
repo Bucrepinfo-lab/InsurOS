@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -96,7 +95,6 @@ export default async function LegalPage() {
           data={documents}
           emptyTitle='No documents'
           emptyDescription='No terms documents have been published.'
-          emptyAction={<Button>Publish Terms</Button>}
         />
       </div>
 
@@ -108,7 +106,6 @@ export default async function LegalPage() {
         data={acceptances}
         emptyTitle='No acceptances'
         emptyDescription='No terms acceptances have been recorded.'
-        emptyAction={<Button>Request Acceptance</Button>}
       />
     </DomainModulePage>
   );

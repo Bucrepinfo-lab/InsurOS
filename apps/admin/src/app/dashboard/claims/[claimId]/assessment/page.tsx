@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Badge, Button, Card, CardContent, DomainModulePage } from '@insuros/ui';
+import { Badge, Card, CardContent, DomainModulePage } from '@insuros/ui';
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
 
@@ -84,10 +84,12 @@ export default function ClaimAssessmentPage() {
                 </li>
               ))}
             </ul>
-            <div className='mt-4 flex gap-3'>
-              <Button>Approve within limit</Button>
-              <Button variant='secondary'>Request more info</Button>
-            </div>
+            <p className='mt-4 text-sm text-slate-500'>
+              A person records the decision in the claim workflow.{' '}
+              <a href='/dashboard/claims/workflows' className='font-medium text-seal underline underline-offset-2'>
+                Open the claim workflow
+              </a>
+            </p>
           </CardContent>
         </Card>
       </div>

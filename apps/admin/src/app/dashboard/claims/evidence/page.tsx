@@ -1,10 +1,8 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
-  MarketingBanner,
   formatDateTime,
   type DataTableColumn
 } from '@insuros/ui';
@@ -12,7 +10,6 @@ import { ActionButton } from '@/components/ActionButton';
 import { registerDemoSceneCapture } from '@/app/dashboard/actions';
 import {
   ClaimsAutomationService,
-  MarketingService,
   SceneCaptureService,
   evaluateSceneIntegrity
 } from '@insuros/services';
@@ -21,12 +18,10 @@ export const metadata = { title: 'Scene evidence' };
 
 const sceneCaptureService = new SceneCaptureService();
 const claimsAutomationService = new ClaimsAutomationService();
-const marketingService = new MarketingService();
 
 export default async function SceneEvidencePage() {
   const photos = await sceneCaptureService.getPhotos();
   const fnols = await claimsAutomationService.getFnols();
-  const [banner] = await marketingService.getContentFor('ClaimsPortal');
 
   const results = photos.map((photo) => {
     const fnol = fnols.find(
@@ -101,14 +96,6 @@ export default async function SceneEvidencePage() {
       description='Customers photograph the scene live in the app — GPS, timestamps, and an on-device hash seal the truth at capture. Strong evidence replaces adjuster visits on small claims.'
       actions={<ActionButton label='Register live capture' action={registerDemoSceneCapture} />}
     >
-      {banner ? (
-        <MarketingBanner
-          headline={banner.headline}
-          body={banner.body}
-          cta={banner.cta}
-          ctaHref={banner.ctaHref}
-        />
-      ) : null}
 
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard
@@ -136,7 +123,6 @@ export default async function SceneEvidencePage() {
         data={results}
         emptyTitle='No evidence'
         emptyDescription='No scene photos registered.'
-        emptyAction={<Button>Register Capture</Button>}
       />
     </DomainModulePage>
   );

@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -87,7 +86,6 @@ export default async function AdminAppointmentsPage() {
         data={appointments}
         emptyTitle='No appointments'
         emptyDescription='No administrators have been appointed.'
-        emptyAction={<Button>Appoint Administrator</Button>}
       />
     </DomainModulePage>
   );

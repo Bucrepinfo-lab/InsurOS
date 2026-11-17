@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import { WorkspaceLayout } from '../layouts';
-import { SidebarNav, adminNavigation, filterNavigationByPermissions } from '../navigation';
+import { SidebarNav, adminNavigation, filterNavigationByPermissions, type NavLinkComponent } from '../navigation';
 import { useEnvironment, usePermissions, useTenant, useUser } from '../platform';
 import {
   EnvironmentBadge,
@@ -18,12 +18,34 @@ export interface AdminWorkspaceShellProps {
   notificationCount?: number;
   /** Extra controls beside the user (e.g. sign out). */
   userActions?: ReactNode;
+  /** Current path, so the menu marks where you are. */
+  pathname?: string;
+  /** The app's router link, so moving between sections does not reload the page. */
+  LinkComponent?: NavLinkComponent;
+  /** Router push, used by the section search on Enter. */
+  onNavigate?: (href: string) => void;
+  /** Rendered above every page (the section's value story). */
+  banner?: ReactNode;
+}
+
+/** Pure: the menu item for a path is the one with the longest matching href. */
+export function activeHref(hrefs: string[], pathname: string): string | null {
+  let best: string | null = null;
+  for (const href of hrefs) {
+    const matches = pathname === href || pathname.startsWith(`${href}/`);
+    if (matches && (!best || href.length > best.length)) best = href;
+  }
+  return best;
 }
 
 export function AdminWorkspaceShell({
   children,
   notificationCount = 0,
-  userActions
+  userActions,
+  pathname = '/dashboard',
+  LinkComponent,
+  onNavigate,
+  banner
 }: AdminWorkspaceShellProps) {
   const tenant = useTenant();
   const environment = useEnvironment();
@@ -32,18 +54,22 @@ export function AdminWorkspaceShell({
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Menus mirror the server-side permission checks (they never replace them).
-  const navItems = filterNavigationByPermissions(adminNavigation, { permissions })
-    .flatMap((section) => section.items)
-    .map((item) => ({
-      label: item.label,
-      href: item.href,
-      isActive: item.id === 'dashboard'
-    }));
+  const sections = filterNavigationByPermissions(adminNavigation, { permissions });
+  const current = activeHref(sections.flatMap((section) => section.items.map((item) => item.href)), pathname);
+  const navGroups = sections.map((section) => ({
+    id: section.id,
+    title: section.title,
+    items: section.items.map((item) => ({ label: item.label, href: item.href, isActive: item.href === current }))
+  }));
+  const searchItems = sections.flatMap((section) =>
+    section.items.map((item) => ({ label: item.label, href: item.href, group: section.title }))
+  );
+  const canSeeNotifications = searchItems.some((item) => item.href === '/dashboard/notifications');
 
   return (
     <>
       <WorkspaceLayout
-        sidebar={<SidebarNav title='InsurOS' items={navItems} />}
+        sidebar={<SidebarNav title='InsurOS' groups={navGroups} LinkComponent={LinkComponent} />}
         topbar={
           <WorkspaceTopbar
             left={
@@ -61,17 +87,22 @@ export function AdminWorkspaceShell({
                 <TenantSwitcher tenantName={tenant.name} environment={environment} />
               </>
             }
-            center={<GlobalSearch />}
+            center={<GlobalSearch items={searchItems} LinkComponent={LinkComponent} onNavigate={onNavigate} />}
             right={
               <>
                 <EnvironmentBadge environment={environment} />
-                <NotificationBell count={notificationCount} />
+                <NotificationBell
+                  count={notificationCount}
+                  href={canSeeNotifications ? '/dashboard/notifications' : undefined}
+                  LinkComponent={LinkComponent}
+                />
                 <UserMenu name={user.name} email={user.email} actions={userActions} />
               </>
             }
           />
         }
       >
+        {banner}
         {children}
       </WorkspaceLayout>
 
@@ -102,9 +133,12 @@ export function AdminWorkspaceShell({
                 </svg>
               </button>
             </div>
-            <div onClick={() => setMenuOpen(false)}>
-              <SidebarNav title='InsurOS' items={navItems} />
-            </div>
+            <SidebarNav
+              title='InsurOS'
+              groups={navGroups}
+              LinkComponent={LinkComponent}
+              onNavigate={() => setMenuOpen(false)}
+            />
           </div>
         </div>
       ) : null}

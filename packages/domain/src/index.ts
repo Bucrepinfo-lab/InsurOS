@@ -60,3 +60,4 @@ export * from "./payments";
 export * from "./tenant";
 export * from "./payment-ledger";
 export * from "./device-auth";
+export * from "./value-story";

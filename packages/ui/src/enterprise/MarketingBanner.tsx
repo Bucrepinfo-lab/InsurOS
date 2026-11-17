@@ -1,6 +1,7 @@
 export interface MarketingBannerProps {
   headline: string;
   body: string;
+  /** Shown only with ctaHref: a call to action that goes nowhere is not drawn. */
   cta: string;
   ctaHref?: string;
 }
@@ -41,9 +42,7 @@ export function MarketingBanner({ headline, body, cta, ctaHref }: MarketingBanne
           <a href={ctaHref} className={ctaClass}>
             {cta}
           </a>
-        ) : (
-          <span className={ctaClass}>{cta}</span>
-        )}
+        ) : null}
       </div>
     </div>
   );

@@ -116,7 +116,7 @@ export const adminNavigation: NavigationSection[] = [
       { id: 'operations', label: 'Operations', href: '/dashboard/operations', requiredPermission: 'Operations:View' },
       {
         id: 'documents',
-        label: 'Document Intelligence',
+        label: 'Documents',
         href: '/dashboard/operations/documents', requiredPermission: 'Operations:View'
       },
       { id: 'crm', label: 'CRM Content', href: '/dashboard/operations/crm', requiredPermission: 'Operations:View' },

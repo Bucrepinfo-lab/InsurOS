@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -61,7 +60,6 @@ export default async function ClaimWorkflowsPage() {
         data={workflows}
         emptyTitle="No claim workflows"
         emptyDescription="No claim workflow records are currently available."
-        emptyAction={<Button>Configure Claim Workflow</Button>}
       />
     </DomainModulePage>
   );

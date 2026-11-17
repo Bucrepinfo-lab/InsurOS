@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -73,8 +72,8 @@ export default async function DocumentIntelligencePage() {
 
   return (
     <DomainModulePage
-      title='Document Intelligence (OCR)'
-      description='Every uploaded file is read at intake: fields extracted, required data checked, low confidence routed to a human. OCR accelerates — it never silently decides.'
+      title='Documents'
+      description='Document details per claim: required details are checked, and anything missing or doubtful goes to a person to review. Reading uploaded files automatically is not switched on in this release.'
       actions={<ActionButton label='Scan document' action={ingestDemoDocument} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
@@ -103,7 +102,6 @@ export default async function DocumentIntelligencePage() {
         data={extractions}
         emptyTitle='No extractions'
         emptyDescription='No documents have been processed.'
-        emptyAction={<Button>Ingest Document</Button>}
       />
     </DomainModulePage>
   );

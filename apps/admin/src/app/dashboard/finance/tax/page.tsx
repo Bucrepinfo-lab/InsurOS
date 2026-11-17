@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -142,7 +141,6 @@ export default async function TaxRemittancePage() {
           data={jurisdictions}
           emptyTitle='No jurisdictions'
           emptyDescription='No tax jurisdictions have been configured.'
-          emptyAction={<Button>Add Jurisdiction</Button>}
         />
       </div>
 
@@ -154,7 +152,6 @@ export default async function TaxRemittancePage() {
         data={remittances}
         emptyTitle='No remittances'
         emptyDescription='No tax remittances have been computed.'
-        emptyAction={<Button>Compute Remittance</Button>}
       />
     </DomainModulePage>
   );

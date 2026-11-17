@@ -1,59 +1,64 @@
 import type { EngagementItem, NewsletterIssue, SubscriberDashboardPrefs } from "@insuros/domain";
 
+/**
+ * Sample customer content. It states only what is true today
+ * (docs/VALUE_STRATEGY.md): no payout speed, no automatic approval, no USSD
+ * code, no invented customers or figures.
+ */
 export const mockEngagementItems: EngagementItem[] = [
   {
     id: "eng-weather-1",
     kind: "WeatherAlert",
-    title: "Heavy rains expected in Nairobi this week",
-    body: "The Met Department forecasts heavy rainfall from Thursday. Park away from trees and flood-prone lanes, photograph your car today (30 seconds, in-app) so your pre-storm condition is on record, and keep our USSD line handy. If the worst happens, your claim starts the moment you tap.",
+    title: "Heavy rain is forecast: a short checklist",
+    body: "When heavy rain is forecast, park away from trees and flood-prone lanes, and photograph your car and property today so their condition before the storm is on record. Keep your policy number and your agent's number where you can find them.",
     countryCode: "KE",
-    cta: "Record pre-storm photos",
-    ctaHref: "/dashboard/claims/evidence",
+    cta: "How evidence is graded",
+    ctaHref: "/why#claims-evidence",
     shareable: true,
-    shareText: "Heavy rains coming to Nairobi this week — my insurance app just warned me and let me photo-record my car in 30 seconds so any claim is instant. First month free if you want in: dial *334# and use my code.",
+    shareText: "Heavy rain is forecast. Photograph your car and property today so their condition before the storm is on record, and keep your policy number to hand.",
     publishedAt: "2026-07-14T06:00:00Z",
     status: "Published"
   },
   {
     id: "eng-tip-1",
     kind: "SafetyTip",
-    title: "The 3 photos that make any motor claim instant",
-    body: "Front, impact point, and the other party's plate — taken live in the app at the scene. Our engine treats sealed scene photos as strong evidence, which means no adjuster visit and payout in hours. Practice once in demo mode so it is muscle memory when it matters.",
+    title: "Three photos that help a motor claim",
+    body: "Front of the vehicle, the point of impact, and the other party's number plate, taken at the scene. Clear photos taken at the time mean fewer questions from the claims officer and fewer disputes later.",
     insuranceLine: "Motor",
-    cta: "Try demo mode",
+    cta: "How evidence is graded",
+    ctaHref: "/why#claims-evidence",
     shareable: true,
-    shareText: "Learnt this from my insurance app: 3 live photos at the scene = claim paid in hours, no assessor drama. This is how insurance should work. First month free: *334#.",
+    shareText: "After a road accident, take three photos at the scene: the front of your vehicle, the point of impact and the other party's number plate. Clear evidence means fewer disputes on a claim.",
     publishedAt: "2026-07-12T06:00:00Z",
     status: "Published"
   },
   {
     id: "eng-milestone-1",
     kind: "Milestone",
-    title: "120 days protected 🎉",
-    body: "You have been continuously covered for 120 days — and your claims fast-lane status is unlocked: your clean record now qualifies you for instant approvals on claims up to KES 50,000. That is loyalty, rewarded with speed.",
+    title: "120 days of continuous cover",
+    body: "You have kept your cover in force for 120 days. Continuous cover means there is no gap for a loss to fall into. Check that your details and documents are still current.",
     countryCode: "KE",
-    shareable: true,
-    shareText: "My insurer just unlocked instant claim approvals for me because I kept my cover 120 days straight. 10 bob a month for the app, first month free: *334#.",
+    shareable: false,
     publishedAt: "2026-07-10T06:00:00Z",
     status: "Published"
   },
   {
     id: "eng-referral-1",
     kind: "ReferralPrompt",
-    title: "Give a month, get a month",
-    body: "Share your code. Your friend gets their first month free (as everyone does) — and when they stay past day 40, you BOTH get a free month. Protection is better in numbers, and so is saving.",
-    cta: "Share my code",
+    title: "Know someone without cover?",
+    body: "Most households have no insurance at all. If someone you know is asking where to start, pass on your agent's contact and the short explanation of how claims are handled.",
+    cta: "Why teams use it",
+    ctaHref: "/why",
     shareable: true,
-    shareText: "I use InsurOS — insurance for 10 bob a month that pays claims in hours and warns me before storms. Use my code and we both get a free month. Dial *334#.",
+    shareText: "If you are asking where to start with insurance, ask an agent three things: what the cover excludes, who owns your claim, and how you will be told the decision.",
     publishedAt: "2026-07-08T06:00:00Z",
     status: "Published"
   },
   {
     id: "eng-health-1",
     kind: "PolicyHealth",
-    title: "Your protection score, explained",
-    body: "One number that tells you if your family is actually covered: premiums current, documents verified, no lapsed policies. Green means sleep well. Anything else comes with the exact one tap that fixes it.",
-    cta: "Check my score",
+    title: "Is your cover in order?",
+    body: "Three things to check: premiums are up to date, your documents are on file, and no policy has lapsed. If any is not, your agent can tell you what to do next.",
     shareable: false,
     publishedAt: "2026-07-06T06:00:00Z",
     status: "Published"
@@ -66,9 +71,9 @@ export const mockNewsletterIssues: NewsletterIssue[] = [
     threadId: "cover-letter",
     threadName: "The Cover Letter",
     issueNumber: 3,
-    subject: "Why we publish our claim-approval rules (competitors won't)",
-    preview: "This month: our adjudication rules are public, what the 40-day cycle means for you, and a boda rider's 3-hour claim story.",
-    body: "Most insurers keep their claim rules in a drawer. Ours are printed in the app: claims under KES 50,000 with clean documents and sealed scene photos are approved automatically, with the reason shown. This issue we walk through exactly how Samuel's windscreen claim went from photo to payout in under 3 hours — and what the day-35 reminder really does (it protects your fast-lane status, not our revenue).",
+    subject: "What happens to a claim after you report it",
+    preview: "The steps a claim goes through, who owns each one, and what you can ask at any point.",
+    body: "A claim moves through written steps: first notice, document check, review, decision and closure. Each step has a named owner. A person makes the decision, and a rejection comes with reasons in writing. At any point you can ask which step your claim is at and who holds it.",
     publishedAt: "2026-07-01T06:00:00Z"
   },
   {
@@ -76,9 +81,9 @@ export const mockNewsletterIssues: NewsletterIssue[] = [
     threadId: "cover-letter",
     threadName: "The Cover Letter",
     issueNumber: 2,
-    subject: "10 bob a month. Here is exactly where it goes.",
-    preview: "Radical transparency: the unit economics of your subscription, published.",
-    body: "Your 10 shillings keeps the rails on: USSD sessions, weather data, document AI, and the servers that approve claims at 2am. We publish this because trust is engineered, not declared. Also inside: drought-index payouts hit 214 farmers this quarter — none of them filed a claim form.",
+    subject: "How a premium is worked out",
+    preview: "The parts of a price: the risk, the loadings and the floor.",
+    body: "A premium starts from the expected cost of the risk, adds the cost of running the cover, and is checked against a floor it may never go below. A price below that floor looks cheap today and is paid for later, when claims are squeezed. Ask to see each line of your quote.",
     publishedAt: "2026-06-01T06:00:00Z"
   },
   {
@@ -86,9 +91,9 @@ export const mockNewsletterIssues: NewsletterIssue[] = [
     threadId: "cover-letter",
     threadName: "The Cover Letter",
     issueNumber: 1,
-    subject: "Welcome to insurance that shows its working",
-    preview: "Issue #1: who we are, why claims here take hours not weeks, and your first-month-free promise in writing.",
-    body: "InsurOS exists because insurance broke its promise: premiums were certain, payouts were not. We rebuilt the machine — live scene photos, automatic approvals with reasons attached, cover from 20 bob a day, and an app subscription at 10 bob a month with the first month free, renewable on day 40 with fair warnings on days 35 and 39. Every issue of this letter shows one piece of our working.",
+    subject: "Insurance that shows its working",
+    preview: "Issue 1: what to expect from us, and what to ask of any insurer.",
+    body: "Premiums are certain; too often the claim is not. This letter explains, one piece at a time, how cover works: what a policy excludes, how a price is built, how a claim is handled and how to complain if something goes wrong.",
     publishedAt: "2026-05-01T06:00:00Z"
   }
 ];

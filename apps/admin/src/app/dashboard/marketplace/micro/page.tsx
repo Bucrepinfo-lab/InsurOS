@@ -1,27 +1,23 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
-  MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
 import { ActionButton } from '@/components/ActionButton';
 import { enrolDemoMicroPolicy } from '@/app/dashboard/actions';
-import { MarketingService, MicroinsuranceService } from '@insuros/services';
+import { MicroinsuranceService } from '@insuros/services';
 
 export const metadata = { title: 'Microinsurance' };
 
 const microinsuranceService = new MicroinsuranceService();
-const marketingService = new MarketingService();
 
 export default async function MicroinsurancePage() {
   const products = await microinsuranceService.getProducts();
   const providers = await microinsuranceService.getProviders();
   const policies = await microinsuranceService.getPolicies();
   const payments = await microinsuranceService.getPayments();
-  const [banner] = await marketingService.getContentFor('Micro');
 
   type ProductRow = (typeof products)[number];
   type PolicyRow = (typeof policies)[number];
@@ -100,14 +96,6 @@ export default async function MicroinsurancePage() {
       description='Micro-premium covers distributed on mobile-money rails (USSD, app, agent, embedded). The mobile number is identity and payment instrument in one — closing the penetration gap.'
       actions={<ActionButton label='Enrol policyholder' action={enrolDemoMicroPolicy} />}
     >
-      {banner ? (
-        <MarketingBanner
-          headline={banner.headline}
-          body={banner.body}
-          cta={banner.cta}
-          ctaHref={banner.ctaHref}
-        />
-      ) : null}
 
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard
@@ -135,13 +123,12 @@ export default async function MicroinsurancePage() {
       <div className='mb-8'>
         <DomainEntityList
           title='Product Catalogue'
-          description='Daily/weekly/monthly micro-premiums; parametric products pay automatically on the index trigger — no claim filing at all.'
+          description='Small covers with daily, weekly or monthly premiums. Index covers are defined by a measurable trigger, such as rainfall, instead of a loss assessment.'
           searchPlaceholder='Search products...'
           columns={productColumns}
           data={products}
           emptyTitle='No products'
           emptyDescription='No micro products configured.'
-          emptyAction={<Button>Create Product</Button>}
         />
       </div>
 
@@ -153,7 +140,6 @@ export default async function MicroinsurancePage() {
         data={policies}
         emptyTitle='No policies'
         emptyDescription='No micro policies enrolled.'
-        emptyAction={<Button>Enrol Policyholder</Button>}
       />
     </DomainModulePage>
   );

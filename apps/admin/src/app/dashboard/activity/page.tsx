@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -53,7 +52,6 @@ export default async function ActivityPage() {
         data={events}
         emptyTitle='No activity'
         emptyDescription='No activity events have been recorded yet.'
-        emptyAction={<Button>Export Activity</Button>}
       />
     </DomainModulePage>
   );

@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -52,7 +51,6 @@ export default async function CommentsPage() {
         data={comments}
         emptyTitle='No comments'
         emptyDescription='No comments have been recorded yet.'
-        emptyAction={<Button>Add Comment</Button>}
       />
     </DomainModulePage>
   );

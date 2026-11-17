@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -111,7 +110,6 @@ export default async function AnalyticsPage() {
         data={reports}
         emptyTitle='No snapshots'
         emptyDescription='No KPI snapshots recorded.'
-        emptyAction={<Button>Record Snapshot</Button>}
       />
     </DomainModulePage>
   );

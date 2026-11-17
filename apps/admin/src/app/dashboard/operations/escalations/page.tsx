@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -58,7 +57,6 @@ export default async function EscalationsQueuePage() {
         data={workflows}
         emptyTitle='No escalations'
         emptyDescription='No escalated workflow items are currently active.'
-        emptyAction={<Button>Escalation Rules</Button>}
       />
     </DomainModulePage>
   );

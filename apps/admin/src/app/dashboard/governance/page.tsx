@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -94,7 +93,6 @@ export default async function GovernancePage() {
         data={regions}
         emptyTitle='No regions'
         emptyDescription='No administrative regions have been configured.'
-        emptyAction={<Button>Create Region</Button>}
       />
     </DomainModulePage>
   );

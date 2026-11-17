@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -75,7 +74,6 @@ export default async function ClerkSyncPage() {
         data={plan}
         emptyTitle='Nothing to sync'
         emptyDescription='No jurisdiction assignments require Clerk changes.'
-        emptyAction={<Button>Refresh Plan</Button>}
       />
     </DomainModulePage>
   );

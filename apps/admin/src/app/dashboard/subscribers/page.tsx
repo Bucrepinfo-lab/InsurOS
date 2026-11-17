@@ -1,10 +1,8 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
-  MarketingBanner,
   type DataTableColumn
 } from '@insuros/ui';
 import { ActionButton } from '@/components/ActionButton';
@@ -151,12 +149,6 @@ export default async function SubscriberExperiencePage() {
       description='The customer-side experience, previewed: 10 units/month (first month free, day-40 renewal, day-35 & 39 nudges), policy health, engagement feed with share-ready content, newsletter threads, and merit-comparison banners.'
       actions={<ActionButton label='Add subscriber' action={addDemoSubscriber} />}
     >
-      <MarketingBanner
-        headline={`Same cover. KES ${savings.toLocaleString()} less every month than the market median.`}
-        body={`Our engineered motor premium: KES ${quote.recommendedPremium.toLocaleString()}/mo vs the market median KES ${(quote.competitorMedian ?? 0).toLocaleString()}. No branches, no paper, no padding — and claims paid in hours with the reason attached. The app costs 10 bob a month, first month free, and you can leave any time. Tell a friend: you both earn a free month.`}
-        cta='Compare us yourself'
-        ctaHref='/dashboard/marketplace/pricing-engine'
-      />
 
       <div className='mb-6 grid gap-4 md:grid-cols-4'>
         <KPICard
@@ -190,7 +182,6 @@ export default async function SubscriberExperiencePage() {
           data={subscriptions}
           emptyTitle='No subscribers'
           emptyDescription='No subscriptions yet.'
-          emptyAction={<Button>New Subscriber</Button>}
         />
       </div>
 
@@ -203,7 +194,6 @@ export default async function SubscriberExperiencePage() {
           data={feed}
           emptyTitle='No content'
           emptyDescription='No engagement content published.'
-          emptyAction={<Button>Publish Content</Button>}
         />
       </div>
 
@@ -215,7 +205,6 @@ export default async function SubscriberExperiencePage() {
         data={newsletter}
         emptyTitle='No issues'
         emptyDescription='No newsletter issues published.'
-        emptyAction={<Button>Draft Issue</Button>}
       />
     </DomainModulePage>
   );

@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -87,7 +86,6 @@ export default async function CrmContentPage() {
         data={contents}
         emptyTitle='No content'
         emptyDescription='No marketing content configured.'
-        emptyAction={<Button>Create Content</Button>}
       />
     </DomainModulePage>
   );

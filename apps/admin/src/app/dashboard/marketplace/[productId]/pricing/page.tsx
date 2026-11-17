@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   type DataTableColumn
@@ -62,7 +61,6 @@ export default function ProductPricingPage() {
         data={pricingRules}
         emptyTitle='No pricing rules'
         emptyDescription='Add the first pricing rule for this product.'
-        emptyAction={<Button>Add Pricing Rule</Button>}
       />
     </DomainModulePage>
   );

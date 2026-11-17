@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -142,7 +141,6 @@ export default async function CommissionsPage() {
           data={schedules}
           emptyTitle='No schedules'
           emptyDescription='No commission schedules have been configured.'
-          emptyAction={<Button>Create Schedule</Button>}
         />
       </div>
 
@@ -154,7 +152,6 @@ export default async function CommissionsPage() {
         data={accruals}
         emptyTitle='No accruals'
         emptyDescription='No commissions have been accrued.'
-        emptyAction={<Button>Accrue Premium</Button>}
       />
     </DomainModulePage>
   );

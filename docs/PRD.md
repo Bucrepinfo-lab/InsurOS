@@ -1,6 +1,6 @@
 # InsurOS — Product Requirements Document
 
-**Version:** 3.5 · **Updated:** 2026-07-17 · **Owner:** Jacob (Super Admin)
+**Version:** 3.6 · **Updated:** 2026-11-17 · **Owner:** Jacob (Super Admin)
 
 ## Vision
 
@@ -25,6 +25,10 @@ Deep research into why insurance businesses fail to thrive (see `docs/MARKET_GAP
 **Subscription & Engagement (v3.2)** — app subscription at 10 units of each country's currency per month: first month free, renewal due on day 40 of the cycle, nudges automatically scheduled for day 35 (push) and day 39 (SMS); Trial → Active → PastDue lifecycle with referral codes ("give a month, get a month"). The engagement layer earns daily relevance for a rarely-used product: weather/risk alerts, safety tips, milestone rewards, a policy-health score, and "The Cover Letter" newsletter thread — every shareable item ships with a WhatsApp-ready forward text for word-of-mouth growth. Subscriber dashboard preview (policy states, customizable widgets, renewal countdown, newsletter, merit-comparison banner vs competitor median): `/dashboard/subscribers`.
 
 **CRM Marketing Content (v3.1)** — merit-led write-ups (claims paid in hours; engineered fair prices; KES-20/day cover; no-forms parametric payouts; sealed scene evidence; decisions with reasons) targeted by placement, insurance line, and audience, and rendered as banners across the policy UIs (micro, pricing, claims). Managed at `/dashboard/operations/crm`.
+
+## Value story (v3.6, 17/11/26)
+
+Owner brief: sell the value, not the app, with facts that can be checked and delivered. `docs/VALUE_STRATEGY.md` is binding for all copy. Every dashboard section opens with a value banner (pain → what this section does → one thing to try → two onward links → share); copy lives in `packages/domain/src/value-story.ts` and is test-guarded against claims the product does not deliver (payment speed, automatic approval or payment, USSD, guarantees, reading uploads). Public page `/why` carries the sourced facts and a shareable link per story. Navigation is grouped and collapsible with a working section search; no control is drawn unless it does something. The v3.0–v3.2 paragraphs above describe the design intent; where they promise automatic approval, payout, USSD or OCR, `docs/VALUE_STRATEGY.md` §3 and §7 state what is true today.
 
 ## Administrative Hierarchy
 

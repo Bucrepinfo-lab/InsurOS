@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -65,7 +64,6 @@ export default async function PlatformEventsPage() {
         data={events}
         emptyTitle='No platform events'
         emptyDescription='No platform events have been emitted yet.'
-        emptyAction={<Button>Replay Events</Button>}
       />
     </DomainModulePage>
   );

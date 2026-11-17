@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   KPICard,
@@ -104,7 +103,6 @@ export default async function RegionalTaxPage() {
         data={rules}
         emptyTitle='No regional rules'
         emptyDescription='No subnational tax rules have been configured.'
-        emptyAction={<Button>Add Regional Rule</Button>}
       />
 
       <div className='mt-4'>

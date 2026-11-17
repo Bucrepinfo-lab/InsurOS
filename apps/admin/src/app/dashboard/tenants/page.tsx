@@ -1,6 +1,5 @@
 import {
   Badge,
-  Button,
   DomainEntityList,
   DomainModulePage,
   type DataTableColumn
@@ -52,7 +51,6 @@ export default function TenantsPage() {
         data={tenants}
         emptyTitle='No tenants yet'
         emptyDescription='Create the first tenant organization to begin operating the InsurOS platform.'
-        emptyAction={<Button>Add Tenant</Button>}
       />
     </DomainModulePage>
   );

@@ -3,11 +3,12 @@ export interface TenantSwitcherProps {
   environment?: 'local' | 'development' | 'staging' | 'production';
 }
 
-export function TenantSwitcher({ tenantName, environment = 'development' }: TenantSwitcherProps) {
+/** The organisation you are working in. A label, not a button: there is nothing to switch here. */
+export function TenantSwitcher({ tenantName }: TenantSwitcherProps) {
   return (
-    <button className='rounded-md border bg-white px-3 py-2 text-left text-sm hover:bg-slate-50'>
-      <span className='block font-medium text-slate-950'>{tenantName}</span>
-      <span className='block text-xs capitalize text-slate-500'>{environment}</span>
-    </button>
+    <div className='text-left text-sm'>
+      <span className='block font-display text-[15px] leading-tight text-ink'>{tenantName}</span>
+      <span className='block text-xs text-dim'>Your workspace</span>
+    </div>
   );
 }
