@@ -96,7 +96,7 @@ export default async function DocumentIntelligencePage() {
 
       <DomainEntityList
         title='Extraction Ledger'
-        description='OCR results per uploaded document, with per-field values and confidence.'
+        description='Details recorded per document, with each value and how sure the record is.'
         searchPlaceholder='Search extractions...'
         columns={columns}
         data={extractions}

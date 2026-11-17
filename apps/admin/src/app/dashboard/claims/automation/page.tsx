@@ -139,7 +139,7 @@ export default async function ClaimsAutomationPage() {
       <div className='mb-8'>
         <DomainEntityList
           title='Adjudication Rules'
-          description='Fast lanes by line: amount ceilings, fraud thresholds, payout SLAs.'
+          description='Review rules by line: amount ceilings and risk thresholds. Every claim goes to a person for the decision.'
           searchPlaceholder='Search rules...'
           columns={ruleColumns}
           data={rules}

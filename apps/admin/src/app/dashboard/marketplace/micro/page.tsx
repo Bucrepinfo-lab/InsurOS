@@ -93,7 +93,7 @@ export default async function MicroinsurancePage() {
   return (
     <DomainModulePage
       title='Microinsurance'
-      description='Micro-premium covers distributed on mobile-money rails (USSD, app, agent, embedded). The mobile number is identity and payment instrument in one — closing the penetration gap.'
+      description='Small covers designed for daily and weekly incomes, with a grace period for a missed day. Collection by mobile money is not switched on in this release.'
       actions={<ActionButton label='Enrol policyholder' action={enrolDemoMicroPolicy} />}
     >
 

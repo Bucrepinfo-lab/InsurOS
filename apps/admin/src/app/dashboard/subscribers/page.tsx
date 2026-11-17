@@ -199,7 +199,7 @@ export default async function SubscriberExperiencePage() {
 
       <DomainEntityList
         title='Newsletter — The Cover Letter'
-        description='Monthly thread of radical transparency: published claim rules, where the 10 bob goes, real payout stories.'
+        description='A monthly letter that explains one piece of how cover works: claims, prices, exclusions and how to complain.'
         searchPlaceholder='Search issues...'
         columns={issueColumns}
         data={newsletter}

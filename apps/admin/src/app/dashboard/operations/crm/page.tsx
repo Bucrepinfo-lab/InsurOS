@@ -47,8 +47,8 @@ export default async function CrmContentPage() {
 
   return (
     <DomainModulePage
-      title='CRM Marketing Content'
-      description='Merit-led write-ups popularised across every policy UI: claims speed, engineered fair pricing, KES-20 micro cover, parametric no-forms payouts, sealed scene evidence, and radical transparency.'
+      title='Customer messages'
+      description='Customer messages kept in one place, by placement, line and audience. Each one states only what your team delivers today.'
       actions={<ActionButton label='Draft content' action={createDemoContent} />}
     >
       {preview ? (
