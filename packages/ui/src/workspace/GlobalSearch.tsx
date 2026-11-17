@@ -9,6 +9,8 @@ export interface GlobalSearchProps {
   LinkComponent?: NavLinkComponent;
   /** Called when Enter picks the first match. */
   onNavigate?: (href: string) => void;
+  /** Called when the person commits a search (Enter, or picking a result). */
+  onSearch?: (query: string, found: boolean) => void;
 }
 
 /** Pure: sections whose name or group contains every word typed. */
@@ -27,7 +29,7 @@ export function matchSections<T extends { label: string; group?: string }>(items
  * Jump to a section by name. (Records are searched inside each list, which
  * keeps that search inside the person's own records.)
  */
-export function GlobalSearch({ items = [], LinkComponent, onNavigate }: GlobalSearchProps) {
+export function GlobalSearch({ items = [], LinkComponent, onNavigate, onSearch }: GlobalSearchProps) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const matches = useMemo(() => matchSections(items, query), [items, query]);
@@ -50,6 +52,7 @@ export function GlobalSearch({ items = [], LinkComponent, onNavigate }: GlobalSe
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         onKeyDown={(event) => {
+          if (event.key === 'Enter' && query.trim() !== '') onSearch?.(query, Boolean(matches[0]));
           if (event.key === 'Enter' && matches[0]) {
             event.preventDefault();
             setQuery('');
@@ -78,7 +81,11 @@ export function GlobalSearch({ items = [], LinkComponent, onNavigate }: GlobalSe
               return (
                 <li key={item.href}>
                   {Link ? (
-                    <Link href={item.href} className={className} onClick={() => setQuery('')}>
+                    <Link href={item.href} className={className} onClick={() => {
+                        onSearch?.(query, true);
+                        setQuery('');
+                      }}
+                    >
                       {body}
                     </Link>
                   ) : (

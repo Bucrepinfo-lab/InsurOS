@@ -11,12 +11,15 @@ export function ShareButton({
   title,
   text,
   url,
-  tone = 'light'
+  tone = 'light',
+  onShare
 }: {
   title: string;
   text: string;
   url: string;
   tone?: 'light' | 'dark';
+  /** Called when the person presses Share. */
+  onShare?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -27,6 +30,7 @@ export function ShareButton({
       : 'border-ink/15 bg-sheet text-ink hover:border-seal/50 hover:text-seal focus-visible:outline-seal';
 
   async function share() {
+    onShare?.();
     if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {
         await navigator.share({ title, text, url });

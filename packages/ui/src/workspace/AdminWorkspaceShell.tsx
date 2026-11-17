@@ -24,6 +24,8 @@ export interface AdminWorkspaceShellProps {
   LinkComponent?: NavLinkComponent;
   /** Router push, used by the section search on Enter. */
   onNavigate?: (href: string) => void;
+  /** Told what was typed in the section search and whether a section matched. */
+  onSearch?: (query: string, found: boolean) => void;
   /** Rendered above every page (the section's value story). */
   banner?: ReactNode;
 }
@@ -45,6 +47,7 @@ export function AdminWorkspaceShell({
   pathname = '/dashboard',
   LinkComponent,
   onNavigate,
+  onSearch,
   banner
 }: AdminWorkspaceShellProps) {
   const tenant = useTenant();
@@ -87,7 +90,7 @@ export function AdminWorkspaceShell({
                 <TenantSwitcher tenantName={tenant.name} environment={environment} />
               </>
             }
-            center={<GlobalSearch items={searchItems} LinkComponent={LinkComponent} onNavigate={onNavigate} />}
+            center={<GlobalSearch items={searchItems} LinkComponent={LinkComponent} onNavigate={onNavigate} onSearch={onSearch} />}
             right={
               <>
                 <EnvironmentBadge environment={environment} />
