@@ -3,6 +3,8 @@
  * Send-SMS hook). Sandbox endpoint when AT_USERNAME === "sandbox".
  * Env: AT_USERNAME, AT_API_KEY, AT_SENDER_ID (optional).
  */
+import { toSmsRecipient } from "@insuros/domain";
+
 export interface SendSmsResult {
   ok: boolean;
   raw: unknown;
@@ -29,7 +31,11 @@ export async function sendSms(to: string, message: string, purpose: SmsPurpose):
       ? "https://api.sandbox.africastalking.com"
       : "https://api.africastalking.com";
 
-  const body = new URLSearchParams({ username, to, message });
+  // Africa's Talking rejects numbers without the leading "+" (Supabase sends bare digits).
+  const recipient = toSmsRecipient(to);
+  if (!recipient) return { ok: false, raw: { error: "invalid_phone" } };
+
+  const body = new URLSearchParams({ username, to: recipient, message });
   const from = process.env.AT_SENDER_ID;
   if (from) body.set("from", from);
 

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { sendSms } from "@/lib/africastalking/sms";
-import { toE164 } from "@insuros/domain";
+import { toSmsRecipient } from "@insuros/domain";
 import { getDeviceAuth } from "@/lib/auth/device-auth";
 import { isPlayReviewPhone } from "@/lib/play-review";
 
@@ -64,7 +64,13 @@ export async function POST(req: Request) {
 
   // Per-number limit on EVERY path that asks Supabase for a code (including
   // direct API calls with the public key). Supabase surfaces the refusal.
-  const e164 = toE164(phone) ?? phone;
+  const e164 = toSmsRecipient(phone);
+  if (!e164) {
+    return NextResponse.json(
+      { error: { http_code: 400, message: "That phone number is not valid. Check it and try again." } },
+      { status: 400 }
+    );
+  }
   if (!(await getDeviceAuth().consume("sms_hook_phone", e164))) {
     return NextResponse.json(
       { error: { http_code: 429, message: "Too many codes requested for this number. Try again later." } },
@@ -72,7 +78,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const result = await sendSms(phone, `${otp} is your InsurOS sign-in code. It expires in 5 minutes. Do not share it.`, "otp");
+  const result = await sendSms(e164, `${otp} is your InsurOS sign-in code. It expires in 5 minutes. Do not share it.`, "otp");
   if (!result.ok) {
     return NextResponse.json({ error: "sms_send_failed", detail: result.raw }, { status: 502 });
   }

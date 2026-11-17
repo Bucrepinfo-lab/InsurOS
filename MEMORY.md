@@ -3,6 +3,10 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-17 — Sign-in SMS reaches Africa's Talking with the "+" (fix from Stawi, 17/11/26)
+- Supabase's Send-SMS hook passes `user.phone` as bare digits ("2547..."); Africa's Talking needs "+E.164", so the code SMS failed (hook 502). New `toSmsRecipient` (packages/domain/src/phone.ts): bare 11-15 digits are already international (no second country code), local forms keep the Kenya default. `sendSms` normalises every recipient (refuses `invalid_phone`), the hook sends and rate-limits on the normalised number. Tests: `packages/domain/test/sms-recipient.test.ts`.
+- Production provisioning for getinsuros.com started 17/11/26 (Fly certs + GoDaddy DNS); see the next entry when it is live.
+
 ## 2026-11-14 — SMS is transactional only (TELPEN sender)
 - Owner 14/11/26: the "TELPEN" sender ID is for transactional SMS only. `sendSms(to, message, purpose)` (apps/admin/src/lib/africastalking/sms.ts) requires `"otp" | "transactional"` (typecheck enforces it at every caller) and refuses anything else; promotion goes through in-app messaging.
 
