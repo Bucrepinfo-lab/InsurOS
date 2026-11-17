@@ -3,6 +3,13 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-17 — Production is live at https://getinsuros.com
+- Fly app `insuros` (fra) deployed by `Deploy (Fly)` run #10 after PR #21; `/api/health` → `{"status":"ok","auth":"supabase","persistence":"postgres"}` on getinsuros.com, www and insuros.fly.dev.
+- Domain decision (owner, 17/11/26): **getinsuros.com is the main address** (global .com, matches getstawi.com). **insuros.net** (bought 07/08/26) now 301-forwards to https://getinsuros.com at GoDaddy; its old Fly certificates can be removed once the forward's HTTPS is confirmed. All domains' registrant is Telpen Systems Ltd.
+- Providers: Neon project `insuros` (Frankfurt, direct connection); Supabase project `insuros` (ref cjohkzyfzokjsnbecsea) in the Telpen Systems Ltd org — phone provider on, OTP 300 s, Send-SMS hook → `https://insuros.fly.dev/api/auth/send-sms`, Site URL https://getinsuros.com, redirects getinsuros.com/**, *.getinsuros.com/**, insuros.fly.dev/**; Africa's Talking team/app **InsurOS** (username `insuros`), separate from HarvestHub and Stawi.
+- Fly secrets set (names only): AUTH_SECRET, AT_USERNAME, NEXT_PUBLIC_SUPABASE_URL, DATABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_SEND_SMS_HOOK_SECRET, PLATFORM_OWNER_PHONES. GitHub secrets: FLY_API_TOKEN, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY.
+- **Open (owner):** `AT_API_KEY` (Africa's Talking locked key requests after a mistyped code; retry, then add as one Fly secret and redeploy) and a wallet top-up — until then the sign-in SMS cannot send. `CLERK_SECRET_KEY` is an unused leftover secret. Play Console app not created yet (owner creates it and accepts the declarations; listing pack in docs/PLAY-LISTING.md).
+
 ## 2026-11-17 — Sign-in SMS reaches Africa's Talking with the "+" (fix from Stawi, 17/11/26)
 - Supabase's Send-SMS hook passes `user.phone` as bare digits ("2547..."); Africa's Talking needs "+E.164", so the code SMS failed (hook 502). New `toSmsRecipient` (packages/domain/src/phone.ts): bare 11-15 digits are already international (no second country code), local forms keep the Kenya default. `sendSms` normalises every recipient (refuses `invalid_phone`), the hook sends and rate-limits on the normalised number. Tests: `packages/domain/test/sms-recipient.test.ts`.
 - Production provisioning for getinsuros.com started 17/11/26 (Fly certs + GoDaddy DNS); see the next entry when it is live.
