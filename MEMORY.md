@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-17 — Gains and market strengths (owner: "not only the solution of their problems, but what users gain")
+- Every value story now has a `gain` line, shown on the banner ("What you gain"), on `/why` and in the share text; test requires it and bans percentages in it.
+- `packages/domain/src/market-strengths.ts`: 14 strengths users praise in established systems (ease of use, one file, role views, document reading, phone, commissions, reports, usage insight, follow-up, renewals, self-service, multi-insurer quotes, e-sign, mobile-money collection), each marked here / partly / not-yet with what is missing. `/why` shows only here and part-way; a test enforces that and that each points at a real page.
+- docs/VALUE_STRATEGY.md §8 has the full matrix with sources and the suggested build order (renewal dates first).
+
 ## 2026-11-17 — Documents: real entry, with a photo read on the device (owner chose "most suitable": on-device)
 - `/dashboard/operations/documents/new` replaces the "Scan document" button that filed a sample record. Types offered: repair invoice, medical receipt, police abstract, vehicle log book (identity documents are deliberately left out for now).
 - The person types the details, or picks/takes a photo: `tesseract.js` (5.1.1, Apache-2.0) reads it **in the browser**. The photo is never uploaded or stored. `suggestDocumentFields` offers only values with a recognisable shape (date, number plate, OB number, total); the person checks each, and only the confirmed details are saved through `recordDocument` (Operations:Create, fields re-checked by `checkDocumentForm`, claim must be one the person may see).

@@ -82,3 +82,32 @@ Reconciled into eight value pillars, which the twenty section stories hang from:
 3. **Detail pages show sample identifiers** (already logged 07/11/26).
 4. **Sample messages live only in the store-review demo tenant.** The corrected CRM, engagement and newsletter copy is seeded into a new demo tenant; a demo tenant that was already seeded keeps the old rows until it is reseeded, which is a data change for the owner to approve. The live tenant has none of this sample content.
 5. **Usage insight (most opened, most searched, most clicked)** is built as its own change because it adds a stored collection (`usage_counters`): Operations → What people use. It counts section opens, section searches (found and not found) and banner clicks per tenant per day. It stores no person and no record id, and search words containing digits are dropped so that no phone, policy or ID number is kept.
+
+## 8. Strengths and selling points of the systems people already use (added 17/11/26)
+
+Owner, 17/11/26: fixing pains is not enough; a team must also gain what users of other systems already enjoy. This is what reviewers praise and vendors sell, and where InsurOS stands on each. The list lives in code at `packages/domain/src/market-strengths.ts`; a test stops any "not yet" item from being shown in public and checks that every claimed strength points at a real page.
+
+| Strength users praise | Who sells it / where it is praised | What a team gains | InsurOS today |
+|---|---|---|---|
+| Easy to learn and use | The most-mentioned like for Applied Epic and EZLynx on G2 | Staff useful in days | **Here**: grouped menu, section search, a banner on every section |
+| One file per customer and claim | Snapsheet ("one claim file"), EZLynx (central repository) | No re-keying | **Here** |
+| A view for each role | Snapsheet role dashboards | Own work first, private records private | **Here**, server-checked |
+| Details read from documents, accepted or corrected by a person | Snapsheet Document Assistant | Less typing, a person still responsible | **Here**: read on the device, photo not stored |
+| Works on a phone | EZLynx mobile app | Capture where it happens | **Here** |
+| Commissions incl. team splits | EZLynx accounting | Trust in pay | **Here** |
+| Reports | A weak spot in EZLynx reviews (reporting accuracy) | Figures on time | **Here**: export on every list, ratios page |
+| Knowing what the team uses | Product analytics in larger suites | Training goes where people struggle | **Here**: What people use |
+| Assignment and follow-up without chasing | Snapsheet automation (assignment, reminders) | Nothing in a shared pile | **Part-way**: owners and queues; no automatic reminders |
+| Renewals that do not slip | EZLynx automated renewals | Income kept | **Part-way**: status filter and export; no renewal dates or reminders |
+| Customer self-service at any hour | EZLynx Client Center; consumer apps such as mTek | Fewer calls | **Not yet**: no customer sign-in |
+| Quotes from several insurers side by side | EZLynx rating engine; mTek comparison | Real choice | **Not yet**: needs links to insurers |
+| Signing on screen | EZLynx e-signature | No printing | **Not yet** |
+| Premiums collected by mobile money | Kenyan consumer apps | Fewer lapses | **Not yet**: payments are off |
+
+Where the established systems are weak, by their own users' accounts, is where InsurOS should stay strong: a steep learning curve and long set-up (Applied Epic, EZLynx), poor support (EZLynx), and inaccurate reports (EZLynx). Hence: sign in with a phone and start working, plain words on every screen, and figures that come from the same records the team works on.
+
+**Build order suggested by this list** (each is its own change; the last two touch protected areas and need the owner's go-ahead): 1) renewal dates and a renewals-due list; 2) automatic reminders for unowned or late work; 3) a read-only status page a customer can open from a link; 4) signing on screen; 5) premium collection (payments); 6) multi-insurer quotes (needs insurer agreements).
+
+Sources: [G2 comparison of Applied Epic, EZLynx and HawkSoft](https://www.g2.com/compare/applied-epic-vs-ezlynx-ezlynx-vs-hawksoft); [SelectHub on EZLynx](https://www.selecthub.com/p/insurance-agency-management-systems/ezlynx/); [Snapsheet claims software](https://www.snapsheetclaims.com/insurance-claims-management-software). Read 17/11/26. Review counts change; no figure from these pages is quoted in the product.
+
+Every value story also carries a **gain** line ("What you gain"), shown on the banner, on `/why` and in the share text.
