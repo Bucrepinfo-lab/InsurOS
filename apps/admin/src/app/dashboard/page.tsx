@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { KPICard, WorkspaceHeader } from '@insuros/ui';
 import { VALUE_STORIES, storyForPath, type ValueStory } from '@insuros/domain';
-import { ClaimService, CustomerService, FollowUpService, PolicyService } from '@insuros/services';
+import { ClaimService, CustomerService, FollowUpService, MessagingService, PolicyService } from '@insuros/services';
 import { ACCENT_SOLID, Motif } from '@/components/value/motif';
 import { getAuthState } from '@/lib/auth/session';
 import { followUpViewerFor } from '@/lib/follow-up-viewer';
@@ -37,6 +37,7 @@ export default async function DashboardHomePage() {
       ])
     : [null, null, null];
   const owed = principal ? await new FollowUpService().counts(followUpViewerFor(principal)) : null;
+  const inbox = principal ? await new MessagingService().counts(followUpViewerFor(principal)) : null;
   const openClaims = claims?.filter((claim) => claim.status === 'Open' || claim.status === 'In Review').length;
   const activePolicies = policies?.filter((policy) => policy.status === 'Active').length;
 
@@ -67,6 +68,24 @@ export default async function DashboardHomePage() {
             {owed.escalated > 0 ? `. ${owed.escalated} escalated to you by your team` : ''}.
           </span>
           <span className='text-sm font-semibold text-seal'>Open follow-ups</span>
+        </Link>
+      ) : null}
+
+      {inbox && inbox.waiting + inbox.escalated > 0 ? (
+        <Link
+          href='/dashboard/messages?show=waiting'
+          className={`mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-5 py-4 transition focus-visible:outline-2 focus-visible:outline-seal ${
+            inbox.escalated + inbox.late > 0 ? 'border-red-300 bg-red-50 hover:border-red-400' : 'border-seal/30 bg-sealsoft hover:border-seal/60'
+          }`}
+        >
+          <span className='min-w-0 text-[15px] text-ink'>
+            <strong>
+              {inbox.waiting} {inbox.waiting === 1 ? 'conversation is' : 'conversations are'} waiting for your reply
+            </strong>
+            {inbox.late > 0 ? `, ${inbox.late} late` : ''}
+            {inbox.escalated > 0 ? `. ${inbox.escalated} escalated to you` : ''}.
+          </span>
+          <span className='text-sm font-semibold text-seal'>Open messages</span>
         </Link>
       ) : null}
 

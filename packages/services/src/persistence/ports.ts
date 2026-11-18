@@ -11,7 +11,9 @@ import type {
   Customer,
   EngagementItem,
   FnolSubmission,
+  Conversation,
   FollowUp,
+  Message,
   KpiSnapshot,
   MarketingContent,
   MicroPayment,
@@ -115,4 +117,9 @@ export interface PersistenceAdapter {
   usageCounters: Repository<UsageCounter>;
   /** Who owes the next step on a record, and by when. Starts empty in every tenant. */
   followUps: Repository<FollowUp>;
+  /** Conversations between staff, and between customers and staff. Starts empty. */
+  conversations: Repository<Conversation>;
+  messages: Repository<Message>;
+  /** AI calls per month (id = yyyy-mm), for the spend cap. */
+  aiUsage: Repository<{ id: string; calls: number }>;
 }

@@ -336,7 +336,7 @@ export const VALUE_STORIES: ValueStory[] = [
   },
   {
     id: "operations",
-    paths: ["/dashboard/operations", "/dashboard/follow-ups", "/dashboard/activity", "/dashboard/notifications", "/dashboard/comments"],
+    paths: ["/dashboard/operations", "/dashboard/follow-ups", "/dashboard/messages", "/dashboard/activity", "/dashboard/notifications", "/dashboard/comments"],
     accent: "ocean",
     motif: "clock",
     area: "Daily operations",
