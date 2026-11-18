@@ -39,3 +39,7 @@ The system pairs with the value-story voice (`docs/VALUE_STRATEGY.md`): the pain
 ## Value-story accents (v1.2, 17/11/26)
 
 The value banner and the `/why` cards use six deep accents, one per theme, each a dark gradient that carries white text at AA contrast, with a matching solid for links and rules on paper (`apps/admin/src/components/value/motif.tsx`): seal (trust, records), gold (money), ocean (claims), coral (risk and evidence), violet (people and access), teal (products and operations). Each pairs with one line drawing (shield, ledger, clock, seal, people, chart). Accents belong to the value story only; tables, forms and status badges keep the ledger tokens.
+
+## Home page and logo (v1.3, 18/11/26)
+
+The Ledger Seal is a component (`LedgerSeal`, `InsurOSLogo` in `@insuros/ui`): simple seal below 96 px, detailed (ticks, arc inscription, MMXXVI) above. The home page is the brand's showpiece: an ink-to-seal hero that keeps its colours in both themes, gold (`#c9a227`) only for the main call to action and the signature rule, and paper sections below that follow the tokens. Audience cards use the value-story accents as their headers.

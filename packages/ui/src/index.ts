@@ -9,3 +9,4 @@ export * from './utils/cn';
 export * from './utils/date-format';
 export * from './theme';
 export * from './layouts';
+export * from './brand';

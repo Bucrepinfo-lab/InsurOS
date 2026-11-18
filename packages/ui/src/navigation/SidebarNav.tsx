@@ -2,6 +2,7 @@
 
 import { useState, type ComponentType, type ReactNode } from 'react';
 import { cn } from '../utils/cn';
+import { LedgerSeal } from '../brand/LedgerSeal';
 
 export interface SidebarNavItem {
   label: string;
@@ -85,8 +86,9 @@ export function SidebarNav({ title = 'InsurOS', items, groups, footer, LinkCompo
 
       <div className='relative border-b border-white/10 px-6 py-6'>
         <div className='flex items-center gap-2.5'>
-          <span className='seal-dot inline-block h-2.5 w-2.5 rounded-full bg-sealbright' />
+          <LedgerSeal size={34} title='' />
           <p className='font-display text-[22px] tracking-tight text-white'>{title}</p>
+          <span className='seal-dot ml-auto inline-block h-2 w-2 rounded-full bg-sealbright' aria-hidden='true' />
         </div>
         <p className='mt-1 text-[11px] text-sealbright'>Insurance operations</p>
       </div>

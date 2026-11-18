@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { InsurOSLogo } from "@insuros/ui";
 import { PhoneAuth } from "@/components/phone-auth";
 import { signInMode } from "@/lib/auth/sign-in-actions";
 
@@ -15,7 +16,10 @@ export default async function SignInPage({
   const mode = resetPin ? { mode: "sms" as const } : await signInMode();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-slate-50 px-4">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-paper px-4">
+      <Link href="/" aria-label="InsurOS home">
+        <InsurOSLogo size={44} tagline />
+      </Link>
       <PhoneAuth
         initialMode={mode.mode}
         phoneHint={mode.mode === "pin" ? mode.phoneHint : undefined}
