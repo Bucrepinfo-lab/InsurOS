@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { reconcile } from "@/lib/payments";
+import { findByProviderTxnId, reconcile } from "@/lib/payments";
+import { recordPlusPayment } from "@/lib/customer-plus";
 import { paymentsEnabled } from "@/lib/payments-gate";
 
 /**
@@ -34,5 +35,7 @@ export async function POST(req: Request) {
   }
 
   await reconcile(body.transactionId, body.status ?? "", body);
+  // A customer's My Cover Plus month is unlocked only from the confirmed ledger row.
+  await recordPlusPayment(await findByProviderTxnId(body.transactionId));
   return NextResponse.json({ status: "Success" });
 }
