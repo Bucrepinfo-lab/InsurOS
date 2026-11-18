@@ -53,6 +53,7 @@ export * from "./messaging";
 export * from "./ai-assistant";
 export * from "./photo-storage";
 export * from "./claim-photos";
+export * from "./documents";
 export { computePolicyHealth, evaluateSceneIntegrity } from "@insuros/domain";
 export type { ScopedAccessRequest, SceneIntegrityResult } from "@insuros/domain";
 export * from "./payment-ledger";

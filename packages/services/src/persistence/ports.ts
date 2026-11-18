@@ -14,6 +14,7 @@ import type {
   Conversation,
   FollowUp,
   Message,
+  SignatureRecord,
   KpiSnapshot,
   MarketingContent,
   MicroPayment,
@@ -122,4 +123,6 @@ export interface PersistenceAdapter {
   messages: Repository<Message>;
   /** AI calls per month (id = yyyy-mm), for the spend cap. */
   aiUsage: Repository<{ id: string; calls: number }>;
+  /** Declarations signed on screen. Starts empty. */
+  signatures: Repository<SignatureRecord>;
 }
