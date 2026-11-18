@@ -22,3 +22,8 @@ export function isCustomerToken(token: unknown): token is string {
 export function customerLinkUrl(token: string): string {
   return `${SITE_URL}/c/${token}`;
 }
+
+/** A customer's own home page: their policies and cover. Same kind of token, different page. */
+export function customerHomeUrl(token: string): string {
+  return `${SITE_URL}/my/${token}`;
+}

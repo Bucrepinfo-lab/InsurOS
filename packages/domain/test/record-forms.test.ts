@@ -39,10 +39,32 @@ describe("record forms", () => {
   });
 
   it("checks a policy form", () => {
-    expect(checkPolicyForm({ customerId: "cus-1", product: "Motor Comprehensive", premium: "42,000", status: "Active" })).toEqual({
+    expect(checkPolicyForm({ customerId: "cus-1", product: "Motor Comprehensive", premium: "42,000", status: "Active", today: "2026-11-18" })).toEqual({
       ok: true,
-      value: { customerId: "cus-1", product: "Motor Comprehensive", premium: 42000, status: "Active" }
+      value: { customerId: "cus-1", product: "Motor Comprehensive", premium: 42000, status: "Active", startDate: "2026-11-18", expiryDate: "2027-11-17" }
     });
+    expect(
+      checkPolicyForm({
+        customerId: "cus-1",
+        product: "Motor Comprehensive",
+        premium: "42,000",
+        status: "Active",
+        insuredItem: " Toyota  Axio ",
+        sumInsured: "1,500,000",
+        registration: "kda 123a",
+        yearOfManufacture: "2016",
+        startDate: "2026-03-01",
+        today: "2026-11-18"
+      })
+    ).toMatchObject({
+      ok: true,
+      value: { insuredItem: "Toyota Axio", sumInsured: 1500000, registration: "KDA 123A", yearOfManufacture: 2016, startDate: "2026-03-01", expiryDate: "2027-02-28" }
+    });
+    const base = { customerId: "c", product: "Motor", premium: "1", status: "Active", today: "2026-11-18" };
+    expect(checkPolicyForm({ ...base, startDate: "2026-02-30" })).toMatchObject({ ok: false, field: "startDate" });
+    expect(checkPolicyForm({ ...base, startDate: "2026-05-01", expiryDate: "2026-04-01" })).toMatchObject({ ok: false, field: "expiryDate" });
+    expect(checkPolicyForm({ ...base, yearOfManufacture: "1890" })).toMatchObject({ ok: false, field: "yearOfManufacture" });
+    expect(checkPolicyForm({ ...base, registration: "<b>" })).toMatchObject({ ok: false, field: "registration" });
     expect(checkPolicyForm({ customerId: "", product: "Motor", premium: "1", status: "Active" })).toMatchObject({ ok: false, field: "customerId" });
     expect(checkPolicyForm({ customerId: "c", product: "", premium: "1", status: "Active" })).toMatchObject({ ok: false, field: "product" });
     expect(checkPolicyForm({ customerId: "c", product: "Motor", premium: "x", status: "Active" })).toMatchObject({ ok: false, field: "premium" });

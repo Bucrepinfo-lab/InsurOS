@@ -10,4 +10,6 @@ export interface Customer {
   referredBy?: string;
   /** When the customer's details were confirmed: the moment a referral counts. */
   verifiedAt?: string;
+  /** SHA-256 of the customer's private home-page link. The link itself is never stored. */
+  homeAccessHash?: string;
 }

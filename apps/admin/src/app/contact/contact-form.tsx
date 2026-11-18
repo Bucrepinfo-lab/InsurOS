@@ -7,7 +7,7 @@ import { contactUs } from '../c/actions';
 const field = 'mt-1 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5 text-[15px] text-ink outline-none focus:border-seal focus:ring-2 focus:ring-seal/20';
 const label = 'block text-sm font-medium text-ink';
 
-export function ContactForm() {
+export function ContactForm({ topic = 'claim', reference = '' }: { topic?: string; reference?: string }) {
   const [result, action, pending] = useActionState(contactUs, null);
   return (
     <form action={action} className='grid gap-4 rounded-2xl border border-line bg-sheet p-5'>
@@ -16,13 +16,13 @@ export function ContactForm() {
       <div className='grid gap-4 sm:grid-cols-2'>
         <label className={label}>
           About
-          <select name='topic' defaultValue='claim' className={field}>
+          <select name='topic' defaultValue={topic} className={field}>
             <option value='claim'>A claim</option>
             <option value='policy'>A policy</option>
             <option value='general'>Something else</option>
           </select>
         </label>
-        <label className={label}>Claim or policy number<input name='reference' maxLength={40} autoComplete='off' className={field} /></label>
+        <label className={label}>Claim or policy number<input name='reference' maxLength={40} defaultValue={reference} autoComplete='off' className={field} /></label>
       </div>
       <label className={label}>Message<textarea name='body' required rows={5} maxLength={MESSAGE_MAX} className={field} /></label>
       {/* Left empty by people; robots that fill every field give themselves away. */}
