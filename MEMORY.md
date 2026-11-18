@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-18 — Home page and the Ledger Seal everywhere (owner brief: professional, persuasive, impressive colours)
+- The Ledger Seal logo (docs/brand, 17/07/26) is now a component, `LedgerSeal` / `InsurOSLogo` in `@insuros/ui` (`packages/ui/src/brand`). Used on the home page, sign-in, public pages and the sidebar (seal replaces the plain dot).
+- **Home page redone**: deep ink-to-seal hero with a gold signature rule and gold call to action, an example claim card (labelled as an example) beside the detailed seal; the service targets (24h policy, 48h claim, 4h reply, 10 photos); four audience cards (insurers, agencies, agents, customers); the claim in five steps on a dark seal band; six feature cards; "Trust is the product"; a closing call; footer with the logo and theme switch. Keeps "InsurOS does not sell insurance to the public". Checked at 1280 and 390 px, light and dark, no sideways scroll.
+- Bordered sheet cards across the app get a soft long-throw shadow (design system v1.1 "cards float").
+
 ## 2026-11-18 — Live retest fixes (built-in browser, 375 px, dark)
 - Retested live pages signed out (sign-in needs the owner's phone code, so dashboard and customer-link pages wait for a signed-in retest): home, sign-in, privacy and contact render cleanly in dark at 375 px, no console errors.
 - Fixed: the dark primary buttons on older screens (sign-in "Send code", home "Sign in with your phone", set PIN) were dull slate; they are now seal green in dark.

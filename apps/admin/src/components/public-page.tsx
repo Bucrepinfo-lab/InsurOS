@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { InsurOSLogo } from "@insuros/ui";
 import type { ReactNode } from "react";
 
 /** Plain, readable shell for public pages (no sign-in required). */
@@ -7,10 +8,10 @@ export function PublicPage({ title, updated, children }: { title: string; update
     <div className="min-h-screen bg-slate-50 text-slate-800">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
-          <Link href="/" className="font-semibold text-slate-900">
-            InsurOS
+          <Link href="/" aria-label="InsurOS home">
+            <InsurOSLogo size={30} />
           </Link>
-          <nav className="flex gap-4 text-sm text-slate-600">
+          <nav className="flex flex-wrap justify-end gap-x-4 gap-y-1 text-sm text-slate-600">
             <Link href="/privacy">Privacy</Link>
             <Link href="/terms">Terms</Link>
             <Link href="/delete-account">Delete account</Link>

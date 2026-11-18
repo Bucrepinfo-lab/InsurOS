@@ -228,3 +228,14 @@ h1, h2, h3 {
     animation: none;
   }
 }
+
+/* Cards float on the paper (design system v1.1): every bordered sheet card
+   gets the same soft long-throw shadow, a little deeper in the dark. */
+.rounded-2xl.border-line.bg-sheet,
+.rounded-xl.border-line.bg-sheet {
+  box-shadow: 0 1px 0 rgba(27, 42, 65, 0.03), 0 16px 36px -26px rgba(27, 42, 65, 0.4);
+}
+:root[data-theme="dark"] .rounded-2xl.border-line.bg-sheet,
+:root[data-theme="dark"] .rounded-xl.border-line.bg-sheet {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 18px 40px -24px rgba(0, 0, 0, 0.7);
+}
