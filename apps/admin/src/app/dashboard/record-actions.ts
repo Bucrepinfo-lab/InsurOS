@@ -10,13 +10,16 @@ import {
   checkPolicyForm,
   formatKes,
   newRecordNumber,
+  type FlowArea,
   type OwnedClaim,
   type OwnedCustomer,
-  type OwnedPolicy
+  type OwnedPolicy,
+  type SessionPrincipal
 } from '@insuros/domain';
-import { ClaimService, DocumentIntelligenceService, getPersistence } from '@insuros/services';
+import { ClaimService, DocumentIntelligenceService, FollowUpService, getPersistence } from '@insuros/services';
 import { fail, ok, type ActionResult } from '@/lib/action-result';
 import { authorizeAction } from '@/lib/auth/session';
+import { followUpViewerFor } from '@/lib/follow-up-viewer';
 import { actorIdFor, reachFor } from '@/lib/record-scope';
 
 /**
@@ -25,6 +28,25 @@ import { actorIdFor, reachFor } from '@/lib/record-scope';
  * convenience), and stamps the record with the person who captured it. No
  * money moves in any of them.
  */
+
+/**
+ * Open the first step of the area's flow for a new record, owned by the person
+ * who captured it. Best effort: a record is never lost because its follow-up
+ * could not be opened.
+ */
+async function openFollowUp(area: FlowArea, reference: string, subject: string, principal: SessionPrincipal): Promise<void> {
+  try {
+    await new FollowUpService().open({
+      area,
+      reference,
+      subject,
+      ownerUserId: actorIdFor(principal),
+      ownerName: principal.name || 'Staff member'
+    });
+  } catch {
+    // The record stands; the follow-up can be opened by hand later.
+  }
+}
 
 /** A number not yet used in this collection (six digits from the clock, then the next free one). */
 async function freeNumber(
@@ -62,6 +84,7 @@ export async function addCustomer(_prev: ActionResult | null, formData: FormData
     ownerUserId: actorIdFor(auth.principal)
   };
   await customers.insert(row);
+  await openFollowUp('customers', id, row.name, auth.principal);
   revalidatePath('/dashboard/customers');
   return ok('Customer added', `${row.name} is on your list as Pending until their details are confirmed.`, { reference: id });
 }
@@ -96,6 +119,7 @@ export async function recordPolicy(_prev: ActionResult | null, formData: FormDat
     ownerUserId: actorIdFor(auth.principal)
   };
   await db.policies.insert(row);
+  if (row.status === 'Pending') await openFollowUp('policies', id, `${row.customer}, ${row.product}`, auth.principal);
   revalidatePath('/dashboard/policies');
   return ok('Policy recorded', `${row.product} for ${row.customer}, ${row.premium}, ${row.status === 'Active' ? 'in force' : 'pending'}.`, {
     reference: id
@@ -127,10 +151,11 @@ export async function registerClaim(_prev: ActionResult | null, formData: FormDa
     template
   });
   if (!result.ok) return fail('Claim not registered', result.error);
+  await openFollowUp('claims', result.claim.claimNumber, result.claim.customer, auth.principal);
   revalidatePath('/dashboard/claims');
   return ok(
     'Claim registered',
-    `${result.claim.amount} claimed on ${result.claim.policyNumber} for ${result.claim.customer}. It is open and waiting for an owner.`,
+    `${result.claim.amount} claimed on ${result.claim.policyNumber} for ${result.claim.customer}. It is open, and acknowledging it to the customer is now on your follow-ups.`,
     { reference: result.claim.claimNumber }
   );
 }
@@ -172,8 +197,34 @@ export async function recordDocument(_prev: ActionResult | null, formData: FormD
     engine: formData.get('readOnDevice') === 'yes' ? 'read on device, confirmed by a person' : 'typed by a person',
     enteredBy: actorIdFor(auth.principal)
   });
+  if (extraction.status !== 'Verified') {
+    await openFollowUp('documents', reference, DOCUMENT_TYPE_LABELS[checked.documentType], auth.principal);
+  }
   revalidatePath('/dashboard/operations/documents');
   return extraction.status === 'Verified'
     ? ok('Document recorded', `${DOCUMENT_TYPE_LABELS[checked.documentType]}: every required detail is on record.`, { reference })
     : ok('Document recorded, needs review', `${DOCUMENT_TYPE_LABELS[checked.documentType]}: a required detail is missing, so it is marked for review.`, { reference });
+}
+
+/**
+ * Confirm a step on a follow-up. The service checks, on the stored record,
+ * that this person owns it or supervises its area.
+ */
+export async function confirmFollowUp(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  const auth = await authorizeAction(null);
+  if (!auth.ok) return auth.result;
+  const id = formData.get('id');
+  if (typeof id !== 'string' || id.length === 0 || id.length > 300) return fail('Not confirmed', 'That follow-up could not be found.');
+
+  const result = await new FollowUpService().respond(id, followUpViewerFor(auth.principal), {
+    userId: actorIdFor(auth.principal),
+    name: auth.principal.name || 'Staff member'
+  });
+  if (!result.ok) return fail('Not confirmed', result.error);
+  revalidatePath('/dashboard/follow-ups');
+  revalidatePath('/dashboard/operations/escalations');
+  revalidatePath('/dashboard');
+  return ok('Step confirmed', result.next ? 'The next step is now on the list.' : 'That was the last step. Nothing more is owed on this record.', {
+    reference: result.done.reference
+  });
 }

@@ -93,8 +93,8 @@ export const MARKET_STRENGTHS: MarketStrength[] = [
     strength: "Less chasing: work is assigned and followed up",
     gain: "Nothing waits in a shared pile, and late work is seen early.",
     status: "partly",
-    today: "Claims, tasks and escalations each carry an owner and sit in a queue. Automatic reminders are not built yet.",
-    href: "/dashboard/operations"
+    today: "Each step has an owner and a time to respond, and a step nobody answers goes to the supervisor. Reminders by SMS or email are not built yet.",
+    href: "/dashboard/follow-ups"
   },
   {
     id: "renewals",

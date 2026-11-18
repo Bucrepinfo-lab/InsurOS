@@ -1,62 +1,77 @@
-import {
-  Badge,
-  DomainEntityList,
-  DomainModulePage,
-  KPICard,
-  type DataTableColumn
-} from '@insuros/ui';
-import { WorkflowService } from '@insuros/services';
-import { ActionButton } from '@/components/ActionButton';
-import { queueDemoRequest } from '@/app/dashboard/actions';
+import Link from 'next/link';
+import { Badge, DomainEntityList, DomainModulePage, KPICard, formatDateTime, type DataTableColumn } from '@insuros/ui';
+import { findStaffRole, flowFor } from '@insuros/domain';
+import { FollowUpService } from '@insuros/services';
 
 export const metadata = { title: 'Escalations' };
+export const dynamic = 'force-dynamic';
 
-const workflowService = new WorkflowService();
+const roleName = (roleId: string) => findStaffRole(roleId)?.name ?? roleId;
 
+/**
+ * Every step, in any area, that its owner did not answer in time. An overview
+ * for operations: the step itself is confirmed from Follow-ups by its owner
+ * or the supervisor it has gone to.
+ */
 export default async function EscalationsQueuePage() {
-  const workflows = await workflowService.getEscalatedWorkflows();
-  const blockedTasks = await workflowService.getBlockedTasks();
+  const lines = await new FollowUpService().escalated();
+  const rows = lines.map((line) => {
+    const flow = flowFor(line.item.area);
+    return {
+      id: line.item.id,
+      reference: line.item.reference,
+      subject: line.item.subject,
+      flow: flow.title,
+      step: `${line.stepNumber} of ${line.stepTotal}: ${line.stepLabel}`,
+      owner: line.item.ownerName,
+      due: formatDateTime(line.due),
+      level: line.level,
+      with: flow.ladder[line.level === 2 ? 1 : 0].map(roleName).join(' or ')
+    };
+  });
+  type Row = (typeof rows)[number];
 
-  type EscalationRow = (typeof workflows)[number];
-
-  const columns: DataTableColumn<EscalationRow>[] = [
-    { key: 'reference', header: 'Reference' },
-    { key: 'name', header: 'Workflow' },
-    { key: 'module', header: 'Module' },
-    { key: 'assignee', header: 'Owner' },
-    { key: 'dueAt', header: 'Due' },
+  const columns: DataTableColumn<Row>[] = [
+    { key: 'reference', header: 'Record' },
+    { key: 'subject', header: 'About' },
+    { key: 'flow', header: 'Flow' },
+    { key: 'step', header: 'Step owed' },
+    { key: 'owner', header: 'Owner' },
+    { key: 'due', header: 'Was due' },
     {
-      key: 'priority',
-      header: 'Priority',
-      render: (row) => <Badge tone='danger'>{row.priority}</Badge>
-    },
-    {
-      key: 'status',
-      header: 'Status',
-      render: (row) => <Badge tone='danger'>{row.status}</Badge>
+      key: 'with',
+      header: 'Now with',
+      render: (row) => <Badge tone={row.level === 2 ? 'danger' : 'warning'}>{row.with}</Badge>
     }
   ];
 
   return (
     <DomainModulePage
       title='Escalations'
-      description='Track blocked, critical, overdue, and escalated operational work.'
-      actions={<ActionButton label='Escalation Rules' action={queueDemoRequest.bind(null, 'Escalation Rules')} />}
+      description='Steps nobody answered in time, and who they have gone to. Confirm a step from Follow-ups.'
+      actions={
+        <Link
+          href='/dashboard/follow-ups'
+          className='inline-flex items-center justify-center rounded-lg border border-ink/15 bg-sheet/60 px-4 py-2 text-sm font-medium text-ink transition hover:border-seal/50 hover:text-seal'
+        >
+          Open follow-ups
+        </Link>
+      }
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
-        <KPICard title='Escalated Workflows' value={String(workflows.length)} change='Requires management review' />
-        <KPICard title='Blocked Tasks' value={String(blockedTasks.length)} change='Needs intervention' />
-        <KPICard title='Critical Priority' value={String(workflows.filter((item) => item.priority === 'Critical').length)} change='Escalate now' />
+        <KPICard title='Escalated steps' value={String(rows.length)} change='Not answered in time' />
+        <KPICard title='With a supervisor' value={String(rows.filter((row) => row.level === 1).length)} change='First level' />
+        <KPICard title='With the administrator' value={String(rows.filter((row) => row.level === 2).length)} change='Second level' />
       </div>
 
       <DomainEntityList
-        title='Escalated Workflows'
-        description='Workflow items currently escalated for operational review.'
+        title='Escalated steps'
+        description='Oldest first within each level.'
         searchPlaceholder='Search escalations...'
         columns={columns}
-        data={workflows}
-        emptyTitle='No escalations'
-        emptyDescription='No escalated workflow items are currently active.'
+        data={rows}
+        emptyTitle='Nothing has escalated'
+        emptyDescription='Every open step is still inside its time to respond.'
       />
     </DomainModulePage>
   );

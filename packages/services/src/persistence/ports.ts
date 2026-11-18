@@ -11,6 +11,7 @@ import type {
   Customer,
   EngagementItem,
   FnolSubmission,
+  FollowUp,
   KpiSnapshot,
   MarketingContent,
   MicroPayment,
@@ -112,4 +113,6 @@ export interface PersistenceAdapter {
   subscriberPrefs: Repository<SubscriberDashboardPrefs & { id: string }>;
   /** Counts of section views, searches and banner clicks per day. Starts empty in every tenant. */
   usageCounters: Repository<UsageCounter>;
+  /** Who owes the next step on a record, and by when. Starts empty in every tenant. */
+  followUps: Repository<FollowUp>;
 }

@@ -65,3 +65,4 @@ export * from "./usage-insight";
 export * from "./record-forms";
 export * from "./document-reading";
 export * from "./market-strengths";
+export * from "./follow-up";

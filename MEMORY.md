@@ -3,6 +3,16 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-17 — Order of events in every section, and escalation to the supervisor (owner request)
+- Every value story has a `flow` (three to five steps), shown on the section banner as "The order of events here".
+- **Follow-ups** (`/dashboard/follow-ups`, every signed-in member of staff): what is owed next on a record, who owes it, by when. Flows with real records (`packages/domain/src/follow-up.ts`): new customer (confirm details, 4 h), policy application (check 4 h → underwrite 8 → premium confirmed 4 → issue 4 = 20 h, inside the 24-hour promise), claim (acknowledge 4 h; then documents 12 → review 12 → decision with written reasons 12 → hand over 8 = 44 h, inside the 48-hour promise), document needing review (12 h). Owner set the promise 18/11/26: policy out within 24 hours, claim decision within 48.
+- **Escalation:** a step not confirmed in time goes to the area's supervisor role (claims: Claims Manager; customers and policies: Underwriter; documents: Claims Manager or Operations), and 4 hours later to the Platform Admin / platform owner. Worked out from the clock whenever a queue is read: no background job, so nothing is missed if a job fails. Times are by the clock, weekends included.
+- Least privilege, server-side: a person sees their own follow-ups; a supervisor sees their area's; the administrator sees all. `FollowUpService.respond` re-checks on the stored record. Confirming a step opens the next one for the same owner and records who confirmed it and when.
+- Follow-ups open automatically from the real forms (add customer, pending policy, register claim, document saved with a detail missing). Home shows "N steps are waiting on you" with late and escalated counts. Operations → Escalations now lists real escalated steps (it showed sample workflows before).
+- A follow-up records a confirmation only: it does not change a claim's status, decide a claim or move money.
+- New JSON collection `follow_ups` (persistence port + dataset entry, no migration, nothing seeded): owner-requested.
+- **Not built:** reminders by SMS or email when a step escalates (the supervisor sees it on their home page and follow-ups list); working-hours calendars; changing the time limits from a settings page.
+
 ## 2026-11-17 — Gains and market strengths (owner: "not only the solution of their problems, but what users gain")
 - Every value story now has a `gain` line, shown on the banner ("What you gain"), on `/why` and in the share text; test requires it and bans percentages in it.
 - `packages/domain/src/market-strengths.ts`: 14 strengths users praise in established systems (ease of use, one file, role views, document reading, phone, commissions, reports, usage insight, follow-up, renewals, self-service, multi-insurer quotes, e-sign, mobile-money collection), each marked here / partly / not-yet with what is missing. `/why` shows only here and part-way; a test enforces that and that each points at a real page.
