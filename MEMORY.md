@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-18 — Live retest fixes (built-in browser, 375 px, dark)
+- Retested live pages signed out (sign-in needs the owner's phone code, so dashboard and customer-link pages wait for a signed-in retest): home, sign-in, privacy and contact render cleanly in dark at 375 px, no console errors.
+- Fixed: the dark primary buttons on older screens (sign-in "Send code", home "Sign in with your phone", set PIN) were dull slate; they are now seal green in dark.
+- Fixed: the contact page had no language or theme switch; it now has both, and its heading, intro and form are in English and Kiswahili.
+
 ## 2026-11-18 — Career record, light/dark, Kiswahili, country clocks, Telpen Edu rules (owner brief)
 - **My career record** (`/dashboard/my-record`, nav "My career record"): roles held (role, level, area, from, current or not), customers brought in, policies placed and premium, claims registered and handled, workflow steps on time, customer replies within 4 hours, plus plain highlights. Built only from the person's own work (`buildCareerRecord`, `CareerService`); nothing typed in. **Download my record (PDF)** (`/api/my-record`) carries a fingerprint (SHA-256 of the record and issue date) the agency can confirm. Only the signed-in person can see or download theirs.
 - **Theme**: Light / Dark / Auto toggle in the top bar, on the career page and on customer pages; remembered on the device; set before paint (no flash). Dark values are token overrides in `globals.css`, plus mappings for the few plain Tailwind colours.

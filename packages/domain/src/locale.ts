@@ -80,7 +80,20 @@ export const CUSTOMER_TEXT = {
     en: "This page is private to you: anyone with the link can see it, so do not share it. Figures are as your agent recorded them; your policy schedule decides.",
     sw: "Ukurasa huu ni wako peke yako: yeyote mwenye kiungo anaweza kuuona, kwa hiyo usiushiriki. Takwimu ni kama wakala wako alivyorekodi; ratiba ya bima yako ndiyo inayoamua."
   },
-  language: { en: "Lugha / Language", sw: "Lugha / Language" }
+  language: { en: "Lugha / Language", sw: "Lugha / Language" },
+  contactTitle: { en: "Talk to your agent", sw: "Ongea na wakala wako" },
+  contactIntro: {
+    en: "Give your policy or claim number if you have it, and your message goes straight to the person who looks after it. We reply within 4 hours; if they cannot, their supervisor will. You will get your own private page to follow the conversation.",
+    sw: "Weka nambari ya bima au ya dai kama unayo, na ujumbe wako utamfikia moja kwa moja anayeishughulikia. Tunajibu ndani ya saa 4; asipoweza, msimamizi wake atajibu. Utapata ukurasa wako binafsi wa kufuatilia mazungumzo."
+  },
+  yourName: { en: "Your name", sw: "Jina lako" },
+  phoneOrEmail: { en: "Phone or email", sw: "Simu au barua pepe" },
+  about: { en: "About", sw: "Kuhusu" },
+  aClaim: { en: "A claim", sw: "Dai" },
+  aPolicy: { en: "A policy", sw: "Bima" },
+  somethingElse: { en: "Something else", sw: "Jambo jingine" },
+  claimOrPolicyNumber: { en: "Claim or policy number", sw: "Nambari ya dai au bima" },
+  message: { en: "Message", sw: "Ujumbe" }
 } as const satisfies Record<string, Record<LanguageTag, string>>;
 
 export type CustomerTextKey = keyof typeof CUSTOMER_TEXT;

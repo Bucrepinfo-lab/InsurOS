@@ -13,7 +13,7 @@ export function LanguageSwitch({ current, languages, path }: { current: Language
       {languages.map((lang) => (
         <Link
           key={lang}
-          href={`${path}?lang=${lang}`}
+          href={`${path}${path.includes("?") ? "&" : "?"}lang=${lang}`}
           lang={lang}
           hrefLang={lang}
           aria-current={lang === current ? 'true' : undefined}

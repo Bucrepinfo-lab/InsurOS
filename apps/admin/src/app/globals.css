@@ -107,16 +107,17 @@
   }
 }
 
-/* Surfaces and solid buttons that must stay readable in the dark. */
+/* Surfaces and solid buttons that must stay readable in the dark: the dark
+   primary buttons of older screens (bg-slate-900) turn seal green. */
 :root[data-theme="dark"] .bg-white { background-color: var(--color-sheet); }
 :root[data-theme="dark"] .bg-slate-900,
-:root[data-theme="dark"] .bg-slate-800 { background-color: #263548; }
+:root[data-theme="dark"] .bg-slate-800 { background-color: var(--color-seal); }
 :root[data-theme="dark"] .bg-warnink { background-color: #8a5410; }
 :root[data-theme="dark"] .text-sealdark { color: var(--color-sealbright); }
 @media (prefers-color-scheme: dark) {
   :root[data-theme="system"] .bg-white { background-color: var(--color-sheet); }
   :root[data-theme="system"] .bg-slate-900,
-  :root[data-theme="system"] .bg-slate-800 { background-color: #263548; }
+  :root[data-theme="system"] .bg-slate-800 { background-color: var(--color-seal); }
   :root[data-theme="system"] .bg-warnink { background-color: #8a5410; }
   :root[data-theme="system"] .text-sealdark { color: var(--color-sealbright); }
 }
