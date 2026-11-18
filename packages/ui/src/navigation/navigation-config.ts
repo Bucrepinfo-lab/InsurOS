@@ -63,6 +63,7 @@ export const adminNavigation: NavigationSection[] = [
         href: '/dashboard/marketplace/micro', requiredPermission: 'Marketplace:View'
       },
       { id: 'customers', label: 'Customers', href: '/dashboard/customers', requiredPermission: 'Customers:View' },
+      { id: 'customer-home-links', label: 'Customer home links', href: '/dashboard/customers/home-links', requiredPermission: 'Customers:View' },
       { id: 'policies', label: 'Policies', href: '/dashboard/policies', requiredPermission: 'Policies:View' },
       { id: 'claims', label: 'Claims', href: '/dashboard/claims', requiredPermission: 'Claims:View' },
       {

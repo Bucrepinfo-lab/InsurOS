@@ -69,6 +69,22 @@ export interface PolicyFormValue {
   product: string;
   premium: number;
   status: PolicyStatus;
+  insuredItem?: string;
+  sumInsured?: number;
+  registration?: string;
+  yearOfManufacture?: number;
+  startDate: string;
+  expiryDate: string;
+}
+
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+const validDay = (value: string) => ISO_DAY.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`)) && new Date(`${value}T00:00:00Z`).toISOString().startsWith(value);
+
+/** One year of cover from a start date: the day before the same date next year. */
+export function defaultExpiry(startDate: string): string {
+  const start = new Date(`${startDate}T00:00:00Z`);
+  const end = new Date(Date.UTC(start.getUTCFullYear() + 1, start.getUTCMonth(), start.getUTCDate() - 1));
+  return end.toISOString().slice(0, 10);
 }
 
 export function checkPolicyForm(input: {
@@ -76,6 +92,13 @@ export function checkPolicyForm(input: {
   product?: unknown;
   premium?: unknown;
   status?: unknown;
+  insuredItem?: unknown;
+  sumInsured?: unknown;
+  registration?: unknown;
+  yearOfManufacture?: unknown;
+  startDate?: unknown;
+  expiryDate?: unknown;
+  today?: string;
 }): FormCheck<PolicyFormValue> {
   const customerId = text(input.customerId);
   if (customerId === "" || customerId.length > 120) return { ok: false, field: "customerId", error: "Choose the customer." };
@@ -88,7 +111,45 @@ export function checkPolicyForm(input: {
   if (!premium.ok) return premium;
   const status = NEW_POLICY_STATUSES.find((candidate) => candidate === input.status);
   if (!status) return { ok: false, field: "status", error: "Choose whether the policy is in force or pending." };
-  return { ok: true, value: { customerId, product, premium: premium.value, status } };
+  const insuredItem = text(input.insuredItem);
+  if (insuredItem.length > 80 || (insuredItem && !PLAIN.test(insuredItem))) {
+    return { ok: false, field: "insuredItem", error: "Describe what is insured in a few words, for example Toyota Axio." };
+  }
+  let sumInsured: number | undefined;
+  if (text(input.sumInsured) !== "") {
+    const value = checkAmount(input.sumInsured, "sumInsured");
+    if (!value.ok) return value;
+    sumInsured = value.value;
+  }
+  const registration = text(input.registration).toUpperCase();
+  if (registration && !/^[A-Z0-9 -]{3,12}$/.test(registration)) return { ok: false, field: "registration", error: "That registration does not look right, for example KDA 123A." };
+  let yearOfManufacture: number | undefined;
+  if (text(input.yearOfManufacture) !== "") {
+    yearOfManufacture = Number(text(input.yearOfManufacture));
+    const thisYear = Number((input.today ?? new Date().toISOString()).slice(0, 4));
+    if (!Number.isInteger(yearOfManufacture) || yearOfManufacture < 1950 || yearOfManufacture > thisYear + 1) {
+      return { ok: false, field: "yearOfManufacture", error: "Enter the year the vehicle was made, for example 2016." };
+    }
+  }
+  const startDate = text(input.startDate) || (input.today ?? new Date().toISOString()).slice(0, 10);
+  if (!validDay(startDate)) return { ok: false, field: "startDate", error: "Enter the date cover starts." };
+  const expiryDate = text(input.expiryDate) || defaultExpiry(startDate);
+  if (!validDay(expiryDate) || expiryDate <= startDate) return { ok: false, field: "expiryDate", error: "The expiry date must be after the start date." };
+  return {
+    ok: true,
+    value: {
+      customerId,
+      product,
+      premium: premium.value,
+      status,
+      ...(insuredItem ? { insuredItem } : {}),
+      ...(sumInsured !== undefined ? { sumInsured } : {}),
+      ...(registration ? { registration: registration.replace(/\s+/g, " ") } : {}),
+      ...(yearOfManufacture !== undefined ? { yearOfManufacture } : {}),
+      startDate,
+      expiryDate
+    }
+  };
 }
 
 export interface ClaimFormValue {

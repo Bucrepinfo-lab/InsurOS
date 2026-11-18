@@ -70,3 +70,4 @@ export * from "./country-economics";
 export * from "./messaging";
 export * from "./ai-assist";
 export * from "./claim-photos";
+export * from "./customer-home";

@@ -19,6 +19,7 @@ import {
 import { ClaimService, DocumentIntelligenceService, FollowUpService, getPersistence } from '@insuros/services';
 import { fail, ok, type ActionResult } from '@/lib/action-result';
 import { authorizeAction } from '@/lib/auth/session';
+import { customerHomeUrl, newCustomerLink } from '@/lib/customer-link';
 import { followUpViewerFor } from '@/lib/follow-up-viewer';
 import { actorIdFor, reachFor } from '@/lib/record-scope';
 
@@ -99,7 +100,14 @@ export async function recordPolicy(_prev: ActionResult | null, formData: FormDat
     customerId: formData.get('customerId'),
     product: formData.get('product'),
     premium: formData.get('premium'),
-    status: formData.get('status')
+    status: formData.get('status'),
+    insuredItem: formData.get('insuredItem'),
+    sumInsured: formData.get('sumInsured'),
+    registration: formData.get('registration'),
+    yearOfManufacture: formData.get('yearOfManufacture'),
+    startDate: formData.get('startDate'),
+    expiryDate: formData.get('expiryDate'),
+    today: new Date(Date.now() + 3 * 3_600_000).toISOString().slice(0, 10)
   });
   if (!checked.ok) return fail('Check the form', checked.error);
 
@@ -118,7 +126,14 @@ export async function recordPolicy(_prev: ActionResult | null, formData: FormDat
     product: checked.value.product,
     premium: formatKes(checked.value.premium),
     status: checked.value.status,
-    ownerUserId: actorIdFor(auth.principal)
+    ownerUserId: actorIdFor(auth.principal),
+    customerId: customer.id,
+    ...(checked.value.insuredItem ? { insuredItem: checked.value.insuredItem } : {}),
+    ...(checked.value.sumInsured !== undefined ? { sumInsured: checked.value.sumInsured } : {}),
+    ...(checked.value.registration ? { registration: checked.value.registration } : {}),
+    ...(checked.value.yearOfManufacture !== undefined ? { yearOfManufacture: checked.value.yearOfManufacture } : {}),
+    startDate: checked.value.startDate,
+    expiryDate: checked.value.expiryDate
   };
   await db.policies.insert(row);
   if (row.status === 'Pending') await openFollowUp('policies', id, `${row.customer}, ${row.product}`, auth.principal);
@@ -238,5 +253,26 @@ export async function confirmFollowUp(_prev: ActionResult | null, formData: Form
   revalidatePath('/dashboard');
   return ok('Step confirmed', result.next ? 'The next step is now on the list.' : 'That was the last step. Nothing more is owed on this record.', {
     reference: result.done.reference
+  });
+}
+
+/**
+ * Make a customer's private home link: their policies, what is insured,
+ * values, expiry dates and claims. Shown once; making a new one stops the old.
+ */
+export async function makeCustomerHomeLink(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  const auth = await authorizeAction('Customers', 'View');
+  if (!auth.ok) return auth.result;
+  const customers = getPersistence().customers;
+  const customer = (await customers.findById(String(formData.get('customerId') ?? ''))) as OwnedCustomer | undefined;
+  if (!customer || !canSeeCustomer(reachFor(auth.principal, 'Customers'), customer)) {
+    return fail('No link made', 'That customer is not one of yours.');
+  }
+  const link = newCustomerLink();
+  await customers.update(customer.id, { homeAccessHash: link.hash });
+  const url = customerHomeUrl(link.token);
+  return ok('Home link made', `Send this to ${customer.name}. It shows their policies, what is insured, values and expiry dates. Any older link stops working.`, {
+    reference: customer.id,
+    link: url
   });
 }

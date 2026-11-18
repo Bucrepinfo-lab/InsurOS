@@ -155,6 +155,40 @@ export function PolicyForm({
           <span className={hint}>The figure on the policy document. This is a record only: no payment is taken here.</span>
           <input name='premium' required inputMode='decimal' placeholder='42,000' autoComplete='off' className={field} />
         </label>
+        <fieldset className='grid gap-4 rounded-xl border border-line p-4'>
+          <legend className='px-1 text-sm font-medium text-ink'>What is insured</legend>
+          <p className='-mt-2 text-xs text-dim'>The customer sees these on their own page, with a reminder before the cover ends.</p>
+          <div className='grid gap-4 sm:grid-cols-2'>
+            <label className={label}>
+              Insured item
+              <span className={hint}>For example Toyota Axio, or House in Ruiru</span>
+              <input name='insuredItem' maxLength={80} autoComplete='off' className={field} />
+            </label>
+            <label className={label}>
+              Value insured, in shillings
+              <input name='sumInsured' inputMode='decimal' placeholder='1,500,000' autoComplete='off' className={field} />
+            </label>
+            <label className={label}>
+              Vehicle registration
+              <span className={hint}>Vehicles only</span>
+              <input name='registration' maxLength={12} autoComplete='off' autoCapitalize='characters' className={field} />
+            </label>
+            <label className={label}>
+              Year of manufacture
+              <span className={hint}>Vehicles only, for the value estimate</span>
+              <input name='yearOfManufacture' inputMode='numeric' maxLength={4} autoComplete='off' className={field} />
+            </label>
+            <label className={label}>
+              Cover starts
+              <input name='startDate' type='date' className={field} />
+            </label>
+            <label className={label}>
+              Cover ends
+              <span className={hint}>Leave empty for one year</span>
+              <input name='expiryDate' type='date' className={field} />
+            </label>
+          </div>
+        </fieldset>
         <label className={label}>
           Status
           <select name='status' required defaultValue='Active' className={field}>
