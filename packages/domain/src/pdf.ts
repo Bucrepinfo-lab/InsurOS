@@ -53,8 +53,10 @@ export function wrap(text: string, width: number, size: number, bold = false): s
     for (const word of paragraph.split(/\s+/).filter(Boolean)) {
       if (word.length > max) {
         if (line) lines.push(line);
-        for (let i = 0; i < word.length; i += max) lines.push(word.slice(i, i + max));
-        line = "";
+        const chunks: string[] = [];
+        for (let i = 0; i < word.length; i += max) chunks.push(word.slice(i, i + max));
+        line = chunks.pop() ?? "";
+        lines.push(...chunks);
         continue;
       }
       const next = line ? `${line} ${word}` : word;
