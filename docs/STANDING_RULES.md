@@ -76,3 +76,47 @@ logs keep their own date format.
 ## 12. Schedules cost minutes
 Each scheduled workflow states why its frequency is needed; prefer the least
 frequent schedule that meets the need (GitHub Actions minutes are a budget).
+
+## 13. Least privilege, decided on the server
+Adopted 18/11/26 from Telpen Edu (02/11/26). What a person may see or do is
+decided on the server from their session and role, never from what the screen
+hides. Every new page, route and download checks the role server-side; anything
+personal (a career record, a customer's conversation, a claim pack) is served
+only to the person it belongs to or to the supervisors above them. Unmapped
+users get nothing.
+
+## 14. The sign-in phone is never shown in full
+Adopted 18/11/26 from Telpen Edu (30/10/26). The phone number a person signs in
+with appears on screens only masked (`maskPhone`: +2547•••••678), including the
+user menu and the access-pending page. Guarded by
+`packages/domain/test/phone-never-shown.test.ts`.
+
+## 15. A country sells only after its own approval
+Adopted 18/11/26 from Telpen Edu's per-country approval audit. A country's
+rates, commission split and referral token go live only when its profile is
+verified against its regulator, a named person has approved it (`approvedBy`,
+`approvedAt`), and the agency's licence for that country is recorded
+(`canSell`). An unapproved country shows its figures as indicative and sells
+nothing. Its clock (`COUNTRY_CLOCKS`) and languages come with it.
+
+## 16. One record, once
+Adopted 18/11/26 from Telpen Edu's dedupe guards. A double tap or a retried
+request never makes two records, two messages or two alerts: opening the same
+follow-up step twice keeps the first (`FollowUpService.open`), and every new
+kind of record gets the same guard with a test.
+
+## 17. No empty screens for a first-time user
+Adopted 18/11/26 from Telpen Edu ("examples in every tab"). A screen with
+nothing on it says, in a sentence, what goes there and how to add the first
+one, with the button to do it. Demo and review tenants carry worked examples so
+a tester never lands on a blank page.
+
+## 18. Testers get an answer
+Adopted 18/11/26 from Telpen Edu (10/11/26). A tester's report is acknowledged
+the same working day on the country's clock, and told when the fix is live.
+
+## 19. Theme, language and clock follow the person
+Every screen works in light and dark (Light, Dark or Auto, remembered on the
+device). Customer pages are offered in the country's languages (Kenya: English
+and Kiswahili) and remember the choice. Times are shown on the country's clock,
+and "today" turns at the country's midnight.

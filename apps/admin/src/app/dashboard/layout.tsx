@@ -2,10 +2,12 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { PlatformProvider } from '@insuros/ui';
+import { maskPhone } from '@insuros/domain';
 import { DashboardShell } from '@/components/dashboard-shell';
 import { SITE_URL } from '@/lib/site';
 import { ServiceUnavailable } from '@/components/auth/service-unavailable';
 import { SignOutButton } from '@/components/sign-out-button';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { getAuthMode, isProductionRuntime } from '@/lib/auth/config';
 import { getAuthState } from '@/lib/auth/session';
 
@@ -28,7 +30,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       user={{
         id: principal.clerkUserId,
         name: principal.name,
-        email: principal.phone ?? principal.email
+        email: principal.phone ? maskPhone(principal.phone) : principal.email
       }}
       tenant={{ name: 'InsurOS' }}
       environment={isProductionRuntime ? 'production' : 'development'}
@@ -37,14 +39,17 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       <DashboardShell
         baseUrl={SITE_URL}
         userActions={
-          getAuthMode() === 'supabase' ? (
-            <div className='flex items-center gap-2'>
-              <Link href='/account/delete' className='hidden text-xs text-slate-500 underline sm:inline'>
-                Delete account
-              </Link>
-              <SignOutButton />
-            </div>
-          ) : null
+          <div className='flex items-center gap-2'>
+            <ThemeToggle />
+            {getAuthMode() === 'supabase' ? (
+              <>
+                <Link href='/account/delete' className='hidden text-xs text-slate-500 underline sm:inline'>
+                  Delete account
+                </Link>
+                <SignOutButton />
+              </>
+            ) : null}
+          </div>
         }
       >
         {children}

@@ -74,3 +74,5 @@ export * from "./customer-home";
 export * from "./pdf";
 export * from "./signature";
 export * from "./exif";
+export * from "./career-record";
+export * from "./locale";

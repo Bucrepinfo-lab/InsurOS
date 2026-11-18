@@ -20,11 +20,14 @@ export interface ExpiryStatus {
 }
 
 const DAY = 86_400_000;
-const eatDay = (now: Date) => new Date(now.getTime() + 3 * 3_600_000).toISOString().slice(0, 10);
+/** Today's calendar date on the country's clock (default Nairobi): `2026-11-18`. */
+export const localDay = (now: Date, timeZone = "Africa/Nairobi") =>
+  new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
+const eatDay = (now: Date, timeZone?: string) => localDay(now, timeZone);
 
-export function expiryStatus(expiryDate: string | undefined, now: Date): ExpiryStatus {
+export function expiryStatus(expiryDate: string | undefined, now: Date, timeZone?: string): ExpiryStatus {
   if (!expiryDate || !/^\d{4}-\d{2}-\d{2}$/.test(expiryDate)) return { level: "unknown", days: null, words: "Expiry date not on record" };
-  const days = Math.round((Date.parse(`${expiryDate}T00:00:00Z`) - Date.parse(`${eatDay(now)}T00:00:00Z`)) / DAY);
+  const days = Math.round((Date.parse(`${expiryDate}T00:00:00Z`) - Date.parse(`${eatDay(now, timeZone)}T00:00:00Z`)) / DAY);
   if (days < 0) return { level: "expired", days, words: `Expired ${-days} ${-days === 1 ? "day" : "days"} ago` };
   if (days === 0) return { level: "due-soon", days, words: "Last day of cover is today" };
   if (days <= RENEWAL_REMINDER_DAYS) return { level: "due-soon", days, words: `Expires in ${days} ${days === 1 ? "day" : "days"}` };

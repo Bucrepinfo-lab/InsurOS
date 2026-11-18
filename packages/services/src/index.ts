@@ -58,3 +58,4 @@ export { computePolicyHealth, evaluateSceneIntegrity } from "@insuros/domain";
 export type { ScopedAccessRequest, SceneIntegrityResult } from "@insuros/domain";
 export * from "./payment-ledger";
 export * from "./auth";
+export * from "./career";

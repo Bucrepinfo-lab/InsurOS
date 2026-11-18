@@ -29,6 +29,98 @@
   --font-mono: var(--font-spline-mono), ui-monospace, monospace;
 }
 
+/*
+  Dark theme ("night ledger"). The person picks Light, Dark or System; System
+  follows the phone. Only tokens change, so every screen follows. A few plain
+  Tailwind colours used on older screens are mapped here too.
+*/
+@layer base {
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --color-paper: #0e1622;
+    --color-sheet: #162131;
+    --color-line: #2a3a50;
+    --color-ink: #e6ebf2;
+    --color-inkdeep: #f4f6fa;
+    --color-dim: #a2afbf;
+    --color-faint: #7d8a9b;
+    --color-seal: #1f9d7a;
+    --color-sealbright: #3cc79f;
+    --color-sealdark: #0b5141;
+    --color-sealsoft: #12372e;
+    --color-warnink: #e2ad55;
+    --color-warnsoft: #3a2c12;
+    --color-dangerink: #f08a8a;
+    --color-dangersoft: #3d1c1c;
+    --color-slate-50: #121c2a;
+    --color-slate-100: #1a2636;
+    --color-slate-200: #2a3a50;
+    --color-slate-300: #3a4c64;
+    --color-slate-400: #8593a5;
+    --color-slate-500: #a2afbf;
+    --color-slate-600: #b8c3d0;
+    --color-slate-700: #ccd5df;
+    --color-slate-800: #dde4ec;
+    --color-slate-900: #e6ebf2;
+    --color-slate-950: #f4f6fa;
+    --color-red-50: #3d1c1c;
+    --color-red-600: #f08a8a;
+    --color-red-700: #f3a0a0;
+    --color-red-800: #f6b4b4;
+    --color-red-900: #f9c8c8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-theme="system"] {
+      color-scheme: dark;
+      --color-paper: #0e1622;
+      --color-sheet: #162131;
+      --color-line: #2a3a50;
+      --color-ink: #e6ebf2;
+      --color-inkdeep: #f4f6fa;
+      --color-dim: #a2afbf;
+      --color-faint: #7d8a9b;
+      --color-seal: #1f9d7a;
+      --color-sealbright: #3cc79f;
+      --color-sealdark: #0b5141;
+      --color-sealsoft: #12372e;
+      --color-warnink: #e2ad55;
+      --color-warnsoft: #3a2c12;
+      --color-dangerink: #f08a8a;
+      --color-dangersoft: #3d1c1c;
+      --color-slate-50: #121c2a;
+      --color-slate-100: #1a2636;
+      --color-slate-200: #2a3a50;
+      --color-slate-300: #3a4c64;
+      --color-slate-400: #8593a5;
+      --color-slate-500: #a2afbf;
+      --color-slate-600: #b8c3d0;
+      --color-slate-700: #ccd5df;
+      --color-slate-800: #dde4ec;
+      --color-slate-900: #e6ebf2;
+      --color-slate-950: #f4f6fa;
+      --color-red-50: #3d1c1c;
+      --color-red-600: #f08a8a;
+      --color-red-700: #f3a0a0;
+      --color-red-800: #f6b4b4;
+      --color-red-900: #f9c8c8;
+    }
+  }
+}
+
+/* Surfaces and solid buttons that must stay readable in the dark. */
+:root[data-theme="dark"] .bg-white { background-color: var(--color-sheet); }
+:root[data-theme="dark"] .bg-slate-900,
+:root[data-theme="dark"] .bg-slate-800 { background-color: #263548; }
+:root[data-theme="dark"] .bg-warnink { background-color: #8a5410; }
+:root[data-theme="dark"] .text-sealdark { color: var(--color-sealbright); }
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="system"] .bg-white { background-color: var(--color-sheet); }
+  :root[data-theme="system"] .bg-slate-900,
+  :root[data-theme="system"] .bg-slate-800 { background-color: #263548; }
+  :root[data-theme="system"] .bg-warnink { background-color: #8a5410; }
+  :root[data-theme="system"] .text-sealdark { color: var(--color-sealbright); }
+}
+
 body {
   background-color: var(--color-paper);
   background-image:

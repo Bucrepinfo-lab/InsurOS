@@ -4,6 +4,7 @@ import {
   CLAIM_DECLARATION_VERSION,
   checkSignature,
   estimateVehicleValue,
+  clockFor,
   expiryStatus,
   jpegSize,
   makePdf,
@@ -18,7 +19,7 @@ import { photoStorage, type PhotoStorage } from "./photo-storage";
 import { MessagingService } from "./messaging";
 
 const day = (iso: string) =>
-  new Date(iso).toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Africa/Nairobi" });
+  new Date(iso).toLocaleString("en-GB", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: clockFor(undefined).timeZone });
 const kes = (value: number) => `KES ${Math.round(value).toLocaleString("en-GB")}`;
 
 async function fetchBytes(storage: PhotoStorage, path: string): Promise<Uint8Array | null> {

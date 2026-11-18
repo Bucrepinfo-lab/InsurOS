@@ -7,7 +7,9 @@ import {
   takenOnTheSpot,
   type ClaimKind,
   type SceneIntegrityResult,
-  type ScenePhoto
+  type ScenePhoto,
+  clockFor,
+  utcOffsetHours
 } from "@insuros/domain";
 import { getPersistence, resolveTenantId } from "./persistence";
 import { photoStorage, type PhotoStorage } from "./photo-storage";
@@ -71,7 +73,7 @@ export class ClaimPhotoService {
 
     // Time: the camera's own record first, then the phone's file time, then the moment it arrived.
     const facts = check.originalType === "image/jpeg" ? readExif(input.original) : {};
-    const exifTime = facts.takenAt ? exifInstant(facts.takenAt, input.utcOffsetHours ?? 3) : null;
+    const exifTime = facts.takenAt ? exifInstant(facts.takenAt, input.utcOffsetHours ?? utcOffsetHours(clockFor(undefined).timeZone, new Date())) : null;
     const deviceTime = input.takenAt && !Number.isNaN(Date.parse(input.takenAt)) ? new Date(input.takenAt).toISOString() : null;
     const takenAt = exifTime ?? deviceTime ?? receivedAt;
     const timeSource: ScenePhoto["timeSource"] = exifTime ? "photo" : deviceTime ? "device" : "upload";

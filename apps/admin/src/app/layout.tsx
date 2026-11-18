@@ -3,6 +3,7 @@ import { Fraunces, Onest, Spline_Sans_Mono } from 'next/font/google';
 import type { ReactNode } from 'react';
 import './globals.css';
 import { ServiceWorkerRegister } from '@/components/service-worker-register';
+import { THEME_BOOT_SCRIPT } from '@/components/theme-toggle';
 
 export const metadata: Metadata = {
   title: {
@@ -48,7 +49,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       lang='en'
       className={`${display.variable} ${body.variable} ${mono.variable}`}
+      data-theme='system'
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+      </head>
       <body>
         {children}
         <ServiceWorkerRegister />
