@@ -3,6 +3,9 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-18 — Shared UI classes were not being generated
+- Found on the live home page: "OS" in the logo showed white. Tailwind skips `node_modules`, where `@insuros/ui` is linked, so classes used only inside `packages/ui` (logo, sidebar, workspace shell) were missing from the CSS. Fixed with `@source "../../../../packages/ui/src"` in `globals.css`.
+
 ## 2026-11-18 — Home page and the Ledger Seal everywhere (owner brief: professional, persuasive, impressive colours)
 - The Ledger Seal logo (docs/brand, 17/07/26) is now a component, `LedgerSeal` / `InsurOSLogo` in `@insuros/ui` (`packages/ui/src/brand`). Used on the home page, sign-in, public pages and the sidebar (seal replaces the plain dot).
 - **Home page redone**: deep ink-to-seal hero with a gold signature rule and gold call to action, an example claim card (labelled as an example) beside the detailed seal; the service targets (24h policy, 48h claim, 4h reply, 10 photos); four audience cards (insurers, agencies, agents, customers); the claim in five steps on a dark seal band; six feature cards; "Trust is the product"; a closing call; footer with the logo and theme switch. Keeps "InsurOS does not sell insurance to the public". Checked at 1280 and 390 px, light and dark, no sideways scroll.
