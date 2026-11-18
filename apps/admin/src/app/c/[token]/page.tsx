@@ -66,6 +66,7 @@ export default async function CustomerConversationPage({
             endpoint='/api/c/photos'
             fields={{ token }}
             initialKind={photos[0]?.photo.claimKind ?? 'motor'}
+            reference={c.reference ?? undefined}
             existing={photos.map((p) => ({ slot: p.photo.slot ?? '', viewUrl: p.viewUrl, onTheSpot: p.photo.liveCapture }))}
           />
         ) : null}

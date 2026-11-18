@@ -31,6 +31,10 @@ export interface ScenePhoto {
   uploadedBy?: { kind: "staff" | "customer"; id: string; name: string };
   /** The customer conversation it came through, if any. */
   conversationId?: string;
+  /** Where the time came from: the photo's own data, the phone's file time, or the upload. */
+  timeSource?: "photo" | "device" | "upload";
+  /** Where the position came from: the phone's location service at upload, or the photo's own data. */
+  locationSource?: "device" | "photo";
 }
 
 export interface SceneIntegrityCheck {
@@ -78,16 +82,19 @@ export function evaluateSceneIntegrity(
     detail: `Captured ${Math.round(captureLagHours)}h after the incident.`
   });
 
+  // A position written into the photo by its camera counts; one from the phone's location service needs a fix within 100 m.
   const hasGeo =
     photo.latitude !== undefined &&
     photo.longitude !== undefined &&
-    (photo.geoAccuracyMeters ?? Infinity) <= 100;
+    (photo.locationSource === "photo" || (photo.geoAccuracyMeters ?? Infinity) <= 100);
 
   checks.push({
     code: "GEO_PRESENT",
     passed: hasGeo,
     detail: hasGeo
-      ? `GPS fix within ${photo.geoAccuracyMeters}m.`
+      ? photo.locationSource === "photo"
+        ? "GPS position written into the photo by the camera."
+        : `GPS fix within ${photo.geoAccuracyMeters}m.`
       : "No reliable GPS fix attached."
   });
 

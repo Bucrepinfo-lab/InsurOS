@@ -118,7 +118,7 @@ export class DocumentService {
             photo.slot ?? "",
             day(photo.capturedAt),
             day(photo.receivedAt),
-            photo.latitude !== undefined ? `within ${photo.geoAccuracyMeters} m` : "none",
+            photo.latitude !== undefined && photo.longitude !== undefined ? `${photo.latitude.toFixed(5)}, ${photo.longitude.toFixed(5)}` : "none",
             photo.sha256
           ])
         }
