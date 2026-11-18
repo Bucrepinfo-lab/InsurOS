@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { ServiceUnavailable } from "@/components/auth/service-unavailable";
 import { SignOutButton } from "@/components/sign-out-button";
 import { getAuthState } from "@/lib/auth/session";
+import { maskPhone } from "@insuros/domain";
 
 export const metadata = { title: "Access pending" };
 export const dynamic = "force-dynamic";
@@ -26,7 +27,7 @@ export default async function AccessPendingPage() {
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-slate-400">InsurOS</p>
         <h1 className="text-xl font-semibold text-slate-900">Access pending</h1>
         <p className="text-sm text-slate-600">
-          You are signed in{principal.phone ? <> as <strong>{principal.phone}</strong></> : null}, but
+          You are signed in{principal.phone ? <> as <strong>{maskPhone(principal.phone)}</strong></> : null}, but
           your organisation has not given you a role yet. InsurOS is a staff tool for insurers,
           agencies and their agents — ask your administrator to grant access to this phone number,
           then reopen the app.

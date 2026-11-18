@@ -3,6 +3,13 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-18 — Career record, light/dark, Kiswahili, country clocks, Telpen Edu rules (owner brief)
+- **My career record** (`/dashboard/my-record`, nav "My career record"): roles held (role, level, area, from, current or not), customers brought in, policies placed and premium, claims registered and handled, workflow steps on time, customer replies within 4 hours, plus plain highlights. Built only from the person's own work (`buildCareerRecord`, `CareerService`); nothing typed in. **Download my record (PDF)** (`/api/my-record`) carries a fingerprint (SHA-256 of the record and issue date) the agency can confirm. Only the signed-in person can see or download theirs.
+- **Theme**: Light / Dark / Auto toggle in the top bar, on the career page and on customer pages; remembered on the device; set before paint (no flash). Dark values are token overrides in `globals.css`, plus mappings for the few plain Tailwind colours.
+- **Languages**: customer pages `/c/<token>` and `/my/<token>` in English and Kiswahili (`CUSTOMER_TEXT`, a test checks every word has both), switch remembered for a year; the country's first language is the default. Photo guide, signing box and contact form are still English.
+- **Country clocks**: `COUNTRY_CLOCKS` gives each country its time zone and languages (KE Africa/Nairobi en+sw; TZ sw first). Customer page times use it; "today" for cover expiry turns at the country's midnight (`localDay`); the photo stamp's camera-time offset and the claim pack use it instead of a fixed +3. Kenya is the default until tenants carry a country.
+- **Standing rules §13–19** adopted from Telpen Edu (not repeating §1–12): least privilege on the server; sign-in phone never shown in full (fixed: user menu and access-pending page showed it; guard test `phone-never-shown.test.ts`); a country sells only after its own approval; one record once; no empty screens; testers get an answer; theme, language and clock follow the person.
+
 ## 2026-11-18 — Photos stamped with time and place (owner brief)
 - The clear copy of every claim photo is **stamped** along the bottom on the phone: date and time with the time zone (dd/mm/yy hh:mm:ss), the GPS position (± accuracy) or "no location", and the claim number. The original stays untouched.
 - **Time**: the camera's own record (EXIF DateTimeOriginal, with its offset, else the country's offset; Kenya +3) first, then the phone's file time, then the upload time; stored as `timeSource` photo / device / upload.

@@ -20,6 +20,7 @@ export const adminNavigation: NavigationSection[] = [
       { id: 'dashboard', label: 'Dashboard', href: '/dashboard' },
       { id: 'follow-ups', label: 'Follow-ups', href: '/dashboard/follow-ups' },
       { id: 'messages', label: 'Messages', href: '/dashboard/messages' },
+      { id: 'my-record', label: 'My career record', href: '/dashboard/my-record' },
       { id: 'tenants', label: 'Tenants', href: '/dashboard/tenants', requiredPermission: 'Platform:View' },
       { id: 'identity', label: 'Identity', href: '/dashboard/identity', requiredPermission: 'Identity:View' },
       {
