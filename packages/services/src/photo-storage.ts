@@ -54,7 +54,7 @@ export class SupabasePhotoStorage implements PhotoStorage {
     const response = await this.fetcher(`${this.baseUrl}/storage/v1/object/${this.bucket}/${path}`, {
       method: "POST",
       headers: this.headers({ "content-type": contentType, "x-upsert": "false", "cache-control": "31536000" }),
-      body: bytes
+      body: new Blob([new Uint8Array(bytes)], { type: contentType })
     });
     if (!response.ok) throw new Error(`The photo could not be stored (${response.status}).`);
   }
