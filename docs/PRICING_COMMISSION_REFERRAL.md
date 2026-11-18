@@ -26,11 +26,11 @@ Owner decision 18/11/26: nothing is global. Prices, commission and referral toke
 
 | Country | Status | Note |
 |---|---|---|
-| Kenya | Verified; **awaiting owner approval** | Caps from the Eleventh Schedule; token and Gold threshold to approve |
+| Kenya | Verified; figures **approved by the owner 18/11/26** | Split 70/60/10, token KES 100 (max 20 a month), Gold at KES 1,500,000 premium a quarter. **Selling waits for the company's IRA licence number** (s.150) |
 | South Africa | Indicative | Regulation 5.3 (motor 12.5%, other 20%); current status to confirm |
 | Uganda, Tanzania, Nigeria, Ghana, India, United Kingdom, United States | Not set | Off until a local adviser confirms caps and referral rules |
 
-Approving a country = setting `approvedBy` and `approvedAt` on its profile in a reviewed commit (who and when, in git).
+Approving a country = setting `approvedBy` and `approvedAt` on its profile in a reviewed commit (who and when, in git). Selling also needs `intermediaryLicence`: the licence number our company holds from that regulator.
 
 ## In the product
 

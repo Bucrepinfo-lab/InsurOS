@@ -48,14 +48,18 @@ describe("country profiles", () => {
     }
   });
 
-  it("sells nowhere until the law is verified and a person has approved", () => {
-    expect(canSell(KENYA)).toMatchObject({ ok: false });
-    const approved = { ...KENYA, approvedBy: "Owner", approvedAt: "2026-11-18" };
+  it("sells nowhere until the law is verified, a person has approved and the licence is on file", () => {
+    // Kenya's figures are approved, but the company has no IRA licence yet.
+    expect(KENYA.approvedBy).toBeTruthy();
+    expect(KENYA.goldThresholdPerQuarter).toBe(1_500_000);
+    expect(canSell(KENYA)).toMatchObject({ ok: false, reason: expect.stringContaining("licence") });
+    expect(canSell({ ...KENYA, approvedBy: undefined, intermediaryLicence: "IRA/01/2027" })).toMatchObject({ ok: false });
+    const approved = { ...KENYA, approvedBy: "Owner", approvedAt: "2026-11-18", intermediaryLicence: "IRA/01/2027" };
     expect(canSell(approved)).toEqual({ ok: true });
     expect(canSell(approved, "motor-private")).toEqual({ ok: true });
     expect(canSell({ ...approved, caps: {} }, "motor-private")).toMatchObject({ ok: false });
     for (const profile of COUNTRY_PROFILES.filter((candidate) => candidate.status !== "verified")) {
-      expect(canSell({ ...profile, approvedBy: "Owner", approvedAt: "2026-11-18" })).toMatchObject({ ok: false });
+      expect(canSell({ ...profile, approvedBy: "Owner", approvedAt: "2026-11-18", intermediaryLicence: "X" })).toMatchObject({ ok: false });
       expect(profile.referralToken).toBeUndefined();
     }
   });

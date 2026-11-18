@@ -113,7 +113,7 @@ export default async function ReferralsPage({
                       {row.statement.overLimit > 0 ? <span className='text-dim'> ({row.statement.overLimit} over the limit)</span> : null}
                     </td>
                     <td className='px-4 py-3 font-mono text-[13px] font-semibold text-seal'>
-                      {row.isCustomer && sell.ok ? money(row.statement.currency, row.statement.amount) : row.isCustomer ? 'After approval' : 'Commission instead'}
+                      {row.isCustomer && sell.ok ? money(row.statement.currency, row.statement.amount) : row.isCustomer ? 'Once selling starts' : 'Commission instead'}
                     </td>
                   </tr>
                 ))}

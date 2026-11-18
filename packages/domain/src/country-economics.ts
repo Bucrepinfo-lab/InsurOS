@@ -93,9 +93,15 @@ export interface CountryProfile {
   claimPaymentDays?: number;
   /** Where the figures come from. */
   sources: string[];
-  /** A person's name and the date they approved selling in this country. */
+  /** A person's name and the date they approved this country's figures (caps, split, token, Gold threshold). */
   approvedBy?: string;
   approvedAt?: string;
+  /**
+   * The licence our company holds from this country's regulator to act as an
+   * intermediary. Selling without one is an offence (Kenya: Insurance Act
+   * s.150), so nothing sells until it is on file, even with approved figures.
+   */
+  intermediaryLicence?: string;
 }
 
 /** The split the owner chose for every country (docs §4). A country may raise the agency share only to cover its costs. */
@@ -116,7 +122,9 @@ const general = (className: string, pct: number): CommissionCap => ({ className,
  * Kenya: caps from the Insurance Regulations, regulation 22 and the Eleventh
  * Schedule (IRA, updated 2023); rebates s.73, licensing s.150, cash before
  * cover s.156, claims s.203 of the Insurance Act. Verified 18/11/26.
- * Referral token and Gold threshold await the owner's approval.
+ * Figures approved by the owner 18/11/26 (split 70/60/10, token KES 100 a
+ * verified sign-up up to 20 a month, Gold at KES 1,500,000 a quarter).
+ * Selling waits for the IRA licence number.
  */
 export const KENYA: CountryProfile = {
   countryCode: "KE",
@@ -148,6 +156,8 @@ export const KENYA: CountryProfile = {
     annuity: { className: "Immediate annuity / single premium", firstYear: 2, renewal: 0 }
   },
   split: STANDARD_SPLIT,
+  // About 25 to 35 private-car policies a quarter (two or three a week) at Kenyan prices.
+  goldThresholdPerQuarter: 1_500_000,
   referralToken: { amount: 100, monthlyLimit: 20 },
   levies: { percent: 0.45, fixed: 40, label: "Training levy and Policyholders' Compensation Fund (0.45%) plus stamp duty" },
   cashBeforeCover: true,
@@ -155,7 +165,9 @@ export const KENYA: CountryProfile = {
   sources: [
     "https://www.ira.go.ke/assets/file/insurance-regulations-updated-2023.pdf",
     "https://ira.go.ke/assets/file/insurance-act-updated-2023.pdf"
-  ]
+  ],
+  approvedBy: "Fredrick Mwangi Gathii",
+  approvedAt: "18/11/26"
 };
 
 /**
@@ -225,6 +237,12 @@ export function canSell(profile: CountryProfile, line?: PolicyLineId): SellCheck
   }
   if (!profile.approvedBy || !profile.approvedAt) {
     return { ok: false, reason: `${profile.country}: the profile is waiting for the owner's approval.` };
+  }
+  if (!profile.intermediaryLicence) {
+    return {
+      ok: false,
+      reason: `${profile.country}: figures approved by ${profile.approvedBy} on ${profile.approvedAt}. Selling starts once the company's intermediary licence from the ${profile.regulator} is on file.`
+    };
   }
   if (line && !profile.caps[line]) {
     return { ok: false, reason: `${profile.country}: this kind of policy has no commission rule on file.` };
