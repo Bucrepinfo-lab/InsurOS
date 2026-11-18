@@ -47,6 +47,9 @@ export default async function MyCoverPage({ params }: { params: Promise<{ token:
             {policies.length} {policies.length === 1 ? 'policy' : 'policies'}
             {insuredTotal > 0 ? `, ${kes(insuredTotal)} insured in all` : ''}. Add this page to your home screen to keep it at hand.
           </p>
+          <a href={`/my/${token}/summary`} className='mt-3 inline-block rounded-lg border border-ink/15 bg-sheet px-4 py-2 text-sm font-semibold text-ink hover:border-seal/50 hover:text-seal'>
+            Download my cover (PDF)
+          </a>
         </header>
 
         {due.length > 0 ? (

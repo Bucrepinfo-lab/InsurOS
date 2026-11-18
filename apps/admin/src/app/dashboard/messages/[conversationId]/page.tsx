@@ -112,6 +112,12 @@ export default async function ConversationPage({ params }: { params: Promise<{ c
             </>
           ) : null}
 
+          {c.kind === 'customer' ? (
+            <a href={`/api/claims/pack?conversation=${encodeURIComponent(c.id)}`} className='rounded-2xl border border-line bg-sheet p-4 font-medium text-seal hover:border-seal/50'>
+              Download the {c.topic === 'claim' ? 'claim pack' : 'conversation'} (PDF)
+              <span className='mt-0.5 block text-xs font-normal text-dim'>Messages{c.topic === 'claim' ? ', photos with fingerprints and the signed declaration' : ''}, ready to send to the insurer.</span>
+            </a>
+          ) : null}
           <form action={setConversationStatus} className='rounded-2xl border border-line bg-sheet p-4'>
             <input type='hidden' name='conversationId' value={c.id} />
             <input type='hidden' name='status' value={c.status === 'open' ? 'closed' : 'open'} />

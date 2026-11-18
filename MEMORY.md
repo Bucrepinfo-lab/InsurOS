@@ -3,6 +3,12 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-18 — Downloads (PDF and CSV) and signing on screen (owner brief)
+- Every list: **Export CSV** (existing) and **Download PDF** (new), both exactly the rows the search shows. PDF writer `packages/domain/src/pdf.ts` (no dependency; A4, Helvetica, tables over pages, JPEG images; Latin-1 text, other characters as "?"). `@insuros/ui` now depends on `@insuros/domain`.
+- **Claim declaration signed on the phone** (`/c/<token>`, claim conversations): the declaration text (`CLAIM_DECLARATION`, version 2026-11-18), typed full name, tick to agree, finger signature → JPEG stored privately with SHA-256; collection `signatures`; the agent gets a message "I have signed the claim declaration as …". Electronic signatures are accepted for most documents in Kenya; an insurer may still ask for a wet signature on some forms.
+- **Claim pack PDF**: details, all messages, photo table with times, location and fingerprints, the clear copies, the declaration and signature. Customer: "Download my claim pack (PDF)" on `/c/<token>`; staff: on the conversation page (`/api/claims/pack`).
+- **My cover PDF** on `/my/<token>`: items, policy, value insured, estimated value today, premium, cover dates, status.
+
 ## 2026-11-18 — Customer home: what they insured, values, expiry, reminders (owner brief)
 - Record policy now captures what is insured, value insured, vehicle registration and year, cover start and end (default one year), and links the policy to the customer record (`customerId`; older rows match by name).
 - **Customers → Customer home links** (`/dashboard/customers/home-links`): make a private link per customer (token hashed on `customers.homeAccessHash`; new link replaces the old), share by WhatsApp/SMS. Sorted with customers whose cover ends within 30 days first.

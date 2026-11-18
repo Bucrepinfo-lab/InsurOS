@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { makePdf } from '@insuros/domain';
 import { downloadCsv, toCsv } from './ExportCsvButton';
 
 export interface TableShellExport {
@@ -112,6 +113,29 @@ export function TableShell({
     downloadCsv(exportCsv.filename, toCsv(exportCsv.headers, rows));
   };
 
+  /** The same rows as a PDF: to read on a phone, send or keep, without printing. */
+  const handlePdf = () => {
+    if (!exportCsv) return;
+    const rows = matchingIndexes
+      .map((index) => exportCsv.rows[index])
+      .filter((row): row is string[] => Array.isArray(row));
+    const title = exportCsv.filename.replace(/[-_]+/g, ' ').replace(/^./, (c) => c.toUpperCase());
+    const day = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', timeZone: 'Africa/Nairobi' });
+    const pdf = makePdf({
+      title,
+      subtitle: `${rows.length} ${rows.length === 1 ? 'row' : 'rows'}${query.trim() ? ` matching "${query.trim()}"` : ''}, downloaded ${day}`,
+      footer: 'InsurOS',
+      blocks: [{ kind: 'table', headers: exportCsv.headers, rows }]
+    });
+    const blob = new Blob([new Uint8Array(pdf)], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${exportCsv.filename}.pdf`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 10_000);
+  };
+
   return (
     <div>
       <div className='mb-4 flex flex-col gap-3 rounded-xl border border-line bg-sheet p-4 shadow-[0_1px_2px_rgba(18,28,49,0.04)] md:flex-row md:items-center md:justify-between'>
@@ -164,6 +188,15 @@ export function TableShell({
                 className='inline-flex items-center justify-center rounded-lg border border-ink/15 bg-sheet/60 px-4 py-2 text-sm font-medium text-ink transition-all duration-200 hover:-translate-y-px hover:border-seal/50 hover:text-seal'
               >
                 Export CSV
+              </button>
+            ) : null}
+            {exportCsv ? (
+              <button
+                type='button'
+                onClick={handlePdf}
+                className='inline-flex items-center justify-center rounded-lg border border-ink/15 bg-sheet/60 px-4 py-2 text-sm font-medium text-ink transition-all duration-200 hover:-translate-y-px hover:border-seal/50 hover:text-seal'
+              >
+                Download PDF
               </button>
             ) : null}
           </div>
