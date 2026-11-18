@@ -3,6 +3,13 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-18 — Claim photos: ten guided shots, on-device clarity, original kept as evidence (owner brief)
+- Customers (on their private link page) and staff (on a customer claim conversation) see **ten guided shots** per kind of claim (`PHOTO_GUIDES` in `packages/domain/src/claim-photos.ts`): vehicle (front with plate, back with plate, left, right, damage wide, damage close, dashboard mileage and warning lights, chassis/VIN, scene, other vehicle), home/property, other. Shot lists follow ICBC, Youi and Pineapple claim guides and Kenyan claim forms. "Take photo" opens the camera; "From gallery" also allowed. Optional "Add my location".
+- Each photo is stored twice, privately: the **original exactly as the phone took it** (evidence; SHA-256 computed on the server; up to 12 MB; JPEG/PNG/WebP/HEIC by magic bytes) and a **clear copy** made on the phone (max 1600 px; `clarify`: brightness stretch at 0.5%/99.5% applied equally to R, G, B so colours do not shift, plus a light unsharp mask; flat images left alone). Staff see the clear copy, the evidence grade (existing `evaluateSceneIntegrity`: on the spot, timely, location, prompt upload, fingerprint) and a link to the original.
+- Storage: Supabase Storage private bucket `claim-photos` (created on first use with the existing `SUPABASE_SERVICE_ROLE_KEY`); links expire after 15 minutes. Memory storage in dev/tests. Rows go in the existing `scene_photos` collection (new optional fields). Max 30 photos per claim.
+- Uploads: `POST /api/c/photos` (customer token) and `POST /api/photos` (staff session, same-origin, conversation they can see).
+- **Cost note:** originals average 2–6 MB; ten per claim ≈ 30–50 MB. Supabase free tier holds 1 GB (~25 claims); the paid tier (100 GB) will be needed in production.
+
 ## 2026-11-18 — Messaging by hierarchy, customers by private link, AI writing help (owner brief)
 - **Messages** (`/dashboard/messages`, all staff): one inbox for customers and colleagues; filters All / Waiting on you / Customers / Colleagues. Home shows "N conversations waiting for your reply".
 - **Colleagues by the hierarchy** (`directoryFor` in `packages/domain/src/messaging.ts`): your supervisors (higher level whose region covers yours), your team (lower level inside your region), peers (same level, same region). SuperAdmin and the platform owner reach everyone. Colleague conversations are private to participants (admins cannot read them).

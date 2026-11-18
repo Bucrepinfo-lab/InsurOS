@@ -19,6 +19,18 @@ export interface ScenePhoto {
   longitude?: number;
   geoAccuracyMeters?: number;
   deviceModel?: string;
+  /** Guided shot this photo answers (see claim-photos.ts). */
+  slot?: string;
+  /** Kind of claim the shot list came from. */
+  claimKind?: "motor" | "property" | "other";
+  /** Stored original, exactly as the phone took it (the evidence). */
+  storagePath?: string;
+  /** Stored clear copy for viewing. */
+  viewPath?: string;
+  bytes?: number;
+  uploadedBy?: { kind: "staff" | "customer"; id: string; name: string };
+  /** The customer conversation it came through, if any. */
+  conversationId?: string;
 }
 
 export interface SceneIntegrityCheck {
