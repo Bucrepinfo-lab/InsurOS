@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DomainModulePage, formatDateTime } from '@insuros/ui';
 import { TOPIC_LABELS, escalationPath, findStaffRole, lateness, replyDueAt } from '@insuros/domain';
-import { MessagingService } from '@insuros/services';
+import { ClaimPhotoService, MessagingService } from '@insuros/services';
+import { ClaimPhotoCapture } from '@/components/claim-photos';
 import { ReplyComposer } from '@/components/message-composer';
 import { CustomerLinkPanel } from '@/components/customer-link-panel';
 import { getAuthState } from '@/lib/auth/session';
@@ -25,6 +26,7 @@ export default async function ConversationPage({ params }: { params: Promise<{ c
   const due = replyDueAt(c);
   const late = lateness(c, new Date());
   const directory = c.kind === 'customer' ? await directoryForPrincipal(state.principal) : [];
+  const photos = c.kind === 'customer' && c.topic === 'claim' ? await new ClaimPhotoService().show(c.reference ?? c.id) : [];
 
   return (
     <DomainModulePage
@@ -50,6 +52,35 @@ export default async function ConversationPage({ params }: { params: Promise<{ c
             })}
           </ol>
           <ReplyComposer conversationId={c.id} action={replyToConversation} closed={c.status === 'closed'} />
+          {photos.length > 0 ? (
+            <section aria-labelledby='evidence' className='grid gap-3 rounded-2xl border border-line bg-sheet p-4'>
+              <h2 id='evidence' className='font-display text-[20px] text-ink'>Photo evidence ({photos.length})</h2>
+              <ul className='grid gap-3 sm:grid-cols-2'>
+                {photos.map(({ photo, viewUrl, originalUrl, integrity }) => (
+                  <li key={photo.id} className='grid gap-1.5 rounded-xl border border-line bg-white p-3 text-sm'>
+                    {viewUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={viewUrl} alt={photo.slot ?? 'Claim photo'} className='aspect-[4/3] w-full rounded-lg bg-paper object-cover' />
+                    ) : null}
+                    <p className='font-medium text-ink'>{photo.slot} · {integrity.verdict} evidence ({integrity.score}%)</p>
+                    <p className='text-xs text-dim'>
+                      Taken {formatDateTime(photo.capturedAt)}, received {formatDateTime(photo.receivedAt)} from {photo.uploadedBy?.name ?? 'unknown'}.
+                      {photo.latitude !== undefined ? ` Location within ${photo.geoAccuracyMeters} m.` : ' No location.'} Fingerprint {photo.sha256.slice(0, 12)}…
+                    </p>
+                    {originalUrl ? <a href={originalUrl} target='_blank' rel='noopener noreferrer' className='text-xs font-medium text-seal underline underline-offset-2'>Open the original (evidence)</a> : null}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+          {c.kind === 'customer' && c.topic === 'claim' && c.status === 'open' ? (
+            <ClaimPhotoCapture
+              endpoint='/api/photos'
+              fields={{ conversationId: c.id }}
+              initialKind={photos[0]?.photo.claimKind ?? 'motor'}
+              existing={photos.map((p) => ({ slot: p.photo.slot ?? '', viewUrl: p.viewUrl, onTheSpot: p.photo.liveCapture }))}
+            />
+          ) : null}
         </div>
 
         <aside className='grid content-start gap-3 text-sm'>

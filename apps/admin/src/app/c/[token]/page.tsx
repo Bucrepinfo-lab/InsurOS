@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 import { formatDateTime } from '@insuros/ui';
 import { CUSTOMER_REPLY_HOURS } from '@insuros/domain';
-import { MessagingService } from '@insuros/services';
+import { ClaimPhotoService, MessagingService } from '@insuros/services';
+import { ClaimPhotoCapture } from '@/components/claim-photos';
 import { hashCustomerToken, isCustomerToken } from '@/lib/customer-link';
 import { CustomerReplyForm } from './reply-form';
 
@@ -26,6 +27,7 @@ export default async function CustomerConversationPage({
   const found = await new MessagingService().forCustomer(hashCustomerToken(token));
   if (!found) notFound();
   const { conversation: c, messages } = found;
+  const photos = c.topic === 'claim' ? await new ClaimPhotoService().show(c.reference ?? c.id) : [];
 
   return (
     <main className='min-h-screen bg-paper px-4 py-8 sm:py-12'>
@@ -57,6 +59,14 @@ export default async function CustomerConversationPage({
           })}
         </ol>
         <CustomerReplyForm token={token} />
+        {c.topic === 'claim' ? (
+          <ClaimPhotoCapture
+            endpoint='/api/c/photos'
+            fields={{ token }}
+            initialKind={photos[0]?.photo.claimKind ?? 'motor'}
+            existing={photos.map((p) => ({ slot: p.photo.slot ?? '', viewUrl: p.viewUrl, onTheSpot: p.photo.liveCapture }))}
+          />
+        ) : null}
         <p className='text-xs text-dim'>Do not share this link: anyone who has it can read this conversation. If you think someone else has it, ask your agent for a new one.</p>
       </div>
     </main>
