@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DomainModulePage, formatDateTime } from '@insuros/ui';
-import { TOPIC_LABELS, escalationPath, findStaffRole, lateness, replyDueAt } from '@insuros/domain';
+import { TOPIC_LABELS, escalationPath, findStaffRole, lateness, mapPinUrl, replyDueAt } from '@insuros/domain';
 import { ClaimPhotoService, MessagingService } from '@insuros/services';
 import { ClaimPhotoCapture } from '@/components/claim-photos';
 import { ReplyComposer } from '@/components/message-composer';
@@ -65,8 +65,14 @@ export default async function ConversationPage({ params }: { params: Promise<{ c
                     <p className='font-medium text-ink'>{photo.slot} · {integrity.verdict} evidence ({integrity.score}%)</p>
                     <p className='text-xs text-dim'>
                       Taken {formatDateTime(photo.capturedAt)}, received {formatDateTime(photo.receivedAt)} from {photo.uploadedBy?.name ?? 'unknown'}.
-                      {photo.latitude !== undefined ? ` Location within ${photo.geoAccuracyMeters} m.` : ' No location.'} Fingerprint {photo.sha256.slice(0, 12)}…
+                      {photo.timeSource === 'photo' ? ' Time from the camera.' : photo.timeSource === 'device' ? ' Time from the phone file.' : ' Time of upload.'}{' '}
+                      {photo.latitude === undefined ? 'No location.' : photo.locationSource === 'photo' ? 'Position from the camera.' : `Location within ${photo.geoAccuracyMeters} m.`} Fingerprint {photo.sha256.slice(0, 12)}…
                     </p>
+                    {photo.latitude !== undefined && photo.longitude !== undefined ? (
+                      <a href={mapPinUrl(photo.latitude, photo.longitude)} target='_blank' rel='noopener noreferrer' className='text-xs font-medium text-seal underline underline-offset-2'>
+                        See the pin on a map
+                      </a>
+                    ) : null}
                     {originalUrl ? <a href={originalUrl} target='_blank' rel='noopener noreferrer' className='text-xs font-medium text-seal underline underline-offset-2'>Open the original (evidence)</a> : null}
                   </li>
                 ))}
@@ -78,6 +84,7 @@ export default async function ConversationPage({ params }: { params: Promise<{ c
               endpoint='/api/photos'
               fields={{ conversationId: c.id }}
               initialKind={photos[0]?.photo.claimKind ?? 'motor'}
+            reference={c.reference ?? undefined}
               existing={photos.map((p) => ({ slot: p.photo.slot ?? '', viewUrl: p.viewUrl, onTheSpot: p.photo.liveCapture }))}
             />
           ) : null}

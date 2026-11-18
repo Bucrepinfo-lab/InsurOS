@@ -73,3 +73,4 @@ export * from "./claim-photos";
 export * from "./customer-home";
 export * from "./pdf";
 export * from "./signature";
+export * from "./exif";

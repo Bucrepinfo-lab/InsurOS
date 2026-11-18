@@ -2,12 +2,15 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { PHOTO_GUIDES, clarify, type ClaimKind } from '@insuros/domain';
+import { PHOTO_GUIDES, clarify, exifInstant, readExif, stampText, type ClaimKind } from '@insuros/domain';
 
 const VIEW_MAX_SIDE = 1600;
 
-/** Make the clear viewing copy on this device: resize, brighten and sharpen. The original is not touched. */
-async function makeClearCopy(file: File): Promise<Blob> {
+/**
+ * Make the clear viewing copy on this device: resize, brighten, sharpen, and
+ * stamp when, where and which claim along the bottom. The original is not touched.
+ */
+async function makeClearCopy(file: File, stamp: string): Promise<Blob> {
   const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
   const scale = Math.min(1, VIEW_MAX_SIDE / Math.max(bitmap.width, bitmap.height));
   const width = Math.max(1, Math.round(bitmap.width * scale));
@@ -22,12 +25,40 @@ async function makeClearCopy(file: File): Promise<Blob> {
   const image = context.getImageData(0, 0, width, height);
   image.data.set(clarify(image.data, width, height));
   context.putImageData(image, 0, 0);
+  const band = Math.max(26, Math.round(width * 0.034));
+  context.fillStyle = 'rgba(0, 0, 0, 0.62)';
+  context.fillRect(0, height - band, width, band);
+  context.fillStyle = '#ffffff';
+  context.font = `600 ${Math.round(band * 0.5)}px system-ui, -apple-system, Segoe UI, Roboto, sans-serif`;
+  context.textBaseline = 'middle';
+  context.fillText(stamp, Math.round(band * 0.4), height - band / 2, width - band * 0.8);
   return new Promise((resolve, reject) => canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('no blob'))), 'image/jpeg', 0.85));
 }
 
 /** The phone's own time for the photo: the file's last-modified time. */
 function takenAtOf(file: File): string {
   return new Date(file.lastModified || Date.now()).toISOString();
+}
+
+/** When and where the camera says the photo was taken, read from the file on this phone. */
+async function cameraFacts(file: File) {
+  try {
+    const head = new Uint8Array(await file.slice(0, 256 * 1024).arrayBuffer());
+    const facts = readExif(head);
+    const offsetHours = -new Date().getTimezoneOffset() / 60;
+    const when = facts.takenAt ? exifInstant(facts.takenAt, offsetHours) : null;
+    return { when: when ?? takenAtOf(file), latitude: facts.latitude, longitude: facts.longitude };
+  } catch {
+    return { when: takenAtOf(file) };
+  }
+}
+
+/** Ask for the phone's location, giving up after a few seconds. */
+function locate(): Promise<GeolocationPosition | null> {
+  return new Promise((resolve) => {
+    if (typeof navigator === 'undefined' || !('geolocation' in navigator)) return resolve(null);
+    navigator.geolocation.getCurrentPosition(resolve, () => resolve(null), { enableHighAccuracy: true, timeout: 8_000, maximumAge: 60_000 });
+  });
 }
 
 type Where = { latitude: number; longitude: number; accuracy: number } | null;
@@ -47,12 +78,15 @@ export function ClaimPhotoCapture({
   endpoint,
   fields,
   initialKind = 'motor',
-  existing
+  existing,
+  reference
 }: {
   endpoint: string;
   fields: Record<string, string>;
   initialKind?: ClaimKind;
   existing: ExistingPhoto[];
+  /** Claim or policy number to stamp on each photo. */
+  reference?: string;
 }) {
   const router = useRouter();
   const [kind, setKind] = useState<ClaimKind>(initialKind);
@@ -62,6 +96,7 @@ export function ClaimPhotoCapture({
   const [showOriginal, setShowOriginal] = useState<Record<string, boolean>>({});
   const [where, setWhere] = useState<Where>(null);
   const [whereNote, setWhereNote] = useState<string | null>(null);
+  const [asked, setAsked] = useState(false);
 
   const done = new Map(existing.map((photo) => [photo.slot, photo]));
 
@@ -81,9 +116,30 @@ export function ClaimPhotoCapture({
   async function send(slot: string, file: File | undefined) {
     if (!file) return;
     setBusy(slot);
-    setNotes((current) => ({ ...current, [slot]: 'Making the clear copy…' }));
     try {
-      const clear = await makeClearCopy(file);
+      // Location is asked for once, on the first photo, so every photo carries its place.
+      let here = where;
+      if (!here && !asked) {
+        setAsked(true);
+        setNotes((current) => ({ ...current, [slot]: 'Finding where you are…' }));
+        const position = await locate();
+        if (position) {
+          here = { latitude: position.coords.latitude, longitude: position.coords.longitude, accuracy: position.coords.accuracy };
+          setWhere(here);
+          setWhereNote(`Location on (within about ${Math.round(position.coords.accuracy)} m). Each photo is pinned to it.`);
+        } else setWhereNote('Location was not shared, so photos are pinned only if your camera saved a position.');
+      }
+      setNotes((current) => ({ ...current, [slot]: 'Making the clear copy…' }));
+      const facts = await cameraFacts(file);
+      const stamp = stampText({
+        when: new Date(facts.when),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        latitude: here?.latitude ?? facts.latitude,
+        longitude: here?.longitude ?? facts.longitude,
+        accuracy: here?.accuracy,
+        reference
+      });
+      const clear = await makeClearCopy(file, stamp);
       setPreviews((current) => ({ ...current, [slot]: { clear: URL.createObjectURL(clear), original: URL.createObjectURL(file) } }));
       setNotes((current) => ({ ...current, [slot]: 'Sending…' }));
       const form = new FormData();
@@ -92,11 +148,11 @@ export function ClaimPhotoCapture({
       form.set('slot', slot);
       form.set('original', file, file.name || 'photo');
       form.set('view', clear, 'clear.jpg');
-      form.set('takenAt', takenAtOf(file));
-      if (where) {
-        form.set('latitude', String(where.latitude));
-        form.set('longitude', String(where.longitude));
-        form.set('accuracy', String(where.accuracy));
+      form.set('takenAt', facts.when);
+      if (here) {
+        form.set('latitude', String(here.latitude));
+        form.set('longitude', String(here.longitude));
+        form.set('accuracy', String(here.accuracy));
       }
       const response = await fetch(endpoint, { method: 'POST', body: form });
       const data = (await response.json().catch(() => ({}))) as { error?: string; onTheSpot?: boolean };
@@ -123,7 +179,7 @@ export function ClaimPhotoCapture({
         <div>
           <h2 id='photos' className='font-display text-[20px] text-ink'>Photos for the claim</h2>
           <p className='text-sm text-dim'>
-            {count} of {guide.slots.length} taken. Take them now, at the scene if it is safe. Each photo is kept exactly as your phone took it, and a clearer copy is made for easy viewing.
+            {count} of {guide.slots.length} taken. Take them now, at the scene if it is safe. Each photo is kept exactly as your phone took it, and a clearer copy is made for easy viewing, stamped with the time and place.
           </p>
         </div>
         <label className='text-sm font-medium text-ink'>
@@ -140,7 +196,7 @@ export function ClaimPhotoCapture({
         <button type='button' onClick={addLocation} className='rounded-lg border border-ink/15 bg-white px-3 py-2 font-medium text-ink hover:border-seal/50 hover:text-seal'>
           Add my location
         </button>
-        <span role='status' className='text-dim'>{whereNote ?? 'Optional. Photos with a location are stronger evidence.'}</span>
+        <span role='status' className='text-dim'>{whereNote ?? 'Each photo is stamped with the time it was taken and pinned to where you are. Your phone will ask once to share your location.'}</span>
       </div>
 
       <ol className='grid gap-3 sm:grid-cols-2'>

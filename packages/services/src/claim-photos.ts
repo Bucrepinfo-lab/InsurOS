@@ -2,6 +2,8 @@ import { createHash, randomBytes } from "node:crypto";
 import {
   checkUpload,
   evaluateSceneIntegrity,
+  exifInstant,
+  readExif,
   takenOnTheSpot,
   type ClaimKind,
   type SceneIntegrityResult,
@@ -21,6 +23,8 @@ export interface AddPhotoInput {
   location?: { latitude: number; longitude: number; accuracy: number };
   uploadedBy: { kind: "staff" | "customer"; id: string; name: string };
   conversationId?: string;
+  /** The country's UTC offset, for a camera time written without one. Kenya: 3. */
+  utcOffsetHours?: number;
 }
 
 export interface ShownPhoto {
@@ -65,23 +69,32 @@ export class ClaimPhotoService {
       return { ok: false, error: error instanceof Error ? error.message : "The photo could not be stored." };
     }
 
-    const takenAt = input.takenAt && !Number.isNaN(Date.parse(input.takenAt)) ? new Date(input.takenAt).toISOString() : receivedAt;
-    const location =
+    // Time: the camera's own record first, then the phone's file time, then the moment it arrived.
+    const facts = check.originalType === "image/jpeg" ? readExif(input.original) : {};
+    const exifTime = facts.takenAt ? exifInstant(facts.takenAt, input.utcOffsetHours ?? 3) : null;
+    const deviceTime = input.takenAt && !Number.isNaN(Date.parse(input.takenAt)) ? new Date(input.takenAt).toISOString() : null;
+    const takenAt = exifTime ?? deviceTime ?? receivedAt;
+    const timeSource: ScenePhoto["timeSource"] = exifTime ? "photo" : deviceTime ? "device" : "upload";
+    // Place: the phone's location service at the scene first (it gives its accuracy), then the photo's own GPS.
+    const device =
       input.location &&
       Math.abs(input.location.latitude) <= 90 &&
       Math.abs(input.location.longitude) <= 180 &&
       input.location.accuracy > 0
         ? input.location
         : undefined;
+    const fromPhoto = !device && facts.latitude !== undefined && facts.longitude !== undefined ? { latitude: facts.latitude, longitude: facts.longitude } : undefined;
     const photo: ScenePhoto = {
       id: `photo-${now.getTime().toString(36)}-${randomBytes(4).toString("hex")}`,
       claimReference: reference,
       url: storagePath,
       sha256,
-      liveCapture: takenOnTheSpot(input.takenAt, receivedAt),
+      liveCapture: takenOnTheSpot(takenAt, receivedAt),
       capturedAt: takenAt,
       receivedAt,
-      ...(location ? { latitude: location.latitude, longitude: location.longitude, geoAccuracyMeters: Math.round(location.accuracy) } : {}),
+      timeSource,
+      ...(device ? { latitude: device.latitude, longitude: device.longitude, geoAccuracyMeters: Math.round(device.accuracy), locationSource: "device" as const } : {}),
+      ...(fromPhoto ? { ...fromPhoto, locationSource: "photo" as const } : {}),
       slot: String(input.slot),
       claimKind: input.kind as ClaimKind,
       storagePath,
