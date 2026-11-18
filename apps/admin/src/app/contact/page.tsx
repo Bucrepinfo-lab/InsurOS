@@ -1,4 +1,7 @@
-import { CUSTOMER_REPLY_HOURS } from '@insuros/domain';
+import { clockFor, t } from '@insuros/domain';
+import { customerLanguage } from '@/lib/customer-language';
+import { LanguageSwitch } from '@/components/language-switch';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { ContactForm } from './contact-form';
 
 export const metadata = { title: 'Contact your agent' };
@@ -9,17 +12,20 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
   const pick = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value) ?? '';
   const topic = ['claim', 'policy', 'general'].includes(pick(params.topic)) ? pick(params.topic) : 'claim';
   const reference = /^[A-Za-z0-9-]{3,40}$/.test(pick(params.reference)) ? pick(params.reference) : '';
+  const lang = await customerLanguage(params.lang);
+  const query = new URLSearchParams({ topic, ...(reference ? { reference } : {}) }).toString();
   return (
     <main className='min-h-screen bg-paper px-4 py-8 sm:py-12'>
       <div className='mx-auto grid max-w-xl gap-5'>
-        <header>
-          <h1 className='font-display text-[30px] leading-tight text-ink'>Talk to your agent</h1>
-          <p className='mt-2 text-[15px] text-ink'>
-            Give your policy or claim number if you have it, and your message goes straight to the person who looks after it. We reply within{' '}
-            {CUSTOMER_REPLY_HOURS} hours; if they cannot, their supervisor will. You will get your own private page to follow the conversation.
-          </p>
+        <div className='flex flex-wrap items-center justify-between gap-2'>
+          <LanguageSwitch current={lang} languages={clockFor(undefined).languages} path={`/contact?${query}`} />
+          <ThemeToggle />
+        </div>
+        <header lang={lang}>
+          <h1 className='font-display text-[30px] leading-tight text-ink'>{t('contactTitle', lang)}</h1>
+          <p className='mt-2 text-[15px] text-ink'>{t('contactIntro', lang)}</p>
         </header>
-        <ContactForm topic={topic} reference={reference} />
+        <ContactForm topic={topic} reference={reference} lang={lang} />
       </div>
     </main>
   );
