@@ -69,7 +69,8 @@ export async function addCustomer(_prev: ActionResult | null, formData: FormData
   const checked = checkCustomerForm({
     name: formData.get('name'),
     type: formData.get('type'),
-    email: formData.get('email')
+    email: formData.get('email'),
+    referredBy: formData.get('referredBy')
   });
   if (!checked.ok) return fail('Check the form', checked.error);
 
@@ -81,7 +82,8 @@ export async function addCustomer(_prev: ActionResult | null, formData: FormData
     type: checked.value.type,
     email: checked.value.email,
     status: 'Pending',
-    ownerUserId: actorIdFor(auth.principal)
+    ownerUserId: actorIdFor(auth.principal),
+    ...(checked.value.referredBy ? { referredBy: checked.value.referredBy } : {})
   };
   await customers.insert(row);
   await openFollowUp('customers', id, row.name, auth.principal);
@@ -221,6 +223,16 @@ export async function confirmFollowUp(_prev: ActionResult | null, formData: Form
     name: auth.principal.name || 'Staff member'
   });
   if (!result.ok) return fail('Not confirmed', result.error);
+  // Confirming a new customer's details makes them Active: the moment a referral counts.
+  if (result.done.area === 'customers') {
+    const customers = getPersistence().customers;
+    const customer = await customers.findById(result.done.reference);
+    if (customer && customer.status === 'Pending') {
+      await customers.update(customer.id, { status: 'Active', verifiedAt: result.done.respondedAt ?? new Date().toISOString() });
+      revalidatePath('/dashboard/customers');
+      revalidatePath('/dashboard/sales/referrals');
+    }
+  }
   revalidatePath('/dashboard/follow-ups');
   revalidatePath('/dashboard/operations/escalations');
   revalidatePath('/dashboard');

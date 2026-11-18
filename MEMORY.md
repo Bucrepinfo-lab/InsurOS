@@ -3,6 +3,13 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-18 — Prices, commission and referral tokens, per country (owner brief)
+- Owner decided per country, not global. Plan and sources: `docs/PRICING_COMMISSION_REFERRAL.md` (shareable plan: https://claude.ai/artifact/JAQqxP79keTL3zZkVSieFW).
+- Code: `packages/domain/src/country-economics.ts`: 21 policy lines; country profiles (Kenya verified from the Eleventh Schedule but **not approved**; South Africa indicative; seven others not set); `canSell` needs verified + `approvedBy`/`approvedAt`; standard split agent 70/60 (Gold 75/65), team leader 10, agency the rest, agent never below 60 on new business; `splitCommission` refuses a rate above the cap; `breakEvenPremium`, `withLevies` (Kenya 0.45% + KES 40); referral codes `KE-XXXXXX`, `tokensFor` (verified sign-ups only, monthly cap, no self, no repeat phone).
+- Pages: Commission plan, Break-even price, Referrals (all Marketplace:View). Add customer takes a referral code (permanent); confirming the customer on Follow-ups sets status Active + `verifiedAt`, which is when a referral counts.
+- Law that drove it: Insurance Act s.73 (no rebates/inducements), s.150 (licensed only), s.156 (cash before cover, commission within 30 days), s.203 (claims within 90 days); Regulation 22.
+- **Open (owner):** approve the Kenya profile, the split, the KES 100 token and a Gold threshold; get the IRA agency/broker licence; agency agreements and filed scheme rates with insurers; a Kenyan lawyer to check the referral design.
+
 ## 2026-11-17 — Order of events in every section, and escalation to the supervisor (owner request)
 - Every value story has a `flow` (three to five steps), shown on the section banner as "The order of events here".
 - **Follow-ups** (`/dashboard/follow-ups`, every signed-in member of staff): what is owed next on a record, who owes it, by when. Flows with real records (`packages/domain/src/follow-up.ts`): new customer (confirm details, 4 h), policy application (check 4 h → underwrite 8 → premium confirmed 4 → issue 4 = 20 h, inside the 24-hour promise), claim (acknowledge 4 h; then documents 12 → review 12 → decision with written reasons 12 → hand over 8 = 44 h, inside the 48-hour promise), document needing review (12 h). Owner set the promise 18/11/26: policy out within 24 hours, claim decision within 48.

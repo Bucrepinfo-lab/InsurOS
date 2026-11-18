@@ -95,6 +95,11 @@ export function CustomerForm() {
           <span className={hint}>Leave empty if the customer has none.</span>
           <input name='email' type='email' maxLength={160} autoComplete='off' inputMode='email' className={field} />
         </label>
+        <label className={label}>
+          Referral code
+          <span className={hint}>Who referred them, if anyone: the code they were given, for example KE-CFT5SD. It cannot be changed later.</span>
+          <input name='referredBy' maxLength={12} autoComplete='off' autoCapitalize='characters' className={field} />
+        </label>
       </FormShell>
     </div>
   );

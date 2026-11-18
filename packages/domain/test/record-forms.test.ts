@@ -5,9 +5,14 @@ describe("record forms", () => {
   it("accepts a customer and tidies the input", () => {
     expect(checkCustomerForm({ name: "  Wanjiru   Kamau ", type: "Individual", email: " W.Kamau@Example.com " })).toEqual({
       ok: true,
-      value: { name: "Wanjiru Kamau", type: "Individual", email: "w.kamau@example.com" }
+      value: { name: "Wanjiru Kamau", type: "Individual", email: "w.kamau@example.com", referredBy: "" }
     });
     expect(checkCustomerForm({ name: "Kilele Traders & Sons (K) Ltd", type: "Business", email: "" })).toMatchObject({ ok: true });
+    expect(checkCustomerForm({ name: "Jane Doe", type: "Individual", referredBy: " ke-cft5sd " })).toMatchObject({
+      ok: true,
+      value: { referredBy: "KE-CFT5SD" }
+    });
+    expect(checkCustomerForm({ name: "Jane Doe", type: "Individual", referredBy: "my friend" })).toMatchObject({ ok: false, field: "referredBy" });
   });
 
   it("refuses a customer that is incomplete or carries markup", () => {
