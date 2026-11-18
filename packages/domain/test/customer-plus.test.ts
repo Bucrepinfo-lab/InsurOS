@@ -39,3 +39,13 @@ describe("My Cover Plus", () => {
     expect(shareMessage({ firstName: "W", items: 1, agency: "A", link: "L", lang: "sw" })).toContain("kitu 1");
   });
 });
+
+describe("Plus payment reference", () => {
+  it("round-trips and refuses anything else", async () => {
+    const { parsePlusReference, plusPaymentReference } = await import("../src");
+    expect(parsePlusReference(plusPaymentReference("cust-1", "2026-12"))).toEqual({ customerId: "cust-1", month: "2026-12" });
+    expect(parsePlusReference("POL-KE-2026-00412")).toBeNull();
+    expect(parsePlusReference("PLUS:cust-1:December")).toBeNull();
+    expect(parsePlusReference(undefined)).toBeNull();
+  });
+});

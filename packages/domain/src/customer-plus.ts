@@ -91,3 +91,13 @@ export function shareMessage(input: { firstName: string; items: number; agency: 
     ? `Nimewekea bima ${what} kupitia ${input.agency}, na naona kila kitu kwenye simu yangu: thamani, tarehe ya mwisho na madai. Jiunge hapa: ${input.link}`
     : `I have ${what} insured through ${input.agency}, and I can see it all on my phone: values, renewal dates and claims. Get covered here: ${input.link}`;
 }
+
+/** The ledger reference of a Plus payment: which customer, which month. */
+export function plusPaymentReference(customerId: string, month: string): string {
+  return `PLUS:${customerId}:${month}`;
+}
+
+export function parsePlusReference(reference: string | undefined): { customerId: string; month: string } | null {
+  const match = /^PLUS:([A-Za-z0-9_-]{1,80}):(\d{4}-\d{2})$/.exec(reference ?? "");
+  return match ? { customerId: match[1]!, month: match[2]! } : null;
+}

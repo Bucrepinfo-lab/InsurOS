@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-18 — My Cover Plus paid by M-Pesa (owner approved building it, switched off)
+- Built behind the existing money gate (`PAYMENTS_ENABLED`, off): when Plus is paused, the customer page shows "Pay KES 10 with M-Pesa". The customer types their Safaricom number and confirms the prompt with their own PIN. `POST /api/my/plus` allows only the fixed price, only this month, 3 tries an hour, and goes through the existing `requestPremiumCheckout` and append-only ledger (reference `PLUS:<customer>:<month>`).
+- The month unlocks only from the confirmed ledger result: the Africa's Talking callback runs `recordPlusPayment`, which records only and is safe to run twice.
+- To go live: Africa's Talking key and callback secret set on Fly, wallet funded, the owner sets `PAYMENTS_ENABLED=true` (this also enables the existing staff premium checkout).
+
 ## 2026-11-18 — Customer page as a marketing tool, and My Cover Plus (owner brief)
 - Owner's intent: the customer page (1) is shown by customers to friends and family, and (2) earns 10 units of local currency a month (Kenya KES 10), first month free, no charge for months not taken.
 - **Decided split** (`packages/domain/src/customer-plus.ts`): always free are what is insured, cover end dates, reminders, reporting a claim and talking to the agent. Locking a policyholder out of their own cover or a claim would hurt them and the agency's standing with the IRA. **My Cover Plus** adds the vehicle's value today, news and offers from the agency, and the cover PDF (the PDF route returns 402 when Plus is paused).

@@ -23,6 +23,8 @@ import { plusFor } from '@/lib/customer-plus';
 import { SITE_URL } from '@/lib/site';
 import { LanguageSwitch } from '@/components/language-switch';
 import { ShareCover } from '@/components/share-cover';
+import { PlusPay } from '@/components/plus-pay';
+import { paymentsEnabled } from '@/lib/payments-gate';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 export const metadata = { title: 'My cover', robots: { index: false, follow: false } };
@@ -157,7 +159,13 @@ export default async function MyCoverPage({
             <span className='rounded-full bg-[#c9a227]/15 px-2.5 py-0.5 font-mono text-xs font-semibold text-warnink'>{price} / mo</span>
           </div>
           <p className='text-sm text-ink'>{plusLine}</p>
-          {plus.state === 'paused' ? <p className='text-sm text-dim'>{t('plusPaySoon', lang)}</p> : null}
+          {plus.state === 'paused' && !paymentsEnabled() ? <p className='text-sm text-dim'>{t('plusPaySoon', lang)}</p> : null}
+          {plus.state === 'paused' && paymentsEnabled() ? (
+            <PlusPay
+              token={token}
+              words={{ label: t('mpesaPhone', lang), pay: tf('payPlus', lang, { price }), sending: t('sending', lang), sent: t('payPrompt', lang) }}
+            />
+          ) : null}
           <ul className='grid gap-1.5 text-sm text-ink sm:grid-cols-3'>
             {PLUS_FEATURES.map((feature) => (
               <li key={feature.id} className='flex gap-2'>

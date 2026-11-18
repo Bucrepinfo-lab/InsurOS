@@ -120,7 +120,13 @@ export const CUSTOMER_TEXT = {
   sendWhatsApp: { en: "Send on WhatsApp", sw: "Tuma kwa WhatsApp" },
   copyLink: { en: "Copy link", sw: "Nakili kiungo" },
   copied: { en: "Link copied", sw: "Kiungo kimenakiliwa" },
-  referredBy: { en: "Referred by a friend", sw: "Umependekezwa na rafiki" }
+  referredBy: { en: "Referred by a friend", sw: "Umependekezwa na rafiki" },
+  mpesaPhone: { en: "M-Pesa phone number", sw: "Nambari ya simu ya M-Pesa" },
+  payPlus: { en: "Pay {price} with M-Pesa", sw: "Lipa {price} kwa M-Pesa" },
+  payPrompt: {
+    en: "Check your phone and enter your M-Pesa PIN. Plus switches on once the payment is confirmed; refresh this page in a minute.",
+    sw: "Angalia simu yako na uweke PIN yako ya M-Pesa. Plus itawaka malipo yakithibitishwa; onyesha upya ukurasa huu baada ya dakika moja."
+  }
 } as const satisfies Record<string, Record<LanguageTag, string>>;
 
 export type CustomerTextKey = keyof typeof CUSTOMER_TEXT;
