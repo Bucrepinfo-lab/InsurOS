@@ -33,22 +33,35 @@ export interface SectionFlow {
   ladder: [string[], string[]];
 }
 
-/** After escalating to the supervisor, hours before it goes one level higher. */
-export const SECOND_ESCALATION_HOURS = 48;
+/**
+ * After escalating to the supervisor, hours before it goes one level higher.
+ * Short on purpose: the promise is a policy in 24 hours and a claim decision
+ * in 48 (docs/PRICING_COMMISSION_REFERRAL.md).
+ */
+export const SECOND_ESCALATION_HOURS = 4;
+
+/** What the step times add up to, from a complete application or complete claim documents. */
+export const SERVICE_PROMISE = { policyHours: 24, claimDecisionHours: 48 } as const;
 
 export const SECTION_FLOWS: SectionFlow[] = [
   {
     area: "customers",
     title: "New customer",
     href: "/dashboard/customers",
-    steps: [{ id: "confirm", label: "Confirm the customer's details", confirm: "Details confirmed", respondWithinHours: 72 }],
+    steps: [{ id: "confirm", label: "Confirm the customer's details and identity", confirm: "Details confirmed", respondWithinHours: 4 }],
     ladder: [["role-underwriter"], ["role-platform-admin"]]
   },
   {
     area: "policies",
-    title: "Pending policy",
+    title: "Policy application",
     href: "/dashboard/policies",
-    steps: [{ id: "complete", label: "Complete the policy and put it in force", confirm: "Policy completed", respondWithinHours: 72 }],
+    // Starts when the application and the premium are both in: no cover before the insurer has the premium.
+    steps: [
+      { id: "check", label: "Check the application and the customer's identity", confirm: "Application checked", respondWithinHours: 4 },
+      { id: "underwrite", label: "Make the underwriting decision", confirm: "Underwriting done", respondWithinHours: 8 },
+      { id: "premium", label: "Confirm the insurer has received the premium", confirm: "Premium confirmed", respondWithinHours: 4 },
+      { id: "issue", label: "Issue the policy and send the documents to the customer", confirm: "Policy issued", respondWithinHours: 4 }
+    ],
     ladder: [["role-underwriter"], ["role-platform-admin"]]
   },
   {
@@ -56,11 +69,11 @@ export const SECTION_FLOWS: SectionFlow[] = [
     title: "Claim",
     href: "/dashboard/claims",
     steps: [
-      { id: "acknowledge", label: "Acknowledge the claim to the customer", confirm: "Acknowledged", respondWithinHours: 48 },
-      { id: "documents", label: "Check the documents are complete", confirm: "Documents checked", respondWithinHours: 72 },
-      { id: "review", label: "Review the claim", confirm: "Review done", respondWithinHours: 120 },
-      { id: "decide", label: "Record the decision and give the customer the reasons in writing", confirm: "Decision given", respondWithinHours: 120 },
-      { id: "close", label: "Close the claim", confirm: "Closed", respondWithinHours: 48 }
+      { id: "acknowledge", label: "Acknowledge the claim to the customer and list the documents needed", confirm: "Acknowledged", respondWithinHours: 4 },
+      { id: "documents", label: "Check the documents are complete", confirm: "Documents checked", respondWithinHours: 12 },
+      { id: "review", label: "Review the claim", confirm: "Review done", respondWithinHours: 12 },
+      { id: "decide", label: "Record the decision and give the customer the reasons in writing", confirm: "Decision given", respondWithinHours: 12 },
+      { id: "close", label: "Hand over for payment and tell the customer", confirm: "Handed over", respondWithinHours: 8 }
     ],
     ladder: [["role-claims-manager"], ["role-platform-admin"]]
   },
@@ -68,10 +81,17 @@ export const SECTION_FLOWS: SectionFlow[] = [
     area: "documents",
     title: "Document needing review",
     href: "/dashboard/operations/documents",
-    steps: [{ id: "review", label: "Get the missing detail and complete the record", confirm: "Record completed", respondWithinHours: 48 }],
+    steps: [{ id: "review", label: "Get the missing detail and complete the record", confirm: "Record completed", respondWithinHours: 12 }],
     ladder: [["role-claims-manager", "role-operations"], ["role-platform-admin"]]
   }
 ];
+
+/** Total hours of a flow's steps, optionally from one step onwards. */
+export function flowHours(area: FlowArea, fromStepId?: string): number {
+  const steps = flowFor(area).steps;
+  const start = fromStepId ? Math.max(0, steps.findIndex((step) => step.id === fromStepId)) : 0;
+  return steps.slice(start).reduce((sum, step) => sum + step.respondWithinHours, 0);
+}
 
 export function flowFor(area: FlowArea): SectionFlow {
   return SECTION_FLOWS.find((flow) => flow.area === area)!;

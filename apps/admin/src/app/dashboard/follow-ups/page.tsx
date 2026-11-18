@@ -85,7 +85,7 @@ export default async function FollowUpsPage({
   return (
     <DomainModulePage
       title='Follow-ups'
-      description='What is owed next on each record, who owes it and by when. A step nobody answers in time goes to the supervisor, and then to the administrator.'
+      description='What is owed next on each record, who owes it and by when. The steps add up to a policy within 24 hours and a claim decision within 48 hours of complete documents. A step nobody answers in time goes to the supervisor, then to the administrator.'
     >
       <nav aria-label='Area' className='mb-6 flex flex-wrap gap-2'>
         {area ? (

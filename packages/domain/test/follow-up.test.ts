@@ -2,11 +2,14 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  SECOND_ESCALATION_HOURS,
   SECTION_FLOWS,
+  SERVICE_PROMISE,
   canSeeFollowUp,
   dueAt,
   escalationLevel,
   findStaffRole,
+  flowHours,
   followUpId,
   ladderLabel,
   ladderRank,
@@ -45,8 +48,8 @@ describe("section flows", () => {
       expect(flow.steps.length).toBeGreaterThan(0);
       expect(new Set(flow.steps.map((step) => step.id)).size).toBe(flow.steps.length);
       for (const step of flow.steps) {
-        expect(step.respondWithinHours).toBeGreaterThanOrEqual(24);
-        expect(step.respondWithinHours).toBeLessThanOrEqual(168);
+        expect(step.respondWithinHours).toBeGreaterThanOrEqual(4);
+        expect(step.respondWithinHours).toBeLessThanOrEqual(24);
       }
       for (const role of flow.ladder.flat()) expect(findStaffRole(role), role).toBeTruthy();
       expect(flow.ladder[0].length).toBeGreaterThan(0);
@@ -54,8 +57,14 @@ describe("section flows", () => {
     }
   });
 
-  it("acknowledges a claim within two days, as the draft claims guidelines ask", () => {
-    expect(stepOf(item()).step.respondWithinHours).toBe(48);
+  it("keeps the service promise: a policy in 24 hours, a claim decision in 48", () => {
+    // Acknowledgement is well inside the draft guidelines' two working days.
+    expect(stepOf(item()).step.respondWithinHours).toBe(4);
+    expect(flowHours("policies")).toBeLessThanOrEqual(SERVICE_PROMISE.policyHours);
+    // From complete documents to the decision handed over.
+    expect(flowHours("claims", "documents")).toBeLessThanOrEqual(SERVICE_PROMISE.claimDecisionHours);
+    // A step that escalates still leaves the administrator time inside the promise.
+    expect(SECOND_ESCALATION_HOURS).toBeLessThanOrEqual(4);
   });
 
   it("names the ladder in plain words", () => {
@@ -65,11 +74,11 @@ describe("section flows", () => {
 
 describe("escalation", () => {
   it("stays with the owner until the time runs out, then climbs one level at a time", () => {
-    expect(dueAt(item()).toISOString()).toBe("2026-11-12T06:00:00.000Z");
-    expect(escalationLevel(item(), at("2026-11-12T06:00:00Z"))).toBe(0);
-    expect(escalationLevel(item(), at("2026-11-12T06:00:01Z"))).toBe(1);
-    expect(escalationLevel(item(), at("2026-11-14T06:00:00Z"))).toBe(1);
-    expect(escalationLevel(item(), at("2026-11-14T06:00:01Z"))).toBe(2);
+    expect(dueAt(item()).toISOString()).toBe("2026-11-10T10:00:00.000Z");
+    expect(escalationLevel(item(), at("2026-11-10T10:00:00Z"))).toBe(0);
+    expect(escalationLevel(item(), at("2026-11-10T10:00:01Z"))).toBe(1);
+    expect(escalationLevel(item(), at("2026-11-10T14:00:00Z"))).toBe(1);
+    expect(escalationLevel(item(), at("2026-11-10T14:00:01Z"))).toBe(2);
   });
 
   it("never escalates a follow-up that was answered", () => {
@@ -90,8 +99,8 @@ describe("escalation", () => {
   });
 
   it("puts a late follow-up in front of the right level", () => {
-    const onTime = at("2026-11-11T06:00:00Z");
-    const late = at("2026-11-13T06:00:00Z");
+    const onTime = at("2026-11-10T08:00:00Z");
+    const late = at("2026-11-10T12:00:00Z");
     const veryLate = at("2026-11-20T06:00:00Z");
     expect(standingFor(agent, item(), onTime)).toBe("yours");
     expect(standingFor(manager, item(), onTime)).toBe("watching");
@@ -107,9 +116,9 @@ describe("escalation", () => {
 
   it("orders a queue: escalated to you first, then your own, oldest due first; answered ones drop out", () => {
     const items = [
-      item({ id: "a", reference: "CLM-A", openedAt: "2026-11-12T06:00:00.000Z", ownerUserId: "staff-mgr" }),
+      item({ id: "a", reference: "CLM-A", openedAt: "2026-11-12T22:00:00.000Z", ownerUserId: "staff-mgr" }),
       item({ id: "b", reference: "CLM-B", openedAt: "2026-11-01T06:00:00.000Z" }),
-      item({ id: "c", reference: "CLM-C", openedAt: "2026-11-10T06:00:00.000Z" }),
+      item({ id: "c", reference: "CLM-C", openedAt: "2026-11-12T18:00:00.000Z" }),
       item({ id: "d", reference: "CLM-D", respondedAt: "2026-11-11T00:00:00.000Z" })
     ];
     const queue = queueFor(manager, items, at("2026-11-13T00:00:00Z"));

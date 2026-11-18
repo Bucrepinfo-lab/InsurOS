@@ -20,12 +20,12 @@ describe("FollowUpService", () => {
 
   it("escalates to the supervisor when the owner does not respond", async () => {
     await open("FU-CLM-2", "2032-02-01T06:00:00Z");
-    const early = await service.queue(manager, at("2032-02-02T06:00:00Z"));
+    const early = await service.queue(manager, at("2032-02-01T08:00:00Z"));
     expect(early.find((line) => line.item.reference === "FU-CLM-2")?.standing).toBe("watching");
-    const late = await service.queue(manager, at("2032-02-03T07:00:00Z"));
+    const late = await service.queue(manager, at("2032-02-01T11:00:00Z"));
     expect(late.find((line) => line.item.reference === "FU-CLM-2")).toMatchObject({ standing: "escalated-to-you", level: 1 });
-    expect((await service.escalated(at("2032-02-03T07:00:00Z"))).some((line) => line.item.reference === "FU-CLM-2")).toBe(true);
-    expect((await service.counts(agent, at("2032-02-03T07:00:00Z"))).late).toBeGreaterThanOrEqual(1);
+    expect((await service.escalated(at("2032-02-01T11:00:00Z"))).some((line) => line.item.reference === "FU-CLM-2")).toBe(true);
+    expect((await service.counts(agent, at("2032-02-01T11:00:00Z"))).late).toBeGreaterThanOrEqual(1);
   });
 
   it("refuses a response from someone who is neither the owner nor a supervisor", async () => {
