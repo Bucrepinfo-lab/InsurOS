@@ -25,6 +25,11 @@ async function makeClearCopy(file: File): Promise<Blob> {
   return new Promise((resolve, reject) => canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('no blob'))), 'image/jpeg', 0.85));
 }
 
+/** The phone's own time for the photo: the file's last-modified time. */
+function takenAtOf(file: File): string {
+  return new Date(file.lastModified || Date.now()).toISOString();
+}
+
 type Where = { latitude: number; longitude: number; accuracy: number } | null;
 
 export interface ExistingPhoto {
@@ -87,7 +92,7 @@ export function ClaimPhotoCapture({
       form.set('slot', slot);
       form.set('original', file, file.name || 'photo');
       form.set('view', clear, 'clear.jpg');
-      form.set('takenAt', new Date(file.lastModified || Date.now()).toISOString());
+      form.set('takenAt', takenAtOf(file));
       if (where) {
         form.set('latitude', String(where.latitude));
         form.set('longitude', String(where.longitude));
