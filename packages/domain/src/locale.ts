@@ -122,7 +122,14 @@ export const CUSTOMER_TEXT = {
   copied: { en: "Link copied", sw: "Kiungo kimenakiliwa" },
   referredBy: { en: "Referred by a friend", sw: "Umependekezwa na rafiki" },
   mpesaPhone: { en: "M-Pesa phone number", sw: "Nambari ya simu ya M-Pesa" },
-  payPlus: { en: "Pay {price} with M-Pesa", sw: "Lipa {price} kwa M-Pesa" },
+  payPlus: { en: "Pay {price} for this month", sw: "Lipa {price} kwa mwezi huu" },
+  payPlusYear: { en: "Pay {price} for a year (2 months free)", sw: "Lipa {price} kwa mwaka (miezi 2 bure)" },
+  priceLine: { en: "{month} a month or {year} a year", sw: "{month} kwa mwezi au {year} kwa mwaka" },
+  foundingLocked: { en: "Your founding price is locked while you stay subscribed.", sw: "Bei yako ya mwanzo imefungwa mradi uendelee kujisajili." },
+  foundingOffer: {
+    en: "Founding price: join in the first year and keep it for as long as you stay subscribed.",
+    sw: "Bei ya mwanzo: jiunge mwaka wa kwanza na uidumishe mradi uendelee kujisajili."
+  },
   payPrompt: {
     en: "Check your phone and enter your M-Pesa PIN. Plus switches on once the payment is confirmed; refresh this page in a minute.",
     sw: "Angalia simu yako na uweke PIN yako ya M-Pesa. Plus itawaka malipo yakithibitishwa; onyesha upya ukurasa huu baada ya dakika moja."

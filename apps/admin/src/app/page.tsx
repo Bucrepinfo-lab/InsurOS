@@ -42,7 +42,7 @@ const AUDIENCES: { title: string; line: string; points: string[]; tone: string }
   {
     title: 'Customers',
     line: 'No app to install: a private page from their agent, in English or Kiswahili.',
-    points: ['What is insured, its value and when cover ends', 'Report a claim with photos from the scene', 'My Cover Plus: KES 10 a month, first month free'],
+    points: ['What is insured, its value and when cover ends', 'Report a claim with photos from the scene', 'My Cover Plus: KES 49 a month or KES 490 a year, first month free'],
     tone: 'from-[#1d5f8a] to-[#123f5e]'
   }
 ];

@@ -1,13 +1,13 @@
 import type { RenewalAlert, Subscription, SubscriptionPlan } from "@insuros/domain";
 
 export const mockSubscriptionPlans: SubscriptionPlan[] = [
-  { id: "plan-ke", countryCode: "KE", currency: "KES", monthlyPrice: 10, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" },
-  { id: "plan-ng", countryCode: "NG", currency: "NGN", monthlyPrice: 10, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" },
-  { id: "plan-gb", countryCode: "GB", currency: "GBP", monthlyPrice: 10, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" },
-  { id: "plan-us", countryCode: "US", currency: "USD", monthlyPrice: 10, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" },
-  { id: "plan-in", countryCode: "IN", currency: "INR", monthlyPrice: 10, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" },
-  { id: "plan-br", countryCode: "BR", currency: "BRL", monthlyPrice: 10, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" },
-  { id: "plan-au", countryCode: "AU", currency: "AUD", monthlyPrice: 10, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" }
+  { id: "plan-ke", countryCode: "KE", currency: "KES", monthlyPrice: 49, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" },
+  { id: "plan-ng", countryCode: "NG", currency: "NGN", monthlyPrice: 600, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" },
+  { id: "plan-gb", countryCode: "GB", currency: "GBP", monthlyPrice: 0.49, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" },
+  { id: "plan-us", countryCode: "US", currency: "USD", monthlyPrice: 0.49, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" },
+  { id: "plan-in", countryCode: "IN", currency: "INR", monthlyPrice: 35, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" },
+  { id: "plan-br", countryCode: "BR", currency: "BRL", monthlyPrice: 2.49, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" },
+  { id: "plan-au", countryCode: "AU", currency: "AUD", monthlyPrice: 0.79, freeTrialDays: 30, renewalDueDay: 40, alertDays: [35, 39], status: "Active" }
 ];
 
 export const mockSubscriptions: Subscription[] = [

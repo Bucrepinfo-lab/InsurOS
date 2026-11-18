@@ -1,8 +1,9 @@
 import type { EntityId, IsoDateTime } from "./base";
 
 /**
- * App subscription: 10 units of the local currency per month, first month
- * free, renewal due on day 40 of each cycle, with nudges on days 35 and 39.
+ * App subscription (the customer's My Cover Plus): Kenya KES 49 a month or
+ * KES 490 a year (owner 18/11/26, was 10 units), first month free, founding
+ * price locked for early joiners (see customer-plus.ts); renewal due on day 40 of each cycle, with nudges on days 35 and 39.
  */
 export interface SubscriptionPlan {
   id: EntityId;
