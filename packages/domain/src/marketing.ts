@@ -7,6 +7,8 @@ export type MarketingPlacement =
   | "PricingQuote"
   | "ClaimsPortal"
   | "Onboarding"
+  /** The customer's own page: the agency's news and offers. Never shown anywhere else. */
+  | "CustomerHome"
   | "All";
 
 export type MarketingAudience = "Prospect" | "Policyholder" | "Agent" | "All";

@@ -7,7 +7,7 @@ import { contactUs } from '../c/actions';
 const field = 'mt-1 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5 text-[15px] text-ink outline-none focus:border-seal focus:ring-2 focus:ring-seal/20';
 const label = 'block text-sm font-medium text-ink';
 
-export function ContactForm({ topic = 'claim', reference = '', lang = 'en' }: { topic?: string; reference?: string; lang?: LanguageTag }) {
+export function ContactForm({ topic = 'claim', reference = '', referral = '', lang = 'en' }: { topic?: string; reference?: string; referral?: string; lang?: LanguageTag }) {
   const [result, action, pending] = useActionState(contactUs, null);
   return (
     <form action={action} lang={lang} className='grid gap-4 rounded-2xl border border-line bg-sheet p-5'>
@@ -25,6 +25,7 @@ export function ContactForm({ topic = 'claim', reference = '', lang = 'en' }: { 
         <label className={label}>{t('claimOrPolicyNumber', lang)}<input name='reference' maxLength={40} defaultValue={reference} autoComplete='off' className={field} /></label>
       </div>
       <label className={label}>{t('message', lang)}<textarea name='body' required rows={5} maxLength={MESSAGE_MAX} className={field} /></label>
+      {referral ? <input type='hidden' name='ref' value={referral} /> : null}
       {/* Left empty by people; robots that fill every field give themselves away. */}
       <input type='text' name='website' tabIndex={-1} autoComplete='off' aria-hidden='true' className='hidden' />
       <div className='flex flex-wrap items-center gap-3'>

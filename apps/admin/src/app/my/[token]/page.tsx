@@ -1,11 +1,28 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { formatDate } from '@insuros/ui';
-import { clockFor, estimateVehicleValue, expiryWords, expiryStatus, policiesOfCustomer, t, type ExpiryLevel } from '@insuros/domain';
+import { formatDate, InsurOSLogo, LedgerSeal } from '@insuros/ui';
+import {
+  DEFAULT_COUNTRY,
+  PLUS_FEATURES,
+  clockFor,
+  estimateVehicleValue,
+  expiryStatus,
+  expiryWords,
+  policiesOfCustomer,
+  referralCodeFor,
+  selectContent,
+  shareMessage,
+  t,
+  tf,
+  type ExpiryLevel
+} from '@insuros/domain';
 import { getPersistence } from '@insuros/services';
 import { hashCustomerToken, isCustomerToken } from '@/lib/customer-link';
 import { customerLanguage } from '@/lib/customer-language';
+import { plusFor } from '@/lib/customer-plus';
+import { SITE_URL } from '@/lib/site';
 import { LanguageSwitch } from '@/components/language-switch';
+import { ShareCover } from '@/components/share-cover';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 export const metadata = { title: 'My cover', robots: { index: false, follow: false } };
@@ -18,10 +35,26 @@ const TONE: Record<ExpiryLevel, string> = {
   unknown: 'bg-paper text-dim'
 };
 const kes = (value: number) => `KES ${Math.round(value).toLocaleString('en-GB')}`;
+const ddmmyy = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice(2, 4)}`;
+
+function PlusLock({ label }: { label: string }) {
+  return (
+    <span className='inline-flex items-center gap-1.5 rounded-full border border-[#c9a227]/50 bg-[#c9a227]/10 px-2.5 py-0.5 text-xs font-semibold text-warnink'>
+      <svg viewBox='0 0 16 16' className='h-3 w-3' aria-hidden='true'>
+        <rect x='3' y='7' width='10' height='7' rx='1.5' fill='currentColor' />
+        <path d='M5 7V5a3 3 0 0 1 6 0v2' fill='none' stroke='currentColor' strokeWidth='1.6' />
+      </svg>
+      {label}
+    </span>
+  );
+}
 
 /**
  * The customer's own page: what they have insured, for how much, when cover
- * ends, and their claims. Reached by a private link, no account needed.
+ * ends, their claims, their agency's news, and a way to show a friend.
+ * Reached by a private link, no account needed. The basics are always free;
+ * My Cover Plus (10 units of the local currency a month, first month free)
+ * adds the value today, the news and the PDF.
  */
 export default async function MyCoverPage({
   params,
@@ -32,40 +65,109 @@ export default async function MyCoverPage({
 }) {
   const { token } = await params;
   const lang = await customerLanguage((await searchParams).lang);
-  const clock = clockFor(undefined);
+  const clock = clockFor(DEFAULT_COUNTRY);
   if (!isCustomerToken(token)) notFound();
   const hash = hashCustomerToken(token);
   const db = getPersistence();
   const [customer] = await db.customers.findWhere((candidate) => candidate.homeAccessHash === hash);
   if (!customer) notFound();
-  const policies = policiesOfCustomer(await db.policies.findAll(), customer);
+  const plus = await plusFor(customer);
+  const [allPolicies, allClaims, content, tenants] = await Promise.all([db.policies.findAll(), db.claims.findAll(), db.marketingContent.findAll(), db.tenants.findAll()]);
+  const policies = policiesOfCustomer(allPolicies, customer);
   const numbers = new Set(policies.map((policy) => policy.policyNumber));
-  const claims = (await db.claims.findAll()).filter((claim) => numbers.has(claim.policyNumber));
+  const claims = allClaims.filter((claim) => numbers.has(claim.policyNumber));
   const now = new Date();
   const lines = policies
     .map((policy) => ({ policy, expiry: expiryStatus(policy.expiryDate, now, clock.timeZone), value: policy.registration || policy.yearOfManufacture ? estimateVehicleValue(policy, now) : null }))
     .sort((a, b) => (a.expiry.days ?? 99999) - (b.expiry.days ?? 99999));
   const due = lines.filter((line) => line.expiry.level === 'due-soon' || line.expiry.level === 'expired');
   const insuredTotal = policies.reduce((sum, policy) => sum + (policy.sumInsured ?? 0), 0);
+  const news = selectContent(content, 'CustomerHome', undefined, now.toISOString()).filter((item) => item.placement === 'CustomerHome').slice(0, 5);
+  const firstName = customer.name.split(' ')[0] ?? customer.name;
+  const code = referralCodeFor(DEFAULT_COUNTRY, customer.id);
+  const joinLink = `${SITE_URL}/join/${code}`;
+  const agency = tenants[0]?.name ?? 'InsurOS';
+  const price = `${plus.price.currency} ${plus.price.amount}`;
+  const plusLine =
+    plus.state === 'open'
+      ? t('plusOpen', lang)
+      : plus.state === 'trial'
+        ? tf('plusTrial', lang, { n: plus.daysLeft ?? 0, date: plus.trialEndsOn ? ddmmyy(plus.trialEndsOn) : '' })
+        : plus.state === 'paid'
+          ? t('plusPaid', lang)
+          : tf('plusPaused', lang, { price });
 
   return (
-    <main className='min-h-screen bg-paper px-4 py-8 sm:py-12'>
+    <main className='min-h-screen bg-paper px-4 py-6 sm:py-10'>
       <div lang={lang} className='mx-auto grid max-w-3xl gap-6'>
-        <div className='flex flex-wrap items-center justify-between gap-2'>
-          <LanguageSwitch current={lang} languages={clock.languages} path={`/my/${token}`} />
-          <ThemeToggle />
+        <div className='flex flex-wrap items-center justify-between gap-3'>
+          <InsurOSLogo size={30} />
+          <div className='flex flex-wrap items-center gap-2'>
+            <LanguageSwitch current={lang} languages={clock.languages} path={`/my/${token}`} />
+            <ThemeToggle />
+          </div>
         </div>
-        <header>
-          <p className='text-sm text-dim'>{t('myCover', lang)}</p>
-          <h1 className='mt-1 font-display text-[32px] leading-tight text-ink'>{t('hello', lang)}, {customer.name.split(' ')[0]}</h1>
-          <p className='mt-1 text-[15px] text-ink'>
-            {lang === 'en' ? `${policies.length} ${policies.length === 1 ? 'policy' : 'policies'}` : `${t('policies', lang)}: ${policies.length}`}
-            {insuredTotal > 0 ? `, ${kes(insuredTotal)} ${t('insuredInAll', lang)}` : ''}. {t('homeScreen', lang)}
-          </p>
-          <a href={`/my/${token}/summary`} className='mt-3 inline-block rounded-lg border border-ink/15 bg-sheet px-4 py-2 text-sm font-semibold text-ink hover:border-seal/50 hover:text-seal'>
-            {t('downloadCover', lang)}
-          </a>
-        </header>
+
+        {/* The cover card: the screen people show their friends */}
+        <section
+          aria-labelledby='hello'
+          className='relative isolate overflow-hidden rounded-3xl p-6 text-white shadow-[0_30px_60px_-30px_rgba(6,56,47,0.8)] sm:p-8'
+          style={{
+            backgroundImage: [
+              'radial-gradient(420px 260px at 100% 0%, rgba(201,162,39,0.35), transparent 65%)',
+              'radial-gradient(520px 320px at 0% 100%, rgba(23,163,126,0.45), transparent 65%)',
+              'linear-gradient(140deg, #0f6e56 0%, #0b4a3c 55%, #101c31 100%)'
+            ].join(',')
+          }}
+        >
+          <div aria-hidden='true' className='absolute -bottom-10 -right-8 -z-10 opacity-25'>
+            <LedgerSeal size={190} detailed title='' />
+          </div>
+          <div className='flex items-start justify-between gap-4'>
+            <div>
+              <p className='text-sm text-white/70'>{t('myCover', lang)}</p>
+              <h1 id='hello' className='mt-1 text-[30px] leading-tight sm:text-[36px]'>
+                {t('hello', lang)}, {firstName}
+              </h1>
+            </div>
+            <span className='inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur'>
+              <span className='seal-dot inline-block h-2 w-2 rounded-full bg-[#7fe0c0]' />
+              {t('covered', lang)}
+            </span>
+          </div>
+          <dl className='mt-8 grid grid-cols-2 gap-4'>
+            <div>
+              <dt className='text-xs text-white/60'>{t('itemsInsured', lang)}</dt>
+              <dd className='mt-1 font-display text-[28px] leading-none'>{policies.length}</dd>
+            </div>
+            {insuredTotal > 0 ? (
+              <div>
+                <dt className='text-xs text-white/60'>{t('insuredInAll', lang)}</dt>
+                <dd className='mt-1 font-mono text-[19px] leading-tight sm:text-[26px]'>{kes(insuredTotal)}</dd>
+              </div>
+            ) : null}
+          </dl>
+          <p className='mt-6 text-xs text-white/60'>{t('homeScreen', lang)}</p>
+        </section>
+
+        {/* My Cover Plus */}
+        <section aria-label='My Cover Plus' className='grid gap-3 rounded-2xl border border-[#c9a227]/40 bg-sheet p-5'>
+          <div className='flex flex-wrap items-center justify-between gap-2'>
+            <p className='font-display text-[19px] text-ink'>My Cover Plus</p>
+            <span className='rounded-full bg-[#c9a227]/15 px-2.5 py-0.5 font-mono text-xs font-semibold text-warnink'>{price} / mo</span>
+          </div>
+          <p className='text-sm text-ink'>{plusLine}</p>
+          {plus.state === 'paused' ? <p className='text-sm text-dim'>{t('plusPaySoon', lang)}</p> : null}
+          <ul className='grid gap-1.5 text-sm text-ink sm:grid-cols-3'>
+            {PLUS_FEATURES.map((feature) => (
+              <li key={feature.id} className='flex gap-2'>
+                <span aria-hidden='true' className='text-[#b98a2f]'>✦</span>
+                {lang === 'sw' ? feature.sw : feature.title}
+              </li>
+            ))}
+          </ul>
+          <p className='text-xs text-dim'>{t('plusAlwaysFree', lang)}</p>
+        </section>
 
         {due.length > 0 ? (
           <section className='grid gap-2 rounded-2xl border border-warnink/40 bg-warnink/5 p-4'>
@@ -82,7 +184,16 @@ export default async function MyCoverPage({
         ) : null}
 
         <section aria-labelledby='policies' className='grid gap-3'>
-          <h2 id='policies' className='font-display text-[22px] text-ink'>{t('whatInsured', lang)}</h2>
+          <div className='flex flex-wrap items-end justify-between gap-2'>
+            <h2 id='policies' className='font-display text-[22px] text-ink'>{t('whatInsured', lang)}</h2>
+            {plus.unlocked ? (
+              <a href={`/my/${token}/summary`} className='rounded-lg border border-ink/15 bg-sheet px-3 py-2 text-sm font-semibold text-ink hover:border-seal/50 hover:text-seal'>
+                {t('downloadCover', lang)}
+              </a>
+            ) : (
+              <PlusLock label={t('partOfPlus', lang)} />
+            )}
+          </div>
           {lines.length === 0 ? (
             <p className='rounded-2xl border border-line bg-sheet p-5 text-sm text-ink'>{t('noPolicies', lang)}</p>
           ) : (
@@ -98,9 +209,13 @@ export default async function MyCoverPage({
                     {value?.estimateToday ? (
                       <div className='flex justify-between gap-3'>
                         <dt className='text-dim'>{t('valueToday', lang)}</dt>
-                        <dd className='font-mono text-ink'>
-                          {kes(value.estimateToday)} <span className={value.change! < 0 ? 'text-warnink' : 'text-seal'}>({value.change! < 0 ? '' : '+'}{kes(value.change!)})</span>
-                        </dd>
+                        {plus.unlocked ? (
+                          <dd className='font-mono text-ink'>
+                            {kes(value.estimateToday)} <span className={value.change! < 0 ? 'text-warnink' : 'text-seal'}>({value.change! < 0 ? '' : '+'}{kes(value.change!)})</span>
+                          </dd>
+                        ) : (
+                          <dd><PlusLock label='Plus' /></dd>
+                        )}
                       </div>
                     ) : null}
                     <div className='flex justify-between gap-3'><dt className='text-dim'>{t('premium', lang)}</dt><dd className='font-mono text-ink'>{policy.premium}</dd></div>
@@ -108,7 +223,7 @@ export default async function MyCoverPage({
                       <div className='flex justify-between gap-3'><dt className='text-dim'>{t('cover', lang)}</dt><dd className='text-right text-ink'>{formatDate(policy.startDate)} – {formatDate(policy.expiryDate)}</dd></div>
                     ) : null}
                   </dl>
-                  {value?.note ? <p className='text-xs text-dim'>{value.note}</p> : null}
+                  {value?.note && plus.unlocked ? <p className='text-xs text-dim'>{value.note}</p> : null}
                   <div className='flex flex-wrap gap-2 pt-1'>
                     <Link href={`/contact?topic=claim&reference=${encodeURIComponent(policy.policyNumber)}`} className='rounded-lg bg-seal px-3 py-2 text-sm font-semibold text-white hover:bg-sealdark'>{t('reportClaim', lang)}</Link>
                     <Link href={`/contact?topic=policy&reference=${encodeURIComponent(policy.policyNumber)}`} className='rounded-lg border border-ink/15 px-3 py-2 text-sm font-medium text-ink hover:border-seal/50 hover:text-seal'>{t('askPolicy', lang)}</Link>
@@ -132,6 +247,43 @@ export default async function MyCoverPage({
             </ul>
           </section>
         ) : null}
+
+        <section aria-labelledby='news' className='grid gap-3'>
+          <div className='flex flex-wrap items-center justify-between gap-2'>
+            <h2 id='news' className='font-display text-[22px] text-ink'>{t('news', lang)}</h2>
+            {!plus.unlocked ? <PlusLock label={t('partOfPlus', lang)} /> : null}
+          </div>
+          {plus.unlocked && news.length > 0 ? (
+            <ul className='grid gap-3'>
+              {news.map((item) => (
+                <li key={item.id} className='rounded-2xl border border-line bg-sheet p-5'>
+                  <p className='font-display text-[18px] text-ink'>{item.headline}</p>
+                  <p className='mt-1 whitespace-pre-wrap text-sm leading-relaxed text-ink'>{item.body}</p>
+                  {item.ctaHref && /^https:\/\//.test(item.ctaHref) ? (
+                    <a href={item.ctaHref} target='_blank' rel='noopener noreferrer' className='mt-2 inline-block text-sm font-semibold text-seal underline underline-offset-2'>
+                      {item.cta}
+                    </a>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          ) : plus.unlocked ? (
+            <p className='rounded-2xl border border-line bg-sheet p-5 text-sm text-dim'>
+              {lang === 'sw' ? 'Hakuna habari mpya kwa sasa. Wakala wako akichapisha, itaonekana hapa.' : 'No news yet. When your agency posts something, it appears here.'}
+            </p>
+          ) : null}
+        </section>
+
+        {/* Show a friend */}
+        <section aria-labelledby='share' className='grid gap-3 rounded-2xl border border-seal/30 bg-sealsoft p-5'>
+          <h2 id='share' className='font-display text-[20px] text-ink'>{t('shareTitle', lang)}</h2>
+          <p className='text-sm text-ink'>{t('shareBody', lang)}</p>
+          <ShareCover
+            text={shareMessage({ firstName, items: policies.length, agency, link: joinLink, lang })}
+            link={joinLink}
+            words={{ share: t('share', lang), whatsapp: t('sendWhatsApp', lang), copy: t('copyLink', lang), copied: t('copied', lang) }}
+          />
+        </section>
 
         <p className='text-xs text-dim'>{t('privatePage', lang)}</p>
       </div>

@@ -42,7 +42,7 @@ const AUDIENCES: { title: string; line: string; points: string[]; tone: string }
   {
     title: 'Customers',
     line: 'No app to install: a private page from their agent, in English or Kiswahili.',
-    points: ['What is insured, its value and when cover ends', 'Report a claim with photos from the scene', 'Sign the declaration on the phone'],
+    points: ['What is insured, its value and when cover ends', 'Report a claim with photos from the scene', 'My Cover Plus: KES 10 a month, first month free'],
     tone: 'from-[#1d5f8a] to-[#123f5e]'
   }
 ];
@@ -301,7 +301,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <div className='relative mx-auto max-w-6xl overflow-hidden rounded-3xl bg-[#101c31] px-6 py-14 text-center text-white sm:px-10' style={{ backgroundImage: 'radial-gradient(600px 300px at 50% -20%, rgba(23,163,126,0.5), transparent 70%)' }}>
             <h2 className='mx-auto max-w-2xl text-[30px] leading-tight [text-wrap:balance] sm:text-[40px]'>Bring your agency onto the record</h2>
             <p className='mx-auto mt-3 max-w-xl text-white/75'>
-              Tell us about your team and we will set up your workspace, your areas and your people. The first month is free.
+              Tell us about your team and we will set up your workspace, your areas and your people, and give your customers a page they will want to show their friends.
             </p>
             <div className='mt-8 flex flex-wrap justify-center gap-3'>
               <Link href='/contact?topic=general' className='rounded-xl bg-[#c9a227] px-6 py-3.5 font-semibold text-[#101c31] transition hover:bg-[#d8b13a]'>

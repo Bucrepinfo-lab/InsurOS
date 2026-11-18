@@ -12,4 +12,8 @@ export interface Customer {
   verifiedAt?: string;
   /** SHA-256 of the customer's private home-page link. The link itself is never stored. */
   homeAccessHash?: string;
+  /** First time the customer opened their page: their free month of My Cover Plus starts here. */
+  plusStartedAt?: string;
+  /** Calendar months of My Cover Plus paid ("2026-12"), written only by a confirmed payment. */
+  plusPaidMonths?: string[];
 }

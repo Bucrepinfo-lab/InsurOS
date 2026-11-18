@@ -3,6 +3,15 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-18 — Customer page as a marketing tool, and My Cover Plus (owner brief)
+- Owner's intent: the customer page (1) is shown by customers to friends and family, and (2) earns 10 units of local currency a month (Kenya KES 10), first month free, no charge for months not taken.
+- **Decided split** (`packages/domain/src/customer-plus.ts`): always free are what is insured, cover end dates, reminders, reporting a claim and talking to the agent. Locking a policyholder out of their own cover or a claim would hurt them and the agency's standing with the IRA. **My Cover Plus** adds the vehicle's value today, news and offers from the agency, and the cover PDF (the PDF route returns 402 when Plus is paused).
+- Free month starts on the customer's first visit (`plusStartedAt`). Months are calendar months on the country clock. Paid months (`plusPaidMonths`) are written only by a confirmed payment. There is no auto-renewal.
+- **While `PAYMENTS_ENABLED` is off, Plus is open to everyone** and nobody is asked to pay (live stays live). **Escalated, not built:** taking the KES 10 by M-Pesa STK on the customer's own phone and the callback that records the month. Both are in the protected payments area, need the Africa's Talking key, and need the owner's go-ahead.
+- **Show a friend**: a cover card at the top of `/my/<token>` (name, number of things insured, total insured, "Covered"), plus Share / WhatsApp / copy with a message that carries nothing private. Each customer has a join link `/join/<code>` (their referral code), which opens "Talk to your agent" marked "Referred by a friend" and routes the enquiry to the referrer's own agent. Referral-token amounts are not shown to customers until the country can sell (IRA licence).
+- **News for customers** (`/dashboard/customers/announcements`): operations leads post or take down news and offers (placement `CustomerHome`) shown on every customer page.
+- Home page: the agency call to action no longer says "first month free"; the Customers card now shows "My Cover Plus: KES 10 a month, first month free".
+
 ## 2026-11-18 — Shared UI classes were not being generated
 - Found on the live home page: "OS" in the logo showed white. Tailwind skips `node_modules`, where `@insuros/ui` is linked, so classes used only inside `packages/ui` (logo, sidebar, workspace shell) were missing from the CSS. Fixed with `@source "../../../../packages/ui/src"` in `globals.css`.
 
