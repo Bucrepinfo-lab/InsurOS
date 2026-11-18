@@ -76,3 +76,4 @@ export * from "./signature";
 export * from "./exif";
 export * from "./career-record";
 export * from "./locale";
+export * from "./customer-plus";

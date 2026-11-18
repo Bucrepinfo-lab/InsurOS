@@ -93,7 +93,34 @@ export const CUSTOMER_TEXT = {
   aPolicy: { en: "A policy", sw: "Bima" },
   somethingElse: { en: "Something else", sw: "Jambo jingine" },
   claimOrPolicyNumber: { en: "Claim or policy number", sw: "Nambari ya dai au bima" },
-  message: { en: "Message", sw: "Ujumbe" }
+  message: { en: "Message", sw: "Ujumbe" },
+  covered: { en: "Covered", sw: "Ina bima" },
+  itemsInsured: { en: "Things insured", sw: "Vilivyowekewa bima" },
+  plusOpen: { en: "My Cover Plus is free for everyone while we launch.", sw: "My Cover Plus ni bure kwa wote wakati huu wa uzinduzi." },
+  plusTrial: { en: "Your free month of My Cover Plus: {n} days left, until {date}.", sw: "Mwezi wako wa bure wa My Cover Plus: siku {n} zimebaki, hadi {date}." },
+  plusPaid: { en: "My Cover Plus is on for this month. Thank you.", sw: "My Cover Plus imewashwa kwa mwezi huu. Asante." },
+  plusPaused: {
+    en: "My Cover Plus is paused this month. {price} switches it on until the month ends; nothing is charged for months you skip.",
+    sw: "My Cover Plus imesimamishwa mwezi huu. {price} inaiwasha hadi mwisho wa mwezi; hakuna malipo kwa miezi unayoruka."
+  },
+  plusPaySoon: { en: "Paying by M-Pesa is being switched on. Your agent will tell you when.", sw: "Malipo kwa M-Pesa yanawashwa. Wakala wako atakujulisha." },
+  plusIncludes: { en: "Plus includes", sw: "Plus inajumuisha" },
+  plusAlwaysFree: {
+    en: "Always free: what you have insured, when cover ends, reminders, reporting a claim and talking to your agent.",
+    sw: "Bure daima: ulichowekea bima, tarehe ya mwisho, vikumbusho, kuripoti dai na kuongea na wakala wako."
+  },
+  partOfPlus: { en: "Part of My Cover Plus", sw: "Sehemu ya My Cover Plus" },
+  news: { en: "News from your agency", sw: "Habari kutoka kwa wakala wako" },
+  shareTitle: { en: "Show a friend", sw: "Mwonyeshe rafiki" },
+  shareBody: {
+    en: "Share how easy your cover is to follow. Nothing private goes with it: no values, numbers or claims.",
+    sw: "Shiriki jinsi bima yako ilivyo rahisi kufuatilia. Hakuna cha siri kinachotumwa: thamani, nambari wala madai."
+  },
+  share: { en: "Share", sw: "Shiriki" },
+  sendWhatsApp: { en: "Send on WhatsApp", sw: "Tuma kwa WhatsApp" },
+  copyLink: { en: "Copy link", sw: "Nakili kiungo" },
+  copied: { en: "Link copied", sw: "Kiungo kimenakiliwa" },
+  referredBy: { en: "Referred by a friend", sw: "Umependekezwa na rafiki" }
 } as const satisfies Record<string, Record<LanguageTag, string>>;
 
 export type CustomerTextKey = keyof typeof CUSTOMER_TEXT;
@@ -114,4 +141,9 @@ export function expiryWords(status: { level: "expired" | "due-soon" | "in-force"
   if (status.days === 0) return "Leo ni siku ya mwisho ya bima";
   if (status.level === "due-soon") return `Inaisha baada ya siku ${d}`;
   return `Inaendelea kwa siku ${d} zaidi`;
+}
+
+/** A customer-page sentence with {placeholders} filled in. */
+export function tf(key: CustomerTextKey, lang: LanguageTag, values: Record<string, string | number>): string {
+  return t(key, lang).replace(/\{(\w+)\}/g, (whole, name: string) => (name in values ? String(values[name]) : whole));
 }

@@ -65,6 +65,7 @@ export const adminNavigation: NavigationSection[] = [
       },
       { id: 'customers', label: 'Customers', href: '/dashboard/customers', requiredPermission: 'Customers:View' },
       { id: 'customer-home-links', label: 'Customer home links', href: '/dashboard/customers/home-links', requiredPermission: 'Customers:View' },
+      { id: 'customer-news', label: 'News for customers', href: '/dashboard/customers/announcements', requiredPermission: 'Customers:View' },
       { id: 'policies', label: 'Policies', href: '/dashboard/policies', requiredPermission: 'Policies:View' },
       { id: 'claims', label: 'Claims', href: '/dashboard/claims', requiredPermission: 'Claims:View' },
       {

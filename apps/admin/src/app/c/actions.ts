@@ -3,7 +3,7 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { checkMessage, type ConversationTopic, type OwnedClaim, type OwnedPolicy } from '@insuros/domain';
+import { checkMessage, cleanReferralCode, referralCodeFor, type ConversationTopic, type OwnedClaim, type OwnedCustomer, type OwnedPolicy } from '@insuros/domain';
 import { MessagingService, getPersistence } from '@insuros/services';
 import { hashCustomerToken, isCustomerToken, newCustomerLink } from '@/lib/customer-link';
 
@@ -68,6 +68,12 @@ export async function contactUs(_prev: CustomerFormState | null, formData: FormD
       ownerId = policy?.ownerUserId;
     }
   }
+  // A friend's share link: the enquiry goes to the agent who looks after the friend.
+  const referral = cleanReferralCode(formData.get('ref'));
+  if (referral && !ownerId) {
+    const [referrer] = (await getPersistence().customers.findWhere((c) => referralCodeFor(referral.slice(0, 2), c.id) === referral)) as OwnedCustomer[];
+    ownerId = referrer?.ownerUserId;
+  }
   const ownerAppointment = ownerId
     ? (await getPersistence().appointments.findWhere((a) => a.userId === ownerId && a.status === 'Active'))[0]
     : undefined;
@@ -75,7 +81,7 @@ export async function contactUs(_prev: CustomerFormState | null, formData: FormD
   const link = newCustomerLink();
   const result = await new MessagingService().startCustomer({
     subject: topic === 'claim' ? `Claim enquiry${reference ? ` ${reference}` : ''}` : topic === 'policy' ? `Policy enquiry${reference ? ` ${reference}` : ''}` : 'Enquiry',
-    body: body.value,
+    body: referral ? `Referred by a customer (code ${referral}).\n\n${body.value}` : body.value,
     topic,
     ...(reference ? { reference } : {}),
     customerName: name,
