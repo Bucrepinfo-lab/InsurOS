@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* The shared UI package lives outside this app (and reaches it through
+   node_modules, which Tailwind skips): scan it so its classes are generated. */
+@source "../../../../packages/ui/src";
 
 /*
   InsurOS design system — "The Underwriter's Ledger" v1.1 (atmosphere)
