@@ -1,11 +1,21 @@
-import { DEFAULT_COUNTRY, PLUS_UNITS_PER_MONTH, clockFor, parsePlusReference, plusStatus, profileFor, withPaidMonth, type Customer, type PlusStatus } from '@insuros/domain';
+import { DEFAULT_COUNTRY, applyPlusPayment, clockFor, listPriceFor, parsePlusReference, plusStatus, type Customer, type PlusStatus } from '@insuros/domain';
 import { getPersistence } from '@insuros/services';
 import { paymentsEnabled } from '@/lib/payments-gate';
 
 /**
- * My Cover Plus for a customer, on their country's clock and currency. The
- * free month starts the first time they open their page. Payments stay off
- * until the money gate is opened, and while they are off Plus is open to all.
+ * When the founding window closes: set PLUS_FOUNDING_UNTIL (ISO date) to 12
+ * months after Plus payments go live. Unset means not launched yet, so anyone
+ * who pays now still gets the founding price.
+ */
+export function plusFoundingUntil(): string | null {
+  const raw = process.env.PLUS_FOUNDING_UNTIL?.trim();
+  return raw && !Number.isNaN(Date.parse(raw)) ? raw : null;
+}
+
+/**
+ * My Cover Plus for a customer, on their country's clock and price. The free
+ * month starts the first time they open their page. Payments stay off until
+ * the money gate is opened, and while they are off Plus is open to all.
  */
 export async function plusFor(customer: Customer, now = new Date()): Promise<PlusStatus> {
   let account = customer;
@@ -15,21 +25,28 @@ export async function plusFor(customer: Customer, now = new Date()): Promise<Plu
   return plusStatus(account, {
     now,
     timeZone: clockFor(DEFAULT_COUNTRY).timeZone,
-    currency: profileFor(DEFAULT_COUNTRY)?.currency ?? 'KES',
+    list: listPriceFor(DEFAULT_COUNTRY),
     paymentsOn: paymentsEnabled()
   });
 }
 
 /**
  * After the M-Pesa result comes back: a successful Plus payment unlocks its
- * month for that customer. Records only; runs again harmlessly.
+ * month (or its 12 months for a yearly plan) and, on a first payment inside
+ * the founding window, locks the founding price. Records only; runs again
+ * harmlessly; an amount below the plan's price unlocks nothing.
  */
-export async function recordPlusPayment(txn: { status: string; amount: number; policyReference?: string } | undefined): Promise<boolean> {
+export async function recordPlusPayment(txn: { status: string; amount: number; policyReference?: string } | undefined, now = new Date()): Promise<boolean> {
   const plus = parsePlusReference(txn?.policyReference);
-  if (!txn || !plus || txn.status !== 'SUCCESS' || txn.amount < PLUS_UNITS_PER_MONTH) return false;
+  if (!txn || !plus || txn.status !== 'SUCCESS') return false;
   const customers = getPersistence().customers;
   const customer = await customers.findById(plus.customerId);
   if (!customer) return false;
-  await customers.update(customer.id, withPaidMonth(customer, plus.month));
+  const applied = applyPlusPayment(customer, { month: plus.month, plan: plus.plan, amount: txn.amount, list: listPriceFor(DEFAULT_COUNTRY), now, foundingUntil: plusFoundingUntil() });
+  if (!applied.ok) {
+    console.error('[plus] payment below the plan price, not applied', applied.reason);
+    return false;
+  }
+  await customers.update(customer.id, applied.update);
   return true;
 }

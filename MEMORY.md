@@ -3,6 +3,12 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-18 — My Cover Plus repriced: KES 49 a month / KES 490 a year, founding price locked (owner agreed)
+- Owner agreed after research: 10 units a month is too low (M-Pesa/Africa's Talking costs would take most of it). Kenya price is now **KES 49 a month or KES 490 a year** (two months free). Other countries are set near the same value (about USD 0.40 a month), marked *indicative* until a named person approves them (`PLUS_PRICES`).
+- **Founding price lock:** a customer whose first confirmed payment falls in the founding window keeps that price for as long as they stay subscribed. A gap of two months or more ends the lock. The window ends at `PLUS_FOUNDING_UNTIL` (env, ISO date). The owner sets it to 12 months after Plus payments go live; while it is unset the window is open.
+- The customer page shows the month and year prices, the founding offer (or "your founding price is locked"), and two pay buttons (month, year). The server sets the amount (`/api/my/plus`); the callback applies months and the lock only for a full payment (`applyPlusPayment`).
+- Not built (proposal only): family/fleet KES 149 for up to 5, and agency pricing per customer page.
+
 ## 2026-11-18 — My Cover Plus paid by M-Pesa (owner approved building it, switched off)
 - Built behind the existing money gate (`PAYMENTS_ENABLED`, off): when Plus is paused, the customer page shows "Pay KES 10 with M-Pesa". The customer types their Safaricom number and confirms the prompt with their own PIN. `POST /api/my/plus` allows only the fixed price, only this month, 3 tries an hour, and goes through the existing `requestPremiumCheckout` and append-only ledger (reference `PLUS:<customer>:<month>`).
 - The month unlocks only from the confirmed ledger result: the Africa's Talking callback runs `recordPlusPayment`, which records only and is safe to run twice.

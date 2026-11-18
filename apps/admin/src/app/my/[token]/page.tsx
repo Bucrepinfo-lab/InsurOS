@@ -55,7 +55,7 @@ function PlusLock({ label }: { label: string }) {
  * The customer's own page: what they have insured, for how much, when cover
  * ends, their claims, their agency's news, and a way to show a friend.
  * Reached by a private link, no account needed. The basics are always free;
- * My Cover Plus (10 units of the local currency a month, first month free)
+ * My Cover Plus (KES 49 a month or KES 490 a year, first month free, founding price locked)
  * adds the value today, the news and the PDF.
  */
 export default async function MyCoverPage({
@@ -89,7 +89,9 @@ export default async function MyCoverPage({
   const code = referralCodeFor(DEFAULT_COUNTRY, customer.id);
   const joinLink = `${SITE_URL}/join/${code}`;
   const agency = tenants[0]?.name ?? 'InsurOS';
-  const price = `${plus.price.currency} ${plus.price.amount}`;
+  const money = (n: number) => `${plus.price.currency} ${n.toLocaleString('en-GB', { maximumFractionDigits: 2 })}`;
+  const price = money(plus.price.monthly);
+  const yearPrice = money(plus.price.yearly);
   const plusLine =
     plus.state === 'open'
       ? t('plusOpen', lang)
@@ -156,14 +158,15 @@ export default async function MyCoverPage({
         <section aria-label='My Cover Plus' className='grid gap-3 rounded-2xl border border-[#c9a227]/40 bg-sheet p-5'>
           <div className='flex flex-wrap items-center justify-between gap-2'>
             <p className='font-display text-[19px] text-ink'>My Cover Plus</p>
-            <span className='rounded-full bg-[#c9a227]/15 px-2.5 py-0.5 font-mono text-xs font-semibold text-warnink'>{price} / mo</span>
+            <span className='rounded-full bg-[#c9a227]/15 px-2.5 py-0.5 font-mono text-xs font-semibold text-warnink'>{tf('priceLine', lang, { month: price, year: yearPrice })}</span>
           </div>
           <p className='text-sm text-ink'>{plusLine}</p>
+          <p className='text-xs font-medium text-warnink'>{plus.price.locked ? t('foundingLocked', lang) : t('foundingOffer', lang)}</p>
           {plus.state === 'paused' && !paymentsEnabled() ? <p className='text-sm text-dim'>{t('plusPaySoon', lang)}</p> : null}
           {plus.state === 'paused' && paymentsEnabled() ? (
             <PlusPay
               token={token}
-              words={{ label: t('mpesaPhone', lang), pay: tf('payPlus', lang, { price }), sending: t('sending', lang), sent: t('payPrompt', lang) }}
+              words={{ label: t('mpesaPhone', lang), payMonth: tf('payPlus', lang, { price }), payYear: tf('payPlusYear', lang, { price: yearPrice }), sending: t('sending', lang), sent: t('payPrompt', lang) }}
             />
           ) : null}
           <ul className='grid gap-1.5 text-sm text-ink sm:grid-cols-3'>

@@ -146,7 +146,7 @@ export default async function SubscriberExperiencePage() {
   return (
     <DomainModulePage
       title='Subscriber Experience'
-      description='The customer-side experience, previewed: 10 units/month (first month free, day-40 renewal, day-35 & 39 nudges), policy health, engagement feed with share-ready content, newsletter threads, and merit-comparison banners.'
+      description='The customer-side experience, previewed: My Cover Plus at KES 49 a month or KES 490 a year (first month free, founding price locked, day-40 renewal, day-35 & 39 nudges), policy health, engagement feed with share-ready content, newsletter threads, and merit-comparison banners.'
       actions={<ActionButton label='Add subscriber' action={addDemoSubscriber} />}
     >
 
