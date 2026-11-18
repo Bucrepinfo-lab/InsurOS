@@ -10,10 +10,13 @@ export interface ActionResult {
   /** Traceable reference, e.g. claim number, policy id, receipt code. */
   reference?: string;
   message: string;
+  /** A link to hand on, shown once (e.g. a customer's private conversation link). */
+  link?: string;
 }
 
 export interface ReceiptExtras {
   reference?: string;
+  link?: string;
 }
 
 export function ok(title: string, message: string, extras?: ReceiptExtras): ActionResult {
