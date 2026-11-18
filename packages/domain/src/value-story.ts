@@ -200,7 +200,7 @@ export const VALUE_STORIES: ValueStory[] = [
   },
   {
     id: "pricing",
-    paths: ["/dashboard/marketplace/pricing-engine"],
+    paths: ["/dashboard/marketplace/pricing-engine", "/dashboard/marketplace/break-even"],
     accent: "violet",
     motif: "chart",
     area: "Pricing",
@@ -312,8 +312,25 @@ export const VALUE_STORIES: ValueStory[] = [
     flow: ["Close the period", "Open the agent's statement", "Trace a line to its policy", "Settle any query"],
     doNow: "Open a statement and trace one line back to the policy that earned it.",
     next: [
-      { label: "The team and targets", href: "/dashboard/sales/assignments" },
+      { label: "The commission plan", href: "/dashboard/sales/commission-plan" },
       { label: "Tax on commissions", href: "/dashboard/finance/tax" }
+    ],
+    publicStory: true
+  },
+  {
+    id: "agent-plan",
+    paths: ["/dashboard/sales/commission-plan", "/dashboard/sales/referrals"],
+    accent: "gold",
+    motif: "people",
+    area: "Commission plan and referrals",
+    pain: "Agents move from company to company chasing a better rate, and a friend who sends a customer is never thanked.",
+    answer: "Per country, the legal cap on each kind of policy and how each commission divides: the selling agent keeps most of it. Every person has a referral code, so who referred whom is on record.",
+    gain: "Agents earn more for the same sale and are paid sooner, and people who send customers are recognised within the law.",
+    flow: ["Pick the country", "Read the cap and the agent's share", "Give out referral codes", "Confirm the customer to count it"],
+    doNow: "Pick your country and read what an agent earns on a car policy.",
+    next: [
+      { label: "Commission statements", href: "/dashboard/sales/commissions" },
+      { label: "Price at break-even", href: "/dashboard/marketplace/break-even" }
     ],
     publicStory: true
   },

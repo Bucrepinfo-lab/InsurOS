@@ -107,7 +107,10 @@ export const adminNavigation: NavigationSection[] = [
         id: 'sales-commissions',
         label: 'Commissions',
         href: '/dashboard/sales/commissions', requiredPermission: 'Marketplace:View'
-      }
+      },
+      { id: 'commission-plan', label: 'Commission plan', href: '/dashboard/sales/commission-plan', requiredPermission: 'Marketplace:View' },
+      { id: 'break-even', label: 'Break-even price', href: '/dashboard/marketplace/break-even', requiredPermission: 'Marketplace:View' },
+      { id: 'referrals', label: 'Referrals', href: '/dashboard/sales/referrals', requiredPermission: 'Marketplace:View' }
     ]
   },
   {

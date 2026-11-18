@@ -1,4 +1,5 @@
 import type { Customer } from "./customer";
+import { cleanReferralCode } from "./country-economics";
 import type { PolicyStatus } from "./policy";
 
 /**
@@ -17,9 +18,16 @@ export interface CustomerFormValue {
   name: string;
   type: Customer["type"];
   email: string;
+  /** Cleaned referral code, or empty when nobody referred them. */
+  referredBy: string;
 }
 
-export function checkCustomerForm(input: { name?: unknown; type?: unknown; email?: unknown }): FormCheck<CustomerFormValue> {
+export function checkCustomerForm(input: {
+  name?: unknown;
+  type?: unknown;
+  email?: unknown;
+  referredBy?: unknown;
+}): FormCheck<CustomerFormValue> {
   const name = text(input.name);
   if (name.length < 2) return { ok: false, field: "name", error: "Enter the customer's full name." };
   if (name.length > 120) return { ok: false, field: "name", error: "The name is too long (120 characters at most)." };
@@ -31,7 +39,12 @@ export function checkCustomerForm(input: { name?: unknown; type?: unknown; email
   if (email !== "" && (email.length > 160 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))) {
     return { ok: false, field: "email", error: "That email address does not look right. Leave it empty if there is none." };
   }
-  return { ok: true, value: { name, type: input.type, email } };
+  const typedCode = text(input.referredBy);
+  const referredBy = typedCode === "" ? "" : cleanReferralCode(typedCode);
+  if (referredBy === null) {
+    return { ok: false, field: "referredBy", error: "That referral code does not look right. It is two letters, a dash and six characters, for example KE-CFT5SD." };
+  }
+  return { ok: true, value: { name, type: input.type, email, referredBy } };
 }
 
 /** A money amount typed by a person: "12,000", "12000.50", "KES 12 000". Whole shillings, above zero. */
