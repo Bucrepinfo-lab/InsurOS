@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { PADDLE_BLOCKED_COUNTRIES, paddleSellsIn, subscriptionRail, subscriptionRails } from '../src/payment-rails';
+import { MPESA_COUNTRIES, PADDLE_BLOCKED_COUNTRIES, localMethodFor, paddleSellsIn, subscriptionRail, subscriptionRails } from '../src/payment-rails';
 
 describe('payment rails by country (owner rules 19/11/26)', () => {
   it('Kenya: M-Pesa leads, Paddle second for card payers', () => {
@@ -27,5 +27,34 @@ describe('payment rails by country (owner rules 19/11/26)', () => {
     }
     expect(paddleSellsIn('KE')).toBe(true);
     expect(paddleSellsIn(null)).toBe(false);
+  });
+});
+
+const allOn = { pawapay: true, paystack: true, paddle: true };
+
+describe('the way most people pay leads; the card comes later (owner standing order 19/11/26)', () => {
+  it('Kenya: M-Pesa first, Paddle card second', () => {
+    expect(subscriptionRails({ country: 'KE', switches: allOn })).toEqual(['MPESA', 'PADDLE']);
+    expect(MPESA_COUNTRIES.has('KE')).toBe(true);
+  });
+
+  it('mobile money countries: mobile money first, card second', () => {
+    expect(subscriptionRails({ country: 'ug', switches: allOn })).toEqual(['MOBILE_MONEY', 'PADDLE']);
+    expect(subscriptionRails({ country: 'GH', switches: allOn })).toEqual(['MOBILE_MONEY', 'PADDLE']);
+    expect(localMethodFor('CI')?.currency).toBe('XOF');
+  });
+
+  it('Nigeria and South Africa: bank transfer / EFT first, card second', () => {
+    expect(subscriptionRails({ country: 'NG', switches: allOn })).toEqual(['BANK_TRANSFER', 'PADDLE']);
+    expect(subscriptionRails({ country: 'ZA', switches: allOn })).toEqual(['BANK_TRANSFER', 'PADDLE']);
+  });
+
+  it('a local way opens only when its provider is on and its price is approved', () => {
+    expect(subscriptionRails({ country: 'UG', switches: { ...allOn, pawapay: false } })).toEqual(['PADDLE']);
+    expect(subscriptionRails({ country: 'UG', switches: allOn, localPriceApproved: false })).toEqual(['PADDLE']);
+  });
+
+  it('nothing where Paddle is blocked and no local way is open', () => {
+    expect(subscriptionRail({ country: 'SO', switches: allOn })).toBe('NONE');
   });
 });
