@@ -77,3 +77,4 @@ export * from "./exif";
 export * from "./career-record";
 export * from "./locale";
 export * from "./customer-plus";
+export * from "./paddle";

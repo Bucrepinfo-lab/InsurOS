@@ -3,6 +3,14 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-19 — My Cover Plus by card through Paddle (owner decision; off until keys are set)
+- Owner 19/11/26: "we had agreed we use firms like Paddle that do an auto remittance of the tax", chose Paddle + M-Pesa for all five products. Cards: Paddle is the merchant of record (charges, files and remits the tax). M-Pesa: direct sale, no VAT until Telpen Systems Ltd is VAT-registered.
+- **Plus only.** Premiums, commissions and claim payouts never go through Paddle.
+- `packages/domain/src/paddle.ts` (browser-safe config, signature check with a server-supplied HMAC, paid item) + `test/paddle.test.ts`. Keys `PADDLE_PRICE_PLUS_{MONTH,YEAR}`, `PADDLE_CLIENT_TOKEN`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_ENV`, `PADDLE_ENABLED=true`.
+- Customer page: "Pay a month / a year by card" (English and Swahili) beside M-Pesa, only behind the money gate (`PAYMENTS_ENABLED`) and only when Paddle is on. Paddle's custom data carries the Plus reference (`PLUS:<customer>:<month>[:Y]`).
+- Webhook `/api/paddle/webhook`: signature on the raw body; the bought price must match the reference's plan; unlock is idempotent (`recordPlusCardPayment`).
+- Owner steps: Paddle website approval for getinsuros.com (Paddle restricts insurance; describe Plus as a customer-portal subscription, not insurance); two Paddle prices (month, year; likely USD); notification destination `https://getinsuros.com/api/paddle/webhook`; Fly secrets.
+
 ## 2026-11-18 — My Cover Plus repriced: KES 49 a month / KES 490 a year, founding price locked (owner agreed)
 - Owner agreed after research: 10 units a month is too low (M-Pesa/Africa's Talking costs would take most of it). Kenya price is now **KES 49 a month or KES 490 a year** (two months free). Other countries are set near the same value (about USD 0.40 a month), marked *indicative* until a named person approves them (`PLUS_PRICES`).
 - **Founding price lock:** a customer whose first confirmed payment falls in the founding window keeps that price for as long as they stay subscribed. A gap of two months or more ends the lock. The window ends at `PLUS_FOUNDING_UNTIL` (env, ISO date). The owner sets it to 12 months after Plus payments go live; while it is unset the window is open.
