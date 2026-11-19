@@ -1,4 +1,4 @@
-import { DEFAULT_COUNTRY, applyPlusPayment, clockFor, listPriceFor, parsePlusReference, plusStatus, type Customer, type PlusStatus } from '@insuros/domain';
+import { DEFAULT_COUNTRY, PLUS_PADDLE_PRICES, applyPlusPayment, clockFor, listPriceFor, paddleConfig, parsePlusReference, plusPaymentReference, plusStatus, type Customer, type PlusPlan, type PlusStatus } from '@insuros/domain';
 import { getPersistence } from '@insuros/services';
 import { paymentsEnabled } from '@/lib/payments-gate';
 
@@ -47,6 +47,51 @@ export async function recordPlusPayment(txn: { status: string; amount: number; p
     console.error('[plus] payment below the plan price, not applied', applied.reason);
     return false;
   }
+  await customers.update(customer.id, applied.update);
+  return true;
+}
+
+/**
+ * Paddle card checkout for My Cover Plus (owner decision 19/11/26: Paddle is
+ * the merchant of record for cards and handles the tax). Only behind the money
+ * gate, only for Plus, never premiums. The reference names the customer, the
+ * first month and the plan; it travels in Paddle's custom data.
+ */
+export function plusCardCheckout(customer: Customer, status: PlusStatus): {
+  environment: 'sandbox' | 'production';
+  clientToken: string;
+  priceIds: Record<PlusPlan, string>;
+  references: Record<PlusPlan, string>;
+} | null {
+  if (!paymentsEnabled()) return null;
+  const cfg = paddleConfig(process.env, PLUS_PADDLE_PRICES);
+  if (!cfg) return null;
+  return {
+    environment: cfg.environment,
+    clientToken: cfg.clientToken,
+    priceIds: { MONTH: cfg.prices.MONTH, YEAR: cfg.prices.YEAR },
+    references: {
+      MONTH: plusPaymentReference(customer.id, status.month, 'MONTH'),
+      YEAR: plusPaymentReference(customer.id, status.month, 'YEAR')
+    }
+  };
+}
+
+/**
+ * A card payment confirmed by Paddle unlocks the months its reference names.
+ * The plan must match the price bought (our price id, so its price was paid,
+ * in Paddle's currency). Idempotent: unlocking the same months twice keeps one entry.
+ */
+export async function recordPlusCardPayment(reference: string, boughtPlan: PlusPlan, now = new Date()): Promise<boolean> {
+  const plus = parsePlusReference(reference);
+  if (!plus || plus.plan !== boughtPlan) return false;
+  const customers = getPersistence().customers;
+  const customer = await customers.findById(plus.customerId);
+  if (!customer) return false;
+  // The amount check in applyPlusPayment is for M-Pesa shillings; a Paddle
+  // price id already proves the plan's price was paid.
+  const applied = applyPlusPayment(customer, { month: plus.month, plan: plus.plan, amount: Number.MAX_SAFE_INTEGER, list: listPriceFor(DEFAULT_COUNTRY), now, foundingUntil: plusFoundingUntil() });
+  if (!applied.ok) return false;
   await customers.update(customer.id, applied.update);
   return true;
 }

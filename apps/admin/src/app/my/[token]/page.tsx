@@ -19,7 +19,7 @@ import {
 import { getPersistence } from '@insuros/services';
 import { hashCustomerToken, isCustomerToken } from '@/lib/customer-link';
 import { customerLanguage } from '@/lib/customer-language';
-import { plusFor } from '@/lib/customer-plus';
+import { plusCardCheckout, plusFor } from '@/lib/customer-plus';
 import { SITE_URL } from '@/lib/site';
 import { LanguageSwitch } from '@/components/language-switch';
 import { ShareCover } from '@/components/share-cover';
@@ -166,7 +166,8 @@ export default async function MyCoverPage({
           {plus.state === 'paused' && paymentsEnabled() ? (
             <PlusPay
               token={token}
-              words={{ label: t('mpesaPhone', lang), payMonth: tf('payPlus', lang, { price }), payYear: tf('payPlusYear', lang, { price: yearPrice }), sending: t('sending', lang), sent: t('payPrompt', lang) }}
+              card={plusCardCheckout(customer, plus)}
+              words={{ label: t('mpesaPhone', lang), payMonth: tf('payPlus', lang, { price }), payYear: tf('payPlusYear', lang, { price: yearPrice }), sending: t('sending', lang), sent: t('payPrompt', lang), cardMonth: t('payCardMonth', lang), cardYear: t('payCardYear', lang), cardNote: t('payCardNote', lang) }}
             />
           ) : null}
           <ul className='grid gap-1.5 text-sm text-ink sm:grid-cols-3'>

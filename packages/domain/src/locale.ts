@@ -124,6 +124,9 @@ export const CUSTOMER_TEXT = {
   mpesaPhone: { en: "M-Pesa phone number", sw: "Nambari ya simu ya M-Pesa" },
   payPlus: { en: "Pay {price} for this month", sw: "Lipa {price} kwa mwezi huu" },
   payPlusYear: { en: "Pay {price} for a year (2 months free)", sw: "Lipa {price} kwa mwaka (miezi 2 bure)" },
+  payCardMonth: { en: "Pay a month by card", sw: "Lipa mwezi kwa kadi" },
+  payCardYear: { en: "Pay a year by card", sw: "Lipa mwaka kwa kadi" },
+  payCardNote: { en: "Card payments are processed by Paddle, our online reseller, which handles any tax due. The card price is shown at checkout.", sw: "Malipo ya kadi yanashughulikiwa na Paddle, muuzaji wetu wa mtandaoni, anayeshughulikia kodi yoyote inayodaiwa. Bei ya kadi inaonyeshwa wakati wa kulipa." },
   priceLine: { en: "{month} a month or {year} a year", sw: "{month} kwa mwezi au {year} kwa mwaka" },
   foundingLocked: { en: "Your founding price is locked while you stay subscribed.", sw: "Bei yako ya mwanzo imefungwa mradi uendelee kujisajili." },
   foundingOffer: {
