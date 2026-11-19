@@ -1,4 +1,4 @@
-import { DEFAULT_COUNTRY, PLUS_PADDLE_PRICES, applyPlusPayment, clockFor, listPriceFor, paddleConfig, parsePlusReference, plusPaymentReference, plusStatus, type Customer, type PlusPlan, type PlusStatus } from '@insuros/domain';
+import { DEFAULT_COUNTRY, PLUS_PADDLE_PRICES, subscriptionRail, type SubscriptionRail, applyPlusPayment, clockFor, listPriceFor, paddleConfig, parsePlusReference, plusPaymentReference, plusStatus, type Customer, type PlusPlan, type PlusStatus } from '@insuros/domain';
 import { getPersistence } from '@insuros/services';
 import { paymentsEnabled } from '@/lib/payments-gate';
 
@@ -57,13 +57,21 @@ export async function recordPlusPayment(txn: { status: string; amount: number; p
  * gate, only for Plus, never premiums. The reference names the customer, the
  * first month and the plan; it travels in Paddle's custom data.
  */
+/**
+ * How a customer pays for Plus (owner rule 19/11/26): Paddle first wherever it
+ * sells (Kenya included; it remits the tax), else M-Pesa in Kenya, else none.
+ */
+export function plusRail(): SubscriptionRail {
+  return subscriptionRail({ country: DEFAULT_COUNTRY, paddleOn: paddleConfig(process.env, PLUS_PADDLE_PRICES) !== null });
+}
+
 export function plusCardCheckout(customer: Customer, status: PlusStatus): {
   environment: 'sandbox' | 'production';
   clientToken: string;
   priceIds: Record<PlusPlan, string>;
   references: Record<PlusPlan, string>;
 } | null {
-  if (!paymentsEnabled()) return null;
+  if (!paymentsEnabled() || plusRail() !== 'PADDLE') return null;
   const cfg = paddleConfig(process.env, PLUS_PADDLE_PRICES);
   if (!cfg) return null;
   return {

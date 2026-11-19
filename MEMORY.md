@@ -3,6 +3,10 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-19 — Paddle first wherever it sells (awaiting owner merge)
+- Owner rule (19/11/26, with the merge of #42): Paddle takes priority in every country it sells to, Kenya included (it deducts and remits the tax); else a merchant of record that remits the tax (researched: none takes M-Pesa or mobile money); else the most popular local method (M-Pesa in Kenya, also while Paddle is off).
+- `packages/domain/src/payment-rails.ts` (Paddle's blocked list, `paddleSellsIn`, `subscriptionRail`) + tests. Customer page shows only card buttons where Paddle is the way; `/api/my/plus` refuses M-Pesa there (server-side).
+
 ## 2026-11-19 — My Cover Plus by card through Paddle (owner decision; off until keys are set)
 - Owner 19/11/26: "we had agreed we use firms like Paddle that do an auto remittance of the tax", chose Paddle + M-Pesa for all five products. Cards: Paddle is the merchant of record (charges, files and remits the tax). M-Pesa: direct sale, no VAT until Telpen Systems Ltd is VAT-registered.
 - **Plus only.** Premiums, commissions and claim payouts never go through Paddle.
