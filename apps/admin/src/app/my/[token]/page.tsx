@@ -19,7 +19,7 @@ import {
 import { getPersistence } from '@insuros/services';
 import { hashCustomerToken, isCustomerToken } from '@/lib/customer-link';
 import { customerLanguage } from '@/lib/customer-language';
-import { plusCardCheckout, plusFor } from '@/lib/customer-plus';
+import { plusCardCheckout, plusFor, plusRails } from '@/lib/customer-plus';
 import { SITE_URL } from '@/lib/site';
 import { LanguageSwitch } from '@/components/language-switch';
 import { ShareCover } from '@/components/share-cover';
@@ -167,6 +167,7 @@ export default async function MyCoverPage({
             <PlusPay
               token={token}
               card={plusCardCheckout(customer, plus)}
+              mpesa={plusRails().includes('MPESA')}
               words={{ label: t('mpesaPhone', lang), payMonth: tf('payPlus', lang, { price }), payYear: tf('payPlusYear', lang, { price: yearPrice }), sending: t('sending', lang), sent: t('payPrompt', lang), cardMonth: t('payCardMonth', lang), cardYear: t('payCardYear', lang), cardNote: t('payCardNote', lang) }}
             />
           ) : null}
