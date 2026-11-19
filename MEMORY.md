@@ -3,7 +3,10 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
-## 2026-11-19 — Paddle first wherever it sells (awaiting owner merge)
+## 2026-11-19 (evening) — M-Pesa leads in Kenya, Paddle second (awaiting owner merge)
+- Owner refined the rule: the most convenient local method takes the lead over Paddle where we can charge it. Kenya: M-Pesa holds 89.1% of 53.4 million mobile money subscriptions (CA Kenya, March 2026). `subscriptionRails` returns every way, best first. Customer page: M-Pesa form first, "pay by card" second; `/api/my/plus` allows M-Pesa wherever it is a way. Paddle account verified 09/11/26.
+
+## 2026-11-19 — Paddle first wherever it sells (superseded the same evening)
 - Owner rule (19/11/26, with the merge of #42): Paddle takes priority in every country it sells to, Kenya included (it deducts and remits the tax); else a merchant of record that remits the tax (researched: none takes M-Pesa or mobile money); else the most popular local method (M-Pesa in Kenya, also while Paddle is off).
 - `packages/domain/src/payment-rails.ts` (Paddle's blocked list, `paddleSellsIn`, `subscriptionRail`) + tests. Customer page shows only card buttons where Paddle is the way; `/api/my/plus` refuses M-Pesa there (server-side).
 

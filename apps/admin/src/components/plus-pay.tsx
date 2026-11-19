@@ -49,11 +49,14 @@ function loadPaddle(card: CardCheckout): Promise<PaddleJs> {
 export function PlusPay({
   token,
   words,
-  card = null
+  card = null,
+  mpesa = true
 }: {
   token: string;
   words: { label: string; payMonth: string; payYear: string; sending: string; sent: string; cardMonth?: string; cardYear?: string; cardNote?: string };
   card?: CardCheckout | null;
+  /** M-Pesa is a way to pay here (it leads where it is). */
+  mpesa?: boolean;
 }) {
   const [phone, setPhone] = useState('');
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
@@ -86,18 +89,23 @@ export function PlusPay({
     }
   };
   if (state === 'sent') return <p role='status' className='rounded-lg bg-sealsoft px-3 py-2 text-sm text-ink'>{words.sent}</p>;
-  // Owner rule 19/11/26: where Paddle is the way to pay (it sells here and
-  // remits the tax), only the card buttons show; M-Pesa is for elsewhere.
-  if (card) {
+  const cardButtons = card ? (
+    <div className='flex w-full flex-wrap gap-2'>
+      <button type='button' onClick={() => void payByCard('MONTH')} className={mpesa ? 'rounded-lg border border-ink/15 bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:border-seal' : 'rounded-lg bg-seal px-4 py-2.5 text-sm font-semibold text-white hover:bg-sealdark'}>
+        {words.cardMonth ?? 'Pay a month by card'}
+      </button>
+      <button type='button' onClick={() => void payByCard('YEAR')} className={mpesa ? 'rounded-lg border border-ink/15 bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:border-seal' : 'rounded-lg bg-[#c9a227] px-4 py-2.5 text-sm font-semibold text-[#101c31] hover:bg-[#d8b13a]'}>
+        {words.cardYear ?? 'Pay a year by card'}
+      </button>
+      <p className='w-full text-xs text-dim'>{words.cardNote ?? 'Card payments are processed by Paddle, our online reseller, which handles any tax due. The card price is shown at checkout.'}</p>
+    </div>
+  ) : null;
+  // Owner rules 19/11/26: M-Pesa leads where it is the way most people pay
+  // (Kenya), with "pay by card" second; card only where M-Pesa is not a way.
+  if (!mpesa) {
     return (
-      <div className='flex w-full flex-wrap gap-2'>
-        <button type='button' onClick={() => void payByCard('MONTH')} className='rounded-lg bg-seal px-4 py-2.5 text-sm font-semibold text-white hover:bg-sealdark'>
-          {words.cardMonth ?? 'Pay a month by card'}
-        </button>
-        <button type='button' onClick={() => void payByCard('YEAR')} className='rounded-lg bg-[#c9a227] px-4 py-2.5 text-sm font-semibold text-[#101c31] hover:bg-[#d8b13a]'>
-          {words.cardYear ?? 'Pay a year by card'}
-        </button>
-        <p className='w-full text-xs text-dim'>{words.cardNote ?? 'Card payments are processed by Paddle, our online reseller, which handles any tax due. The card price is shown at checkout.'}</p>
+      <div className='grid w-full gap-2'>
+        {cardButtons}
         {error ? <p role='alert' className='w-full text-sm text-red-800'>{error}</p> : null}
       </div>
     );
@@ -121,6 +129,7 @@ export function PlusPay({
       <button type='submit' value='YEAR' disabled={state === 'sending'} className='rounded-lg bg-[#c9a227] px-4 py-2.5 text-sm font-semibold text-[#101c31] hover:bg-[#d8b13a] disabled:opacity-60'>
         {state === 'sending' ? words.sending : words.payYear}
       </button>
+      {cardButtons}
       {error ? <p role='alert' className='w-full text-sm text-red-800'>{error}</p> : null}
     </form>
   );

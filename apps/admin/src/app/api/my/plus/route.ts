@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { plusPaymentReference, toE164, type PlusPlan } from '@insuros/domain';
 import { getPersistence } from '@insuros/services';
 import { hashCustomerToken, isCustomerToken } from '@/lib/customer-link';
-import { plusFor, plusRail } from '@/lib/customer-plus';
+import { plusFor, plusRails } from '@/lib/customer-plus';
 import { requestPremiumCheckout } from '@/lib/payments';
 import { paymentsEnabled } from '@/lib/payments-gate';
 
@@ -24,8 +24,8 @@ function allowed(key: string, now = Date.now()): boolean {
  */
 export async function POST(req: Request) {
   if (!paymentsEnabled()) return NextResponse.json({ error: 'payments_disabled' }, { status: 403 });
-  // Owner rule 19/11/26: where Paddle sells (Kenya included), Plus is paid by card through Paddle.
-  if (plusRail() === 'PADDLE') return NextResponse.json({ error: 'Plus is paid by card here. Use the card buttons.' }, { status: 409 });
+  // Owner rules 19/11/26: M-Pesa wherever it is a way to pay (it leads in Kenya); elsewhere Plus is paid by card.
+  if (!plusRails().includes('MPESA')) return NextResponse.json({ error: 'Plus is paid by card here. Use the card buttons.' }, { status: 409 });
   const body = (await req.json().catch(() => null)) as { token?: unknown; phone?: unknown; plan?: unknown } | null;
   if (!body || !isCustomerToken(body.token)) return NextResponse.json({ error: 'not_found' }, { status: 404 });
   const hash = hashCustomerToken(body.token);
