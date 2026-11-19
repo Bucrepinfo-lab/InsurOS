@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-19 (late) — Local way first in every country; card later through Paddle (awaiting owner merge)
+- Owner standing order 19/11/26: always lead with the way most people in the country pay, in every country (developed ones too); the card comes later, through Paddle, which takes the payment and remits the VAT.
+- `packages/domain/src/payment-rails.ts` v4, same module as Stawi/SellFindConnect/HarvestHub: `LOCAL_METHOD` (KE M-Pesa; 15 mobile money countries via pawaPay; NG bank transfer/USSD and ZA EFT via Paystack), `subscriptionRails({country, switches, localPriceApproved})` best first. The v3 call (`paddleOn`) still works and gives the same answers; `MPESA_COUNTRIES` kept.
+- My Cover Plus is sold in Kenya only (`DEFAULT_COUNTRY`, KES prices), so the live order is unchanged: M-Pesa first, Paddle card second. Mobile money / bank transfer for Plus wait until Plus is priced in another country.
+
 ## 2026-11-19 (evening) — M-Pesa leads in Kenya, Paddle second (awaiting owner merge)
 - Owner refined the rule: the most convenient local method takes the lead over Paddle where we can charge it. Kenya: M-Pesa holds 89.1% of 53.4 million mobile money subscriptions (CA Kenya, March 2026). `subscriptionRails` returns every way, best first. Customer page: M-Pesa form first, "pay by card" second; `/api/my/plus` allows M-Pesa wherever it is a way. Paddle account verified 09/11/26.
 
