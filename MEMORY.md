@@ -3,6 +3,14 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-20 (evening) — Sign-in without SMS: phone + PIN, joining codes (owner approved; awaiting merge)
+- Owner: no paid SMS codes (Africa's Talking is not global) and no codes or alerts from Africa's Talking; the app's own messaging instead. Supersedes the 07/11/26 SMS-code rule.
+- Only a staff phone (non-revoked appointment), a platform-owner phone or the store reviewer can sign in. Step 2 is the person's own 4-digit PIN on any device (`signInWithPin`). First time, forgotten or locked PIN: a 6-digit joining code given under Governance → Jurisdiction Access ("Give a joining code"; Identity:Create, only inside the giver's regions, owner phones only by an owner, never oneself) → `redeemJoiningCode` → choose a PIN.
+- Codes: one phone, once, 48 h, burned after 5 wrong tries; HMAC with `AUTH_SECRET` in `auth_join_codes` (migration v3, platform-level like v2). Existing accounts keep their id (`userIdForPhone`). `PLATFORM_OWNER_BOOTSTRAP_CODE` (optional Fly secret) lets an owner phone in if every owner is locked out.
+- Removed `/api/auth/send-sms`, `lib/africastalking/sms.ts`, `lib/supabase/otp.ts`, `toSmsRecipient` and its test, the SMS rate-limit kinds; `no-sms.test.ts` guards it. Play reviewer: `PLAY_REVIEW_PHONE` + `PLAY_REVIEW_PIN`.
+- Africa's Talking remains only for M-Pesa checkout (behind `PAYMENTS_ENABLED`, off); moving it to Daraja STK is a separate change.
+- Owner/Chrome after merge: Fly secret `PLAY_REVIEW_PIN`; unset `PLAY_REVIEW_CODE`, `SUPABASE_SEND_SMS_HOOK_SECRET`, `AT_SENDER_ID`; Supabase Send SMS hook off; Play App access text.
+
 ## 2026-11-20 — My Cover Plus prices approved in six more African countries
 - Second round approved the same day ("approve the second-round prices"), a month: Zambia ZMW 8, Malawi MWK 650, Mozambique MZN 25, Cameroon, Congo, Gabon XAF 220, Côte d'Ivoire, Senegal, Benin, Burkina Faso XOF 220, DR Congo CDF 900, Lesotho LSL 6, Sierra Leone SLE 9, Zimbabwe USD 0.49, Ethiopia ETB 60.
 - Owner: "approve all prices" (Africa Local Prices table). `PLUS_PRICES` approved, a month (a year = 10 months): Uganda UGX 1,500, Tanzania TZS 1,000, Rwanda RWF 500, Nigeria NGN 600, Ghana GHS 5, South Africa ZAR 7, beside Kenya KES 49. India, UK and US stay indicative.

@@ -33,8 +33,8 @@ export function SetPinForm({ next, allowSkip }: { next: string; allowSkip: boole
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Choose a 4-digit PIN</h1>
         <p className="mt-1 text-sm text-slate-500">
-          You&apos;ll use it to sign in on this device. A new device, a forgotten PIN or 5 wrong tries
-          needs a new SMS code.
+          You&apos;ll sign in on any device with your phone number and this PIN. A forgotten PIN or 5
+          wrong tries needs a new joining code from your administrator.
         </p>
       </div>
       <input type="password" inputMode="numeric" autoComplete="new-password" aria-label="New PIN" placeholder="••••" maxLength={4}

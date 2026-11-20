@@ -23,7 +23,7 @@ import { getDeviceAuth } from "./device-auth";
 export type AuthState =
   | { status: "misconfigured" }
   | { status: "signed-out" }
-  /** Verified by SMS, but must choose a 4-digit PIN before using the app. */
+  /** Signed in with a joining code, but must choose a 4-digit PIN before using the app. */
   | { status: "needs-pin" }
   | { status: "pending"; principal: SessionPrincipal }
   | { status: "active"; principal: SessionPrincipal };

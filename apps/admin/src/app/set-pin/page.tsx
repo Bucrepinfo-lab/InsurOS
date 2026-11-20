@@ -6,7 +6,7 @@ import { isPlayReviewPhone } from "@/lib/play-review";
 export const metadata = { title: "Choose your PIN" };
 export const dynamic = "force-dynamic";
 
-/** After a verified SMS code: choose the 4-digit PIN for this trusted device. */
+/** After a joining code: choose the 4-digit PIN used with the phone number on any device. */
 export default async function SetPinPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const identity = await getSessionIdentity();
   if (!identity) redirect("/sign-in");

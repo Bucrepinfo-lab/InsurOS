@@ -1,11 +1,14 @@
-import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
 import bcrypt from "bcryptjs";
 import {
   APP_SESSION_TTL_MS,
   AUTH_RATE_LIMITS,
+  JOIN_CODE_MAX_TRIES,
+  JOIN_CODE_TTL_MS,
   applyPinAttempt,
-  isCodeFresh,
   isDeviceActive,
+  isJoinCode,
+  isJoinCodeOpen,
   isValidPin,
   type PinCheck,
   type RateLimitRule,
@@ -14,15 +17,19 @@ import {
 import type { AuthStore } from "./store";
 
 /**
- * Phone + SMS code + PIN on trusted devices (owner rule 07/11/26).
+ * Phone + PIN + joining codes (owner 20/11/26: no SMS).
  *
- * - Identity comes ONLY from a signed app-session token, issued after a
- *   verified SMS code (first sign-in / new device / forgotten or locked PIN) or
- *   a correct PIN on a trusted device. A typed phone number alone gets nothing.
+ * - Identity comes ONLY from a signed app-session token, issued after the
+ *   account's own PIN (phone + PIN on any device) or a joining code given by
+ *   someone who manages staff access (first sign-in, forgotten or locked PIN).
+ *   A typed phone number alone gets nothing.
  * - Trusted device = random secret in an httpOnly cookie; only its SHA-256 is
- *   stored; bound to the user; revocable (by the user or an owner).
+ *   stored; bound to the user; revocable (by the user or an owner). A session
+ *   lives only with the device it was issued on.
  * - PIN = 4 digits, peppered with the server secret then bcrypt-hashed; 5 wrong
- *   tries lock it until a new SMS code is verified.
+ *   tries lock it until a new joining code is redeemed.
+ * - Joining code = 6 digits, one phone, once, 48 hours, 5 tries; only an HMAC
+ *   with the server secret is stored.
  */
 export interface AppSession {
   /** Auth user id (Supabase id, or "play-review" for the store reviewer). */
@@ -31,7 +38,7 @@ export interface AppSession {
   /** Trusted device the session was issued on. */
   did: string;
   /** How it was unlocked. */
-  via: "sms" | "pin";
+  via: "code" | "pin";
   iat: number;
   exp: number;
 }
@@ -77,30 +84,63 @@ export class DeviceAuthService {
     return true;
   }
 
-  /* ── SMS code freshness (≤ 5 minutes) ────────────────────────── */
+  /* ── joining codes (no SMS) ──────────────────────────────────── */
 
-  async markCodeSent(phone: string): Promise<void> {
+  private codeHash(phone: string, code: string): string {
+    return createHmac("sha256", this.options.secret).update(`join|${phone}|${code}`).digest("hex");
+  }
+
+  /** A new 6-digit code for this phone; earlier unused codes stop working. */
+  async issueJoinCode(phone: string, issuedBy: string): Promise<{ code: string; expiresAt: string }> {
     const now = this.now();
-    await this.store.recordEvent("sms_sent", phone, now.toISOString());
+    let code = "";
+    do {
+      code = String(randomInt(0, 1_000_000)).padStart(6, "0");
+    } while (code === "000000");
+    await this.store.closeJoinCodes(phone, now.toISOString());
+    const expiresAt = new Date(now.getTime() + JOIN_CODE_TTL_MS).toISOString();
+    await this.store.createJoinCode({
+      id: `jc_${randomBytes(12).toString("hex")}`,
+      phone,
+      codeHash: this.codeHash(phone, code),
+      issuedBy,
+      createdAt: now.toISOString(),
+      expiresAt,
+      usedAt: null,
+      tries: 0
+    });
     // Retention: sign-in security events (phone/IP + time) are kept 7 days.
     await this.store.pruneEvents(new Date(now.getTime() - AUTH_EVENT_RETENTION_MS).toISOString());
+    return { code, expiresAt };
   }
 
-  async isCodeFresh(phone: string): Promise<boolean> {
-    return isCodeFresh(await this.store.lastEventAt("sms_sent", phone), this.now());
+  /** Check and use a joining code for this phone. */
+  async redeemJoinCode(phone: string, typed: string): Promise<{ ok: true } | { ok: false; reason: "none" | "wrong" | "burned" }> {
+    const now = this.now();
+    const open = (await this.store.listOpenJoinCodes(phone)).filter((c) => isJoinCodeOpen(c, now));
+    const newest = open[0];
+    if (!newest) return { ok: false, reason: "none" };
+    const code = typed.replace(/\s/g, "");
+    if (isJoinCode(code)) {
+      const given = Buffer.from(this.codeHash(phone, code));
+      for (const record of open) {
+        const stored = Buffer.from(record.codeHash);
+        if (given.length === stored.length && timingSafeEqual(given, stored)) {
+          await this.store.useJoinCode(record.id, now.toISOString());
+          return { ok: true };
+        }
+      }
+    }
+    await this.store.addJoinCodeTry(newest.id);
+    return { ok: false, reason: newest.tries + 1 >= JOIN_CODE_MAX_TRIES ? "burned" : "wrong" };
   }
 
-  /** Make the last code unusable on our side (single use). */
-  async markCodeUsed(phone: string): Promise<void> {
-    // A "used" marker newer than the send means the freshness window is closed.
-    await this.store.recordEvent("sms_used", phone, this.now().toISOString());
-  }
-
-  async isCodeUnused(phone: string): Promise<boolean> {
-    const sent = await this.store.lastEventAt("sms_sent", phone);
-    const used = await this.store.lastEventAt("sms_used", phone);
-    if (!sent) return false;
-    return !used || new Date(used).getTime() < new Date(sent).getTime();
+  /**
+   * The user id that signs in with this phone: the one its PIN record already
+   * uses (accounts from before 20/11/26 keep their id), else the one given.
+   */
+  async userIdForPhone(phone: string, fallback: string): Promise<string> {
+    return (await this.store.getPinByPhone(phone))?.userId ?? fallback;
   }
 
   /* ── trusted devices ─────────────────────────────────────────── */
@@ -199,16 +239,19 @@ export class DeviceAuthService {
   }
 
   /**
-   * After a verified SMS code: a locked PIN, or a user who asked to reset it,
-   * loses the old PIN and must choose a new one.
+   * After a redeemed joining code: the old PIN (forgotten or locked) is gone
+   * and a new one must be chosen; the phone stays on the record.
    */
-  async afterSmsVerified(userId: string, resetPin: boolean): Promise<{ needsPin: boolean }> {
-    const record = await this.store.getPin(userId);
-    if (record && (record.lockedAt || resetPin)) {
-      await this.store.deletePin(userId);
-      return { needsPin: true };
-    }
-    return { needsPin: !record?.pinHash };
+  async afterCodeRedeemed(userId: string, phone: string): Promise<{ needsPin: true }> {
+    await this.store.putPin({
+      userId,
+      phone,
+      pinHash: null,
+      failedAttempts: 0,
+      lockedAt: null,
+      updatedAt: this.now().toISOString()
+    });
+    return { needsPin: true };
   }
 
   async forgetUser(userId: string): Promise<void> {

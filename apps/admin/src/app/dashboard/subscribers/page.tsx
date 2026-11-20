@@ -169,7 +169,7 @@ export default async function SubscriberExperiencePage() {
         <KPICard
           title='Renewal Nudges'
           value={String(alerts.length)}
-          change='Day-35 push · day-39 SMS'
+          change='Day-35 and day-39 reminders in the app'
         />
       </div>
 

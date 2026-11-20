@@ -139,3 +139,27 @@ CREATE INDEX IF NOT EXISTS auth_trusted_devices_user ON auth_trusted_devices (us
 CREATE INDEX IF NOT EXISTS auth_trusted_devices_phone ON auth_trusted_devices (phone);
 `
 });
+
+/**
+ * v3 (20/11/26): joining codes replace SMS codes (owner: no SMS). Platform-level
+ * identity table like v2 (no tenant_id by design). Only an HMAC of each code is
+ * stored. Lookup of a PIN by phone for phone + PIN sign-in on any device.
+ */
+MIGRATIONS.push({
+  version: 3,
+  name: "auth_join_codes",
+  sql: `
+CREATE TABLE IF NOT EXISTS auth_join_codes (
+  id          text        PRIMARY KEY,
+  phone       text        NOT NULL,
+  code_hash   text        NOT NULL,
+  issued_by   text        NOT NULL,
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  expires_at  timestamptz NOT NULL,
+  used_at     timestamptz,
+  tries       integer     NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS auth_join_codes_phone ON auth_join_codes (phone, used_at);
+CREATE INDEX IF NOT EXISTS auth_user_pins_phone ON auth_user_pins (phone);
+`
+});

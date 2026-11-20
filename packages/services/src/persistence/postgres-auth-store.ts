@@ -1,4 +1,4 @@
-import type { PinRecord, TrustedDevice } from "@insuros/domain";
+import type { JoinCodeRecord, PinRecord, TrustedDevice } from "@insuros/domain";
 import type { AuthStore } from "../auth/store";
 import type { SqlClient } from "./postgres-adapter";
 
@@ -29,7 +29,51 @@ function toDevice(row: DeviceRow): TrustedDevice {
   };
 }
 
-/** PostgreSQL sign-in store (tables from migration v2). */
+interface PinRow {
+  user_id: string;
+  phone: string;
+  pin_hash: string | null;
+  failed_attempts: number;
+  locked_at: unknown;
+  updated_at: unknown;
+}
+
+function toPin(row: PinRow): PinRecord {
+  return {
+    userId: row.user_id,
+    phone: row.phone,
+    pinHash: row.pin_hash,
+    failedAttempts: Number(row.failed_attempts),
+    lockedAt: isoOrNull(row.locked_at),
+    updatedAt: iso(row.updated_at)
+  };
+}
+
+interface JoinCodeRow {
+  id: string;
+  phone: string;
+  code_hash: string;
+  issued_by: string;
+  created_at: unknown;
+  expires_at: unknown;
+  used_at: unknown;
+  tries: number;
+}
+
+function toJoinCode(row: JoinCodeRow): JoinCodeRecord {
+  return {
+    id: row.id,
+    phone: row.phone,
+    codeHash: row.code_hash,
+    issuedBy: row.issued_by,
+    createdAt: iso(row.created_at),
+    expiresAt: iso(row.expires_at),
+    usedAt: isoOrNull(row.used_at),
+    tries: Number(row.tries)
+  };
+}
+
+/** PostgreSQL sign-in store (tables from migrations v2 and v3). */
 export class PostgresAuthStore implements AuthStore {
   constructor(
     private readonly sql: SqlClient,
@@ -67,20 +111,13 @@ export class PostgresAuthStore implements AuthStore {
 
   async getPin(userId: string) {
     const sql = await this.q();
-    const rows = await sql<{
-      user_id: string; phone: string; pin_hash: string | null; failed_attempts: number; locked_at: unknown; updated_at: unknown;
-    }>`select * from auth_user_pins where user_id = ${userId}`;
-    const row = rows[0];
-    if (!row) return undefined;
-    const record: PinRecord = {
-      userId: row.user_id,
-      phone: row.phone,
-      pinHash: row.pin_hash,
-      failedAttempts: Number(row.failed_attempts),
-      lockedAt: isoOrNull(row.locked_at),
-      updatedAt: iso(row.updated_at)
-    };
-    return record;
+    const rows = await sql<PinRow>`select * from auth_user_pins where user_id = ${userId}`;
+    return rows[0] ? toPin(rows[0]) : undefined;
+  }
+  async getPinByPhone(phone: string) {
+    const sql = await this.q();
+    const rows = await sql<PinRow>`select * from auth_user_pins where phone = ${phone} order by updated_at desc limit 1`;
+    return rows[0] ? toPin(rows[0]) : undefined;
   }
   async putPin(record: PinRecord) {
     const sql = await this.q();
@@ -125,5 +162,31 @@ export class PostgresAuthStore implements AuthStore {
     const sql = await this.q();
     const rows = await sql<DeviceRow>`select * from auth_trusted_devices where phone = ${phone} order by created_at`;
     return rows.map(toDevice);
+  }
+
+  async createJoinCode(record: JoinCodeRecord) {
+    const sql = await this.q();
+    await sql`
+      insert into auth_join_codes (id, phone, code_hash, issued_by, created_at, expires_at, used_at, tries)
+      values (${record.id}, ${record.phone}, ${record.codeHash}, ${record.issuedBy}, ${record.createdAt},
+              ${record.expiresAt}, ${record.usedAt}, ${record.tries})`;
+  }
+  async listOpenJoinCodes(phone: string) {
+    const sql = await this.q();
+    const rows = await sql<JoinCodeRow>`
+      select * from auth_join_codes where phone = ${phone} and used_at is null order by created_at desc`;
+    return rows.map(toJoinCode);
+  }
+  async addJoinCodeTry(id: string) {
+    const sql = await this.q();
+    await sql`update auth_join_codes set tries = tries + 1 where id = ${id}`;
+  }
+  async useJoinCode(id: string, at: string) {
+    const sql = await this.q();
+    await sql`update auth_join_codes set used_at = ${at} where id = ${id} and used_at is null`;
+  }
+  async closeJoinCodes(phone: string, at: string) {
+    const sql = await this.q();
+    await sql`update auth_join_codes set used_at = ${at} where phone = ${phone} and used_at is null`;
   }
 }

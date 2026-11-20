@@ -1,11 +1,15 @@
 /**
- * Sign-in policy (owner standing rule, 07/11/26) — PURE.
+ * Sign-in policy — PURE. Owner 20/11/26: no SMS.
  *
- * Phone number is the identity. First sign-in on a device: 6-digit SMS code.
- * Later sign-ins on that trusted device: 4-digit PIN. A new device, a forgotten
- * PIN, or 5 wrong PINs (lockout) all require a fresh SMS code. No email.
+ * Phone number is the identity; only a phone on a staff appointment (or the
+ * platform-owner allowlist, or the store reviewer) can sign in. Step 2 is the
+ * person's own 4-digit PIN, on any device. The first time, a forgotten PIN or
+ * 5 wrong PINs (lockout) need a one-time joining code from someone who manages
+ * staff access in that region. No email, no SMS.
  */
-export const SMS_CODE_TTL_MS = 5 * 60_000;
+/** Joining codes live 48 hours, work once, and are burned after 5 wrong tries. */
+export const JOIN_CODE_TTL_MS = 48 * 60 * 60_000;
+export const JOIN_CODE_MAX_TRIES = 5;
 export const PIN_MAX_ATTEMPTS = 5;
 /** Unlocked app session (after SMS or PIN). */
 export const APP_SESSION_TTL_MS = 12 * 60 * 60_000;
@@ -13,34 +17,22 @@ export const APP_SESSION_TTL_MS = 12 * 60 * 60_000;
 export const TRUSTED_DEVICE_TTL_MS = 180 * 24 * 60 * 60_000;
 
 export interface RateLimitRule {
-  kind: "sms_send_phone" | "sms_send_ip" | "sms_verify_phone" | "sms_verify_ip" | "pin_ip" | "sms_hook_phone";
+  kind: "code_verify_phone" | "code_verify_ip" | "pin_phone" | "pin_ip";
   limit: number;
   windowMs: number;
 }
 
 /** Server-side rate limits (per phone number and per IP). */
 export const AUTH_RATE_LIMITS: Record<RateLimitRule["kind"], RateLimitRule[]> = {
-  sms_send_phone: [
-    { kind: "sms_send_phone", limit: 3, windowMs: 10 * 60_000 },
-    { kind: "sms_send_phone", limit: 10, windowMs: 24 * 60 * 60_000 }
-  ],
-  sms_send_ip: [
-    { kind: "sms_send_ip", limit: 10, windowMs: 10 * 60_000 },
-    { kind: "sms_send_ip", limit: 50, windowMs: 24 * 60 * 60_000 }
-  ],
-  sms_verify_phone: [{ kind: "sms_verify_phone", limit: 5, windowMs: 10 * 60_000 }],
-  sms_verify_ip: [{ kind: "sms_verify_ip", limit: 20, windowMs: 10 * 60_000 }],
-  pin_ip: [{ kind: "pin_ip", limit: 20, windowMs: 10 * 60_000 }],
-  // The Supabase Send-SMS hook: last line of defence for ANY path that asks
-  // Supabase for a code (including direct API calls with the public key).
-  sms_hook_phone: [
-    { kind: "sms_hook_phone", limit: 3, windowMs: 10 * 60_000 },
-    { kind: "sms_hook_phone", limit: 10, windowMs: 24 * 60 * 60_000 }
-  ]
+  code_verify_phone: [{ kind: "code_verify_phone", limit: 5, windowMs: 10 * 60_000 }],
+  code_verify_ip: [{ kind: "code_verify_ip", limit: 20, windowMs: 10 * 60_000 }],
+  pin_phone: [{ kind: "pin_phone", limit: 10, windowMs: 10 * 60_000 }],
+  pin_ip: [{ kind: "pin_ip", limit: 20, windowMs: 10 * 60_000 }]
 };
 
-export function isSmsCode(code: string): boolean {
-  return /^\d{6}$/.test(code.trim());
+/** Six digits (joining codes). */
+export function isJoinCode(code: string): boolean {
+  return /^\d{6}$/.test(code.replace(/\s/g, ""));
 }
 
 /** 4 digits; not all the same digit (e.g. 0000, 1111). */
@@ -48,11 +40,29 @@ export function isValidPin(pin: string): boolean {
   return /^\d{4}$/.test(pin) && !/^(\d)\1{3}$/.test(pin);
 }
 
-/** A code sent at `sentAt` may be used until SMS_CODE_TTL_MS later. */
-export function isCodeFresh(sentAt: string | undefined, now: Date): boolean {
-  if (!sentAt) return false;
-  const age = now.getTime() - new Date(sentAt).getTime();
-  return age >= 0 && age <= SMS_CODE_TTL_MS;
+export interface JoinCodeRecord {
+  id: string;
+  phone: string;
+  /** HMAC of the code with the server secret (the code itself is never stored). */
+  codeHash: string;
+  issuedBy: string;
+  createdAt: string;
+  expiresAt: string;
+  usedAt: string | null;
+  tries: number;
+}
+
+/** Can this joining code still be used at `now`? */
+export function isJoinCodeOpen(record: JoinCodeRecord | undefined, now: Date): record is JoinCodeRecord {
+  if (!record || record.usedAt) return false;
+  if (record.tries >= JOIN_CODE_MAX_TRIES) return false;
+  return new Date(record.expiresAt).getTime() > now.getTime();
+}
+
+/** The message an admin hands over (in person or WhatsApp). No link to tap. */
+export function joinCodeMessage(name: string, code: string, site: string): string {
+  const first = name.trim().split(/\s+/)[0] || "there";
+  return `Hello ${first}. Your InsurOS joining code is ${code}. Open ${site}, enter your phone number and this code, then choose your own 4-digit PIN. It works once within 48 hours. Never share it with anyone else.`;
 }
 
 export interface PinRecord {

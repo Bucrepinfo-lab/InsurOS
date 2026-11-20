@@ -41,7 +41,7 @@ export default async function DeleteAccountInfoPage({
           <Link href="/sign-in?next=/account/delete" className="underline">
             Sign in
           </Link>{" "}
-          with your phone number and the SMS code (or your PIN on a trusted device).
+          with your phone number and your PIN.
         </li>
         <li>
           Open <strong>Delete account</strong> (top bar, or go to{" "}
@@ -62,7 +62,7 @@ export default async function DeleteAccountInfoPage({
           email telpeninfo@gmail.com
         </a>{" "}
         with the subject “InsurOS account deletion request” and the phone number you sign in
-        with. We verify the request (we may send an SMS code to that number) and complete the
+        with. We verify the request (we may call that number) and complete the
         deletion within 30 days, usually much sooner, then confirm by email.
       </p>
 
