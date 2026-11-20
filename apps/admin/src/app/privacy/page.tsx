@@ -14,7 +14,7 @@ function H({ children }: { children: ReactNode }) {
 /** Public privacy policy (Google Play "Privacy policy URL"). No sign-in needed. */
 export default function PrivacyPage() {
   return (
-    <PublicPage title="InsurOS privacy policy" updated="07/11/26">
+    <PublicPage title="InsurOS privacy policy" updated="20/11/26">
       <p>
         InsurOS is an insurance operations app for insurance companies, agencies and their staff
         and agents. It is not a public insurance shop: you cannot buy insurance or make payments
@@ -42,8 +42,8 @@ export default function PrivacyPage() {
           name, your role and the region you are assigned to, and who granted that access and when.
         </li>
         <li>
-          <strong>Sign-in security data:</strong> a one-time 6-digit SMS code when you sign in on a
-          new device (valid 5 minutes, used once; we do not store the code); your 4-digit PIN, stored
+          <strong>Sign-in security data:</strong> a one-time 6-digit joining code your administrator
+          gives you the first time (valid 48 hours, used once; we keep only a scrambled copy); your 4-digit PIN, stored
           only as a salted, peppered hash; a random trusted-device identifier kept in a secure cookie
           on your device, with a short device label (e.g. “Android app”) and when it was last used;
           a session cookie; and, to stop abuse, the phone number or IP address and time of sign-in
@@ -83,7 +83,6 @@ export default function PrivacyPage() {
       <ul className="list-disc space-y-1 pl-6">
         <li><strong>Your organisation</strong> — administrators of the insurer/agency you work for.</li>
         <li><strong>Supabase</strong> — sign-in and account service.</li>
-        <li><strong>Africa’s Talking</strong> — to send the SMS sign-in code to your phone.</li>
         <li><strong>Fly.io</strong> — application hosting.</li>
         <li>
           <strong>Anthropic</strong> — only if an organisation switches on optional wording help
@@ -131,8 +130,8 @@ export default function PrivacyPage() {
       <p>
         Data is encrypted in transit (HTTPS). Access is role-based and enforced on our servers:
         each person sees only their own department’s work; administrators have the overall view.
-        Sign-in uses a one-time SMS code on a new device and a 4-digit PIN on a trusted device; 5
-        wrong PINs lock the PIN until a new SMS code is verified, and administrators can revoke a
+        Sign-in uses your phone number and a 4-digit PIN (no SMS); 5 wrong PINs lock the PIN until
+        your administrator gives you a new joining code, and administrators can revoke a
         staff member’s devices at any time.
       </p>
 

@@ -1,6 +1,8 @@
 "use server";
 
-import { isSmsCode, maskPhone, toE164 } from "@insuros/domain";
+import { createHash, timingSafeEqual } from "node:crypto";
+import { isJoinCode, maskPhone, toE164 } from "@insuros/domain";
+import { PrincipalService } from "@insuros/services";
 import { getAuthMode } from "./config";
 import {
   clearSessionCookie,
@@ -13,86 +15,43 @@ import {
 } from "./device-auth";
 import { getSessionIdentity } from "./session-user";
 import { PLAY_REVIEW_USER_ID, isPlayReviewPhone, matchesPlayReview } from "../play-review";
-import { createSupabaseOtpClient } from "../supabase/otp";
+import { platformOwnerPhones } from "./session";
 
 /**
- * Sign-in server actions (owner rule 07/11/26):
- * phone → 6-digit SMS code (first sign-in on a device, new device, forgotten or
- * locked PIN) → trusted device + 4-digit PIN for later sign-ins.
- * Everything is decided on the server; responses never reveal whether a phone
- * number has an account.
+ * Sign-in server actions — owner 20/11/26: no SMS.
+ * Step 1 the phone number (only a staff phone, a platform owner or the store
+ * reviewer), step 2 the person's own 4-digit PIN — on any device. The first
+ * time, a forgotten PIN or 5 wrong PINs: a one-time joining code from someone
+ * who manages staff access, then a new PIN. Everything is decided on the
+ * server; responses never reveal whether a phone number has an account.
  */
 export type SignInResult =
   | { ok: true; next: string }
   | { ok: false; error: string; lockedOut?: boolean };
 
-const GENERIC_SEND_ERROR = "We could not send a code right now. Wait a few minutes and try again.";
 const RATE_LIMITED = "Too many attempts. Wait a few minutes and try again.";
+const NO_MATCH = "That phone number and PIN do not match.";
+const ASK_ADMIN = "Ask the person who manages your access for a joining code.";
+
+const principals = new PrincipalService();
 
 function safeNext(next: string | undefined): string {
   return next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
 }
 
-export async function requestSmsCode(phoneInput: string): Promise<{ ok: boolean; phone?: string; error?: string }> {
-  if (getAuthMode() !== "supabase") return { ok: false, error: "Sign-in is not available on this server." };
-  const phone = toE164(phoneInput);
-  if (!phone) return { ok: false, error: "Enter a valid phone number, e.g. 0712 345 678." };
-
-  const auth = getDeviceAuth();
-  const ip = await clientIp();
-  if (!(await auth.consume("sms_send_ip", ip)) || !(await auth.consume("sms_send_phone", phone))) {
-    return { ok: false, error: RATE_LIMITED };
-  }
-
-  // Store reviewer: no SMS — the configured code is used instead.
-  if (!isPlayReviewPhone(phone)) {
-    const { error } = await createSupabaseOtpClient().auth.signInWithOtp({
-      phone,
-      options: { shouldCreateUser: true }
-    });
-    if (error) return { ok: false, error: GENERIC_SEND_ERROR };
-  }
-
-  await auth.markCodeSent(phone);
-  return { ok: true, phone };
+/** The account id for a phone that may sign in, or null. Accounts from before 20/11/26 keep their id. */
+async function accountFor(phone: string): Promise<string | null> {
+  if (isPlayReviewPhone(phone)) return PLAY_REVIEW_USER_ID;
+  const owner = platformOwnerPhones().includes(phone);
+  const appointment = owner ? null : await principals.staffAppointmentForPhone(phone);
+  if (!owner && !appointment) return null;
+  return getDeviceAuth().userIdForPhone(phone, appointment?.userId ?? `owner-${phone.replace(/\D/g, "")}`);
 }
 
-export async function verifySmsCode(
-  phoneInput: string,
-  codeInput: string,
-  options: { resetPin?: boolean; next?: string } = {}
-): Promise<SignInResult> {
-  if (getAuthMode() !== "supabase") return { ok: false, error: "Sign-in is not available on this server." };
-  const phone = toE164(phoneInput);
-  const code = codeInput.trim();
-  if (!phone || !isSmsCode(code)) return { ok: false, error: "Enter the 6-digit code." };
-
+/** Open the session on this browser's device (reused when it is the same person's). */
+async function openSession(userId: string, phone: string, via: "pin" | "code"): Promise<void> {
   const auth = getDeviceAuth();
-  const ip = await clientIp();
-  if (!(await auth.consume("sms_verify_ip", ip)) || !(await auth.consume("sms_verify_phone", phone))) {
-    return { ok: false, error: RATE_LIMITED };
-  }
-  // Codes live at most 5 minutes and work once (also enforced by Supabase).
-  if (!(await auth.isCodeFresh(phone)) || !(await auth.isCodeUnused(phone))) {
-    return { ok: false, error: "That code has expired. Request a new one." };
-  }
-
-  let userId: string;
-  if (isPlayReviewPhone(phone)) {
-    if (!matchesPlayReview(phone, code)) return { ok: false, error: "That code is not right." };
-    userId = PLAY_REVIEW_USER_ID;
-  } else {
-    const { data, error } = await createSupabaseOtpClient().auth.verifyOtp({ phone, token: code, type: "sms" });
-    if (error || !data.user) return { ok: false, error: "That code is not right, or it has expired." };
-    userId = data.user.id;
-  }
-  await auth.markCodeUsed(phone);
-
-  const { needsPin } = await auth.afterSmsVerified(userId, Boolean(options.resetPin));
-
-  // Reuse this browser's trusted device if it belongs to the same user.
-  const cookiesNow = await readAuthCookies();
-  let device = await auth.validateDevice(cookiesNow.device);
+  let device = await auth.validateDevice((await readAuthCookies()).device);
   if (!device || device.userId !== userId) {
     const registered = await auth.registerDevice(userId, phone, await deviceLabel());
     device = registered.device;
@@ -100,45 +59,81 @@ export async function verifySmsCode(
   } else {
     await auth.touchDevice(device.id);
   }
-
-  const { token } = auth.issueSession({ uid: userId, phone, did: device.id, via: "sms" });
+  const { token } = auth.issueSession({ uid: userId, phone, did: device.id, via });
   await setSessionCookie(token);
-
-  // No PIN yet (first sign-in, or cleared after lockout / "forgot PIN"):
-  // choose one now. The store reviewer may skip it.
-  return {
-    ok: true,
-    next: needsPin ? `/set-pin?next=${encodeURIComponent(safeNext(options.next))}` : safeNext(options.next)
-  };
 }
 
-/** Later sign-in on a trusted device: 4-digit PIN. 5 wrong → SMS code required. */
-export async function unlockWithPin(pin: string, next?: string): Promise<SignInResult> {
+/** Step 2: phone + 4-digit PIN, on any device. */
+export async function signInWithPin(phoneInput: string, pin: string, next?: string): Promise<SignInResult> {
   if (getAuthMode() !== "supabase") return { ok: false, error: "Sign-in is not available on this server." };
+  const phone = toE164(phoneInput);
+  if (!phone || !/^\d{4}$/.test(pin)) return { ok: false, error: "Enter your phone number and 4-digit PIN." };
   const auth = getDeviceAuth();
-  if (!(await auth.consume("pin_ip", await clientIp()))) return { ok: false, error: RATE_LIMITED };
+  if (!(await auth.consume("pin_ip", await clientIp())) || !(await auth.consume("pin_phone", phone))) {
+    return { ok: false, error: RATE_LIMITED };
+  }
 
-  const device = await auth.validateDevice((await readAuthCookies()).device);
-  if (!device) return { ok: false, error: "This device is no longer trusted. Sign in with an SMS code.", lockedOut: true };
+  if (isPlayReviewPhone(phone)) {
+    if (!matchesPlayReview(phone, pin)) return { ok: false, error: NO_MATCH };
+    await openSession(PLAY_REVIEW_USER_ID, phone, "pin");
+    return { ok: true, next: safeNext(next) };
+  }
 
-  const check = await auth.verifyPin(device.userId, pin);
+  const userId = await accountFor(phone);
+  if (!userId) return { ok: false, error: NO_MATCH };
+  const check = await auth.verifyPin(userId, pin);
   if (check.outcome === "ok") {
-    await auth.touchDevice(device.id);
-    const { token } = auth.issueSession({ uid: device.userId, phone: device.phone, did: device.id, via: "pin" });
-    await setSessionCookie(token);
+    await openSession(userId, phone, "pin");
     return { ok: true, next: safeNext(next) };
   }
   if (check.outcome === "wrong") {
-    return { ok: false, error: `Wrong PIN. ${check.remaining} ${check.remaining === 1 ? "try" : "tries"} left.` };
+    return { ok: false, error: `${NO_MATCH} ${check.remaining} ${check.remaining === 1 ? "try" : "tries"} left.` };
   }
-  return {
-    ok: false,
-    lockedOut: true,
-    error: check.outcome === "locked" ? "Too many wrong PINs. Verify with an SMS code to continue." : "Sign in with an SMS code."
-  };
+  // No PIN yet, or locked: same answer whether or not the number is known.
+  return { ok: false, lockedOut: true, error: check.outcome === "locked" ? `Too many wrong PINs. ${ASK_ADMIN}` : `${NO_MATCH} First time? ${ASK_ADMIN}` };
 }
 
-/** Choose (or replace) the 4-digit PIN — needs a session verified on this device. */
+/** Owner bootstrap: a fixed code for platform-owner phones only (Fly secret), e.g. when the only owner is locked out. */
+function matchesOwnerBootstrap(phone: string, code: string): boolean {
+  const configured = (process.env.PLATFORM_OWNER_BOOTSTRAP_CODE ?? "").trim();
+  if (!/^\d{6}$/.test(configured) || !platformOwnerPhones().includes(phone)) return false;
+  const a = createHash("sha256").update(code).digest();
+  const b = createHash("sha256").update(configured).digest();
+  return timingSafeEqual(a, b);
+}
+
+/** First time, forgotten or locked PIN: phone + joining code → choose a new PIN. */
+export async function redeemJoiningCode(phoneInput: string, codeInput: string, next?: string): Promise<SignInResult> {
+  if (getAuthMode() !== "supabase") return { ok: false, error: "Sign-in is not available on this server." };
+  const phone = toE164(phoneInput);
+  const code = codeInput.replace(/\s/g, "");
+  if (!phone) return { ok: false, error: "Enter a valid phone number, e.g. 0712 345 678." };
+  if (!isJoinCode(code)) return { ok: false, error: "Enter the 6-digit joining code." };
+  const auth = getDeviceAuth();
+  if (!(await auth.consume("code_verify_ip", await clientIp())) || !(await auth.consume("code_verify_phone", phone))) {
+    return { ok: false, error: RATE_LIMITED };
+  }
+
+  const userId = await accountFor(phone);
+  const redeemed = userId && !isPlayReviewPhone(phone)
+    ? matchesOwnerBootstrap(phone, code) ? ({ ok: true } as const) : await auth.redeemJoinCode(phone, code)
+    : ({ ok: false, reason: "none" } as const);
+  if (!redeemed.ok || !userId) {
+    const why =
+      redeemed.ok === false && redeemed.reason === "burned"
+        ? "That code has been tried too many times. Ask for a new one."
+        : redeemed.ok === false && redeemed.reason === "wrong"
+          ? "That joining code is not right. Check it and try again."
+          : "There is no open joining code for this number. Ask for a new one.";
+    return { ok: false, error: why };
+  }
+
+  await auth.afterCodeRedeemed(userId, phone);
+  await openSession(userId, phone, "code");
+  return { ok: true, next: `/set-pin?next=${encodeURIComponent(safeNext(next))}` };
+}
+
+/** Choose (or replace) the 4-digit PIN — needs a session on this device. */
 export async function choosePin(pin: string, confirm: string, next?: string): Promise<SignInResult> {
   const identity = await getSessionIdentity();
   if (!identity) return { ok: false, error: "Your session has ended. Sign in again." };
@@ -147,16 +142,14 @@ export async function choosePin(pin: string, confirm: string, next?: string): Pr
   return result.ok ? { ok: true, next: safeNext(next) } : { ok: false, error: result.error ?? "Choose a different PIN." };
 }
 
-/** Sign out on this device. The device stays trusted, so next time = PIN. */
+/** Sign out on this device. Next time: phone + PIN. */
 export async function signOut(): Promise<void> {
   await clearSessionCookie();
 }
 
-/** What the sign-in screen should show for this browser. */
-export async function signInMode(): Promise<{ mode: "pin"; phoneHint: string } | { mode: "sms" }> {
-  if (getAuthMode() !== "supabase") return { mode: "sms" };
-  const auth = getDeviceAuth();
-  const device = await auth.validateDevice((await readAuthCookies()).device);
-  if (device && (await auth.hasPin(device.userId))) return { mode: "pin", phoneHint: maskPhone(device.phone) };
-  return { mode: "sms" };
+/** The masked number this browser last signed in with, if any (never the full number). */
+export async function signInHint(): Promise<{ phoneHint?: string }> {
+  if (getAuthMode() !== "supabase") return {};
+  const device = await getDeviceAuth().validateDevice((await readAuthCookies()).device);
+  return device ? { phoneHint: maskPhone(device.phone) } : {};
 }

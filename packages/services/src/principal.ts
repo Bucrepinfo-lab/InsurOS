@@ -120,6 +120,18 @@ export class PrincipalService {
   }
 
   /**
+   * The staff appointment (not revoked) for a login phone, or null. Sign-in is
+   * open only to these phones (plus the platform-owner allowlist and the store
+   * reviewer) — owner 20/11/26, phone + PIN, no SMS.
+   */
+  async staffAppointmentForPhone(phoneInput: string): Promise<AdminAppointment | null> {
+    const phone = toE164(phoneInput);
+    if (!phone) return null;
+    const [appointment] = await this.db.appointments.findWhere((item) => item.phone === phone && item.status !== "Revoked");
+    return appointment ?? null;
+  }
+
+  /**
    * Grant a staff member access by login phone: one appointment + one active
    * role assignment in a region. Callers must already hold Identity:Create.
    */

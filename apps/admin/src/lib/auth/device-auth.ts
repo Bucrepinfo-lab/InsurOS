@@ -5,7 +5,7 @@ import { DeviceAuthService, getAuthStore } from "@insuros/services";
 import { isProductionRuntime } from "./config";
 
 /**
- * Cookie + secret glue for the phone / SMS code / PIN sign-in.
+ * Cookie + secret glue for the phone + PIN sign-in (joining codes, no SMS).
  * Env (names only): AUTH_SECRET (≥32 chars; required in production).
  */
 export const DEVICE_COOKIE = "insuros_device";

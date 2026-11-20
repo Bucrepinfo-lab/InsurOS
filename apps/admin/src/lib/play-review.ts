@@ -3,11 +3,11 @@ import { toE164 } from "@insuros/domain";
 
 /**
  * Google Play reviewer access. Active ONLY when BOTH PLAY_REVIEW_PHONE and
- * PLAY_REVIEW_CODE are set (names only; values live in Fly secrets and in the
- * Play Console "App access" section). The reviewer enters that phone, then that
- * 6-digit code in place of the SMS code (no SMS is sent), and lands in the
- * isolated demo tenant with sample data — never in a real organisation's data.
- * On the reviewer's device they may set a PIN or skip it.
+ * PLAY_REVIEW_PIN are set (names only; values live in Fly secrets and in the
+ * Play Console "App access" section). The reviewer enters that phone and that
+ * 4-digit PIN on the normal sign-in screen (owner 20/11/26: no SMS) and lands
+ * in the isolated demo tenant with sample data — never in a real
+ * organisation's data.
  */
 /** Stable identity of the store reviewer (no Supabase account is created). */
 export const PLAY_REVIEW_USER_ID = "play-review";
@@ -19,8 +19,8 @@ export interface PlayReviewConfig {
 
 export function playReviewConfig(): PlayReviewConfig | null {
   const phone = toE164(process.env.PLAY_REVIEW_PHONE ?? "");
-  const code = (process.env.PLAY_REVIEW_CODE ?? "").trim();
-  if (!phone || !/^\d{6}$/.test(code)) return null;
+  const code = (process.env.PLAY_REVIEW_PIN ?? "").trim();
+  if (!phone || !/^\d{4}$/.test(code)) return null;
   return { phone, code };
 }
 
@@ -30,7 +30,7 @@ export function isPlayReviewPhone(phone: string | null | undefined): boolean {
   return toE164(phone) === config.phone;
 }
 
-/** Constant-time check of a reviewer phone + code pair. */
+/** Constant-time check of a reviewer phone + PIN pair. */
 export function matchesPlayReview(phone: string, code: string): boolean {
   const config = playReviewConfig();
   if (!config) return false;

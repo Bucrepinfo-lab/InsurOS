@@ -2,10 +2,10 @@
 
 import { revalidatePath } from 'next/cache';
 import { fail, ok, type ActionResult } from '@/lib/action-result';
-import { authorizeAction, denyUnless } from '@/lib/auth/session';
+import { authorizeAction, denyUnless, platformOwnerPhones } from '@/lib/auth/session';
 import { paymentsEnabled } from '@/lib/payments-gate';
 import { getDeviceAuth } from '@/lib/auth/device-auth';
-import { toE164 } from '@insuros/domain';
+import { joinCodeMessage, toE164 } from '@insuros/domain';
 import {
   AdminHierarchyService,
   ClaimsAutomationService,
@@ -496,7 +496,34 @@ export async function revokeStaffAccess(_prev: ActionResult | null, formData: Fo
     : fail('Nothing to revoke', 'No active access was found for that phone number');
 }
 
-/** Owner: sign a staff member out of every device (role kept; next sign-in needs an SMS code). */
+/**
+ * Give a staff member a one-time joining code (owner 20/11/26: no SMS) — for
+ * their first sign-in, a forgotten PIN or 5 wrong PINs. Same permission as
+ * granting access, only for a phone in a region the giver may administer
+ * (platform-owner phones only by another platform owner), never for oneself.
+ * The code is shown once; only its HMAC is stored.
+ */
+export async function issueJoiningCode(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  const auth = await authorizeAction('Identity', 'Create');
+  if (!auth.ok) return auth.result;
+  const phone = toE164(String(formData.get('phone') ?? ''));
+  if (!phone) return fail('No code given', 'Enter a valid phone number');
+  if (phone === auth.principal.phone) return fail('No code given', 'Ask someone else who manages access to give you a code');
+
+  const isOwnerPhone = platformOwnerPhones().includes(phone);
+  const appointment = isOwnerPhone ? null : await new PrincipalService().staffAppointmentForPhone(phone);
+  const allowed = isOwnerPhone
+    ? auth.principal.isPlatformOwner === true
+    : !!appointment && (auth.principal.isPlatformOwner === true || auth.principal.accessibleRegionIds.includes(appointment.regionId));
+  // Same answer for "unknown number" and "not in your regions".
+  if (!allowed) return fail('No code given', 'No staff member with that number in your regions — grant access first');
+
+  const { code } = await getDeviceAuth().issueJoinCode(phone, auth.principal.phone ?? auth.principal.email);
+  const site = (process.env.NEXT_PUBLIC_APP_URL ?? 'getinsuros.com').replace(/^https?:\/\//, '').replace(/\/$/, '');
+  return ok('Joining code ready', joinCodeMessage(appointment?.userName ?? 'there', code, site), { reference: code });
+}
+
+/** Owner: sign a staff member out of every device (role kept; next sign-in is phone + PIN). */
 export async function revokeStaffDevices(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
   const auth = await authorizeAction('Identity', 'Delete');
   if (!auth.ok) return auth.result;
@@ -505,6 +532,6 @@ export async function revokeStaffDevices(_prev: ActionResult | null, formData: F
   if (!phone) return fail('Nothing to revoke', 'Enter a valid phone number');
   const devices = await getDeviceAuth().revokeAllForPhone(phone);
   return devices > 0
-    ? ok('Devices signed out', `${devices} trusted device(s) revoked — the next sign-in needs a new SMS code`)
+    ? ok('Devices signed out', `${devices} trusted device(s) revoked — they sign in again with phone + PIN`)
     : fail('No devices', 'No trusted devices were found for that phone number');
 }

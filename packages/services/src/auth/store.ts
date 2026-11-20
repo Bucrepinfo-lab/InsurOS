@@ -1,4 +1,4 @@
-import type { PinRecord, TrustedDevice } from "@insuros/domain";
+import type { JoinCodeRecord, PinRecord, TrustedDevice } from "@insuros/domain";
 
 /**
  * Sign-in store — PLATFORM-LEVEL data (one identity can belong to any tenant),
@@ -13,6 +13,8 @@ export interface AuthStore {
   pruneEvents(beforeIso: string): Promise<void>;
 
   getPin(userId: string): Promise<PinRecord | undefined>;
+  /** The PIN record for a sign-in phone (newest if a number was reused). */
+  getPinByPhone(phone: string): Promise<PinRecord | undefined>;
   putPin(record: PinRecord): Promise<void>;
   deletePin(userId: string): Promise<void>;
 
@@ -22,12 +24,22 @@ export interface AuthStore {
   revokeDevice(id: string, at: string): Promise<void>;
   listDevicesForUser(userId: string): Promise<TrustedDevice[]>;
   listDevicesForPhone(phone: string): Promise<TrustedDevice[]>;
+
+  /** Joining codes (owner 20/11/26: no SMS). */
+  createJoinCode(record: JoinCodeRecord): Promise<void>;
+  /** Open (unused) codes for a phone, newest first. */
+  listOpenJoinCodes(phone: string): Promise<JoinCodeRecord[]>;
+  addJoinCodeTry(id: string): Promise<void>;
+  useJoinCode(id: string, at: string): Promise<void>;
+  /** Close every unused code for a phone (a new code replaces them). */
+  closeJoinCodes(phone: string, at: string): Promise<void>;
 }
 
 export class MemoryAuthStore implements AuthStore {
   private readonly events: { kind: string; key: string; at: string }[] = [];
   private readonly pins = new Map<string, PinRecord>();
   private readonly devices = new Map<string, TrustedDevice>();
+  private readonly codes = new Map<string, JoinCodeRecord>();
 
   async recordEvent(kind: string, key: string, at: string) {
     this.events.push({ kind, key, at });
@@ -49,6 +61,10 @@ export class MemoryAuthStore implements AuthStore {
   async getPin(userId: string) {
     const record = this.pins.get(userId);
     return record ? { ...record } : undefined;
+  }
+  async getPinByPhone(phone: string) {
+    const hits = [...this.pins.values()].filter((p) => p.phone === phone).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    return hits[0] ? { ...hits[0] } : undefined;
   }
   async putPin(record: PinRecord) {
     this.pins.set(record.userId, { ...record });
@@ -76,5 +92,25 @@ export class MemoryAuthStore implements AuthStore {
   }
   async listDevicesForPhone(phone: string) {
     return [...this.devices.values()].filter((d) => d.phone === phone).map((d) => ({ ...d }));
+  }
+  async createJoinCode(record: JoinCodeRecord) {
+    this.codes.set(record.id, { ...record });
+  }
+  async listOpenJoinCodes(phone: string) {
+    return [...this.codes.values()]
+      .filter((c) => c.phone === phone && !c.usedAt)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .map((c) => ({ ...c }));
+  }
+  async addJoinCodeTry(id: string) {
+    const code = this.codes.get(id);
+    if (code) code.tries += 1;
+  }
+  async useJoinCode(id: string, at: string) {
+    const code = this.codes.get(id);
+    if (code && !code.usedAt) code.usedAt = at;
+  }
+  async closeJoinCodes(phone: string, at: string) {
+    for (const code of this.codes.values()) if (code.phone === phone && !code.usedAt) code.usedAt = at;
   }
 }

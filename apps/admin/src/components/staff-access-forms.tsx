@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react';
 import type { ActionResult } from '@/lib/action-result';
-import { grantStaffAccess, revokeStaffAccess, revokeStaffDevices } from '@/app/dashboard/actions';
+import { grantStaffAccess, issueJoiningCode, revokeStaffAccess, revokeStaffDevices } from '@/app/dashboard/actions';
 
 interface Option {
   id: string;
@@ -93,6 +93,38 @@ export function RevokeStaffDevicesForm() {
         {pending ? 'Revoking…' : 'Revoke devices'}
       </button>
       <Receipt result={result} />
+    </form>
+  );
+}
+
+/** Give a staff member a one-time joining code to hand over in person or on WhatsApp (no SMS). */
+export function JoiningCodeForm() {
+  const [result, action, pending] = useActionState(issueJoiningCode, null);
+  const code = result?.ok ? result.reference : undefined;
+  return (
+    <form action={action} className='grid gap-3 rounded-2xl border border-ink/10 bg-sheet/60 p-5'>
+      <h2 className='text-base font-semibold text-ink'>Give a joining code</h2>
+      <p className='text-sm text-ink/70'>
+        For a staff member&apos;s first sign-in, a forgotten PIN or a locked PIN. Check it is really them, then hand
+        it over in person or on WhatsApp. It works once, for 48 hours.
+      </p>
+      <div className='flex flex-wrap items-end gap-3'>
+        <label className='min-w-56 flex-1 text-sm text-ink/70'>
+          Staff login phone
+          <input name='phone' required inputMode='tel' placeholder='0712 345 678' className={field} />
+        </label>
+        <button type='submit' disabled={pending} className='rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-60'>
+          {pending ? 'Giving…' : 'Give a code'}
+        </button>
+      </div>
+      {code ? (
+        <div className='grid gap-2'>
+          <p className='font-mono text-2xl font-bold tracking-[0.25em] text-ink'>{code}</p>
+          <textarea readOnly rows={3} value={result?.message ?? ''} onFocus={(e) => e.currentTarget.select()} className={field} />
+        </div>
+      ) : (
+        <Receipt result={result} />
+      )}
     </form>
   );
 }

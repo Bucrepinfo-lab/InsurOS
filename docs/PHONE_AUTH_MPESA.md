@@ -1,5 +1,7 @@
 # InsurOS — Phone-OTP Login + M-Pesa Premiums
 
+> **Sign-in part superseded 20/11/26:** no SMS. Phone + 4-digit PIN; a joining code from an admin the first time (`packages/services/src/auth/service.ts`). Kept for history.
+
 Clerk was replaced with **Supabase phone-OTP** in `apps/admin`, and **Africa's
 Talking** now delivers OTP SMS and M-Pesa premium payments. The phone you sign in
 with is also your M-Pesa number. Consistent with the app's design, auth is
