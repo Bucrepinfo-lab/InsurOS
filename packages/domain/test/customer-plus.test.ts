@@ -56,7 +56,8 @@ describe("Plus price and the founding lock (owner 18/11/26)", () => {
   it("lists KES 49 a month or KES 490 a year in Kenya; the African prices are approved (20/11/26), the rest indicative", () => {
     expect(listPriceFor("ke")).toEqual({ currency: "KES", monthly: 49, yearly: 490, approved: true });
     expect(listPriceFor("ZZ")).toBe(KE);
-    const approved = ["KE", "UG", "TZ", "RW", "NG", "GH", "ZA"];
+    const approved = ["KE", "UG", "TZ", "RW", "NG", "GH", "ZA",
+      "ZM", "MW", "MZ", "CM", "CG", "GA", "CI", "SN", "BJ", "BF", "CD", "LS", "SL", "ZW", "ET"];
     for (const [code, price] of Object.entries(PLUS_PRICES)) {
       expect(price.yearly, code).toBeCloseTo(price.monthly * 10, 5);
       expect(price.approved, code).toBe(approved.includes(code));
