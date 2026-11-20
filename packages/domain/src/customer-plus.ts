@@ -26,7 +26,8 @@ export const PLUS_TRIAL_DAYS = 30;
  * Prices (owner decision 18/11/26, replacing 10 units a month): Kenya KES 49 a
  * month or KES 490 a year (two months free). Other countries are set near the
  * same value (about USD 0.40 a month) and marked indicative until a person
- * approves them for that country.
+ * approves them for that country. Approved by the owner 20/11/26 ("approve all
+ * prices"): Uganda, Tanzania, Rwanda, Nigeria, Ghana and South Africa.
  */
 export type PlusPlan = "MONTH" | "YEAR";
 
@@ -40,12 +41,12 @@ export interface PlusPrice {
 
 export const PLUS_PRICES: Record<string, PlusPrice> = {
   KE: { currency: "KES", monthly: 49, yearly: 490, approved: true },
-  UG: { currency: "UGX", monthly: 1_500, yearly: 15_000, approved: false },
-  TZ: { currency: "TZS", monthly: 1_000, yearly: 10_000, approved: false },
-  RW: { currency: "RWF", monthly: 500, yearly: 5_000, approved: false },
-  NG: { currency: "NGN", monthly: 600, yearly: 6_000, approved: false },
-  GH: { currency: "GHS", monthly: 5, yearly: 50, approved: false },
-  ZA: { currency: "ZAR", monthly: 7, yearly: 70, approved: false },
+  UG: { currency: "UGX", monthly: 1_500, yearly: 15_000, approved: true },
+  TZ: { currency: "TZS", monthly: 1_000, yearly: 10_000, approved: true },
+  RW: { currency: "RWF", monthly: 500, yearly: 5_000, approved: true },
+  NG: { currency: "NGN", monthly: 600, yearly: 6_000, approved: true },
+  GH: { currency: "GHS", monthly: 5, yearly: 50, approved: true },
+  ZA: { currency: "ZAR", monthly: 7, yearly: 70, approved: true },
   IN: { currency: "INR", monthly: 35, yearly: 350, approved: false },
   GB: { currency: "GBP", monthly: 0.49, yearly: 4.9, approved: false },
   US: { currency: "USD", monthly: 0.49, yearly: 4.9, approved: false }
