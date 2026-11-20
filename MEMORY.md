@@ -3,6 +3,12 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-20 — My Cover Plus prices approved in six more African countries
+- Second round approved the same day ("approve the second-round prices"), a month: Zambia ZMW 8, Malawi MWK 650, Mozambique MZN 25, Cameroon, Congo, Gabon XAF 220, Côte d'Ivoire, Senegal, Benin, Burkina Faso XOF 220, DR Congo CDF 900, Lesotho LSL 6, Sierra Leone SLE 9, Zimbabwe USD 0.49, Ethiopia ETB 60.
+- Owner: "approve all prices" (Africa Local Prices table). `PLUS_PRICES` approved, a month (a year = 10 months): Uganda UGX 1,500, Tanzania TZS 1,000, Rwanda RWF 500, Nigeria NGN 600, Ghana GHS 5, South Africa ZAR 7, beside Kenya KES 49. India, UK and US stay indicative.
+- Only the Plus app price; per-country insurance economics (commission caps, tokens, licences) are unchanged. My Cover Plus is still sold in Kenya only, and local payment elsewhere also needs pawaPay/Paystack keys.
+- pawaPay coverage checked 20/11/26 (docs.pawapay.io/v2/docs/providers, 21 countries): `LOCAL_METHOD` gains DR Congo (CDF), Lesotho (LSL), Zimbabwe (EcoCash, USD) and Ethiopia (ETB); Senegal adds Free Money; Sierra Leone is Orange Money only. pawaPay does not cover Mali, Liberia or South Sudan. Paddle does not sell in DR Congo or Zimbabwe, so mobile money is the only way there. Prices for the second-round countries await owner approval.
+
 ## 2026-11-19 (late) — Local way first in every country; card later through Paddle (awaiting owner merge)
 - Owner standing order 19/11/26: always lead with the way most people in the country pay, in every country (developed ones too); the card comes later, through Paddle, which takes the payment and remits the VAT.
 - `packages/domain/src/payment-rails.ts` v4, same module as Stawi/SellFindConnect/HarvestHub: `LOCAL_METHOD` (KE M-Pesa; 15 mobile money countries via pawaPay; NG bank transfer/USSD and ZA EFT via Paystack), `subscriptionRails({country, switches, localPriceApproved})` best first. The v3 call (`paddleOn`) still works and gives the same answers; `MPESA_COUNTRIES` kept.

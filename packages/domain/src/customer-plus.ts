@@ -26,7 +26,9 @@ export const PLUS_TRIAL_DAYS = 30;
  * Prices (owner decision 18/11/26, replacing 10 units a month): Kenya KES 49 a
  * month or KES 490 a year (two months free). Other countries are set near the
  * same value (about USD 0.40 a month) and marked indicative until a person
- * approves them for that country.
+ * approves them for that country. Approved by the owner 20/11/26 ("approve all
+ * prices"): Uganda, Tanzania, Rwanda, Nigeria, Ghana and South Africa; then the
+ * pawaPay second round ("approve the second-round prices").
  */
 export type PlusPlan = "MONTH" | "YEAR";
 
@@ -40,12 +42,28 @@ export interface PlusPrice {
 
 export const PLUS_PRICES: Record<string, PlusPrice> = {
   KE: { currency: "KES", monthly: 49, yearly: 490, approved: true },
-  UG: { currency: "UGX", monthly: 1_500, yearly: 15_000, approved: false },
-  TZ: { currency: "TZS", monthly: 1_000, yearly: 10_000, approved: false },
-  RW: { currency: "RWF", monthly: 500, yearly: 5_000, approved: false },
-  NG: { currency: "NGN", monthly: 600, yearly: 6_000, approved: false },
-  GH: { currency: "GHS", monthly: 5, yearly: 50, approved: false },
-  ZA: { currency: "ZAR", monthly: 7, yearly: 70, approved: false },
+  UG: { currency: "UGX", monthly: 1_500, yearly: 15_000, approved: true },
+  TZ: { currency: "TZS", monthly: 1_000, yearly: 10_000, approved: true },
+  RW: { currency: "RWF", monthly: 500, yearly: 5_000, approved: true },
+  NG: { currency: "NGN", monthly: 600, yearly: 6_000, approved: true },
+  GH: { currency: "GHS", monthly: 5, yearly: 50, approved: true },
+  ZA: { currency: "ZAR", monthly: 7, yearly: 70, approved: true },
+  // Second round, approved by the owner 20/11/26: the pawaPay countries.
+  ZM: { currency: "ZMW", monthly: 8, yearly: 80, approved: true },
+  MW: { currency: "MWK", monthly: 650, yearly: 6_500, approved: true },
+  MZ: { currency: "MZN", monthly: 25, yearly: 250, approved: true },
+  CM: { currency: "XAF", monthly: 220, yearly: 2_200, approved: true },
+  CG: { currency: "XAF", monthly: 220, yearly: 2_200, approved: true },
+  GA: { currency: "XAF", monthly: 220, yearly: 2_200, approved: true },
+  CI: { currency: "XOF", monthly: 220, yearly: 2_200, approved: true },
+  SN: { currency: "XOF", monthly: 220, yearly: 2_200, approved: true },
+  BJ: { currency: "XOF", monthly: 220, yearly: 2_200, approved: true },
+  BF: { currency: "XOF", monthly: 220, yearly: 2_200, approved: true },
+  CD: { currency: "CDF", monthly: 900, yearly: 9_000, approved: true },
+  LS: { currency: "LSL", monthly: 6, yearly: 60, approved: true },
+  SL: { currency: "SLE", monthly: 9, yearly: 90, approved: true },
+  ZW: { currency: "USD", monthly: 0.49, yearly: 4.9, approved: true },
+  ET: { currency: "ETB", monthly: 60, yearly: 600, approved: true },
   IN: { currency: "INR", monthly: 35, yearly: 350, approved: false },
   GB: { currency: "GBP", monthly: 0.49, yearly: 4.9, approved: false },
   US: { currency: "USD", monthly: 0.49, yearly: 4.9, approved: false }
