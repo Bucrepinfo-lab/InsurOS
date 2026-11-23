@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import type { ClaimStatus, OwnedClaim, OwnedCustomer, OwnedPolicy, PolicyStatus } from '@insuros/domain';
+import type { ClaimSettlementRecord, ClaimStatus, ClaimStep, OwnedClaim, OwnedCustomer, OwnedPolicy, PolicyStatus } from '@insuros/domain';
 import { ClaimService, CustomerService, PolicyService } from '@insuros/services';
 import { sampleClaimStory, type SampleClaimStory } from '@insuros/mocks';
 import { currentReach } from '@/lib/record-scope';
@@ -18,6 +18,22 @@ export const claimTone = (status: ClaimStatus): Tone =>
 
 export const policyTone = (status: PolicyStatus): Tone =>
   status === 'Active' ? 'success' : status === 'Cancelled' ? 'danger' : 'warning';
+
+/** Where a claim stands, worked out from its own status (never a separate list that can go stale). */
+export function claimStage(claim: Pick<OwnedClaim, 'status' | 'declinedReason'>): { stage: string; state: string } {
+  switch (claim.status) {
+    case 'Open':
+      return { stage: 'First notice', state: 'Submitted' };
+    case 'In Review':
+      return { stage: 'Assessment', state: 'In Review' };
+    case 'Approved':
+      return { stage: 'Settlement', state: 'Approved' };
+    case 'Settled':
+      return { stage: 'Closed', state: 'Settled' };
+    default:
+      return { stage: 'Closed', state: claim.declinedReason ? 'Declined' : 'Closed' };
+  }
+}
 
 export const money = (amount: number, currency = 'KES') => `${currency} ${amount.toLocaleString('en-KE')}`;
 
@@ -45,6 +61,10 @@ export interface ClaimRecord {
   claim: OwnedClaim;
   policy?: OwnedPolicy;
   story?: SampleClaimStory;
+  /** Approval, payment and certificate as recorded (the claim's own record first). */
+  settlement?: ClaimSettlementRecord;
+  /** Steps taken, oldest first. */
+  steps: ClaimStep[];
   tabs: { id: string; label: string; href: string }[];
 }
 
@@ -55,10 +75,13 @@ export async function loadClaim(rawId: string): Promise<ClaimRecord> {
   const policies = (await new PolicyService().getPolicies()) as OwnedPolicy[];
   const policy = policies.find((row) => row.policyNumber === claim.policyNumber);
   const base = `/dashboard/claims/${encodeURIComponent(claim.id)}`;
+  const story = sampleClaimStory(claim.id);
   return {
     claim,
     policy,
-    story: sampleClaimStory(claim.id),
+    story,
+    settlement: claim.settlement ?? (story ? { ...story.settlement, approvedBy: story.settlement.certificateApprovedBy } : undefined),
+    steps: claim.steps?.length ? claim.steps : (story?.steps ?? []),
     tabs: [
       { id: 'overview', label: 'Overview', href: base },
       { id: 'fnol', label: 'First notice', href: `${base}/fnol` },

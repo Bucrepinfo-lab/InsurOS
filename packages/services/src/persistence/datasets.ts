@@ -54,6 +54,12 @@ export interface DatasetDefinition {
   collection: string;
   kind: DatasetKind;
   rows: () => { id: string }[];
+  /**
+   * Bump to seed new sample rows into a tenant that was seeded before. Rows
+   * already there are never overwritten (insert ... on conflict do nothing),
+   * so edits made in the demo tenant stay. Missing = 1.
+   */
+  seedVersion?: number;
 }
 
 const tenantRows = (): Tenant[] => [
@@ -80,9 +86,10 @@ export const DATASETS: Record<RepositoryKey, DatasetDefinition> = {
   regions: { collection: "regions", kind: "reference", rows: () => mockAdminRegions },
   appointments: { collection: "appointments", kind: "sample", rows: () => mockAdminAppointments },
   jurisdictionAssignments: { collection: "jurisdiction_assignments", kind: "sample", rows: () => mockJurisdictionAssignments },
-  policies: { collection: "policies", kind: "sample", rows: () => mockPolicies },
-  claims: { collection: "claims", kind: "sample", rows: () => mockClaims },
-  customers: { collection: "customers", kind: "sample", rows: () => mockCustomers },
+  // v2 (23/11/26): three worked examples for every kind of cover (sample-book.ts).
+  policies: { collection: "policies", kind: "sample", rows: () => mockPolicies, seedVersion: 2 },
+  claims: { collection: "claims", kind: "sample", rows: () => mockClaims, seedVersion: 2 },
+  customers: { collection: "customers", kind: "sample", rows: () => mockCustomers, seedVersion: 2 },
   taxJurisdictions: { collection: "tax_jurisdictions", kind: "reference", rows: () => mockTaxJurisdictions },
   subnationalTaxRules: { collection: "subnational_tax_rules", kind: "reference", rows: () => mockSubnationalTaxRules },
   taxRemittances: { collection: "tax_remittances", kind: "sample", rows: () => mockTaxRemittances },
@@ -126,6 +133,11 @@ export const DATASETS: Record<RepositoryKey, DatasetDefinition> = {
 };
 
 export const REPOSITORY_KEYS = Object.keys(DATASETS) as RepositoryKey[];
+
+/** Name recorded in insuros_tenant_seeds once a dataset is seeded ("claims", then "claims@v2"). */
+export function seedMarker(dataset: DatasetDefinition): string {
+  return (dataset.seedVersion ?? 1) > 1 ? `${dataset.collection}@v${dataset.seedVersion}` : dataset.collection;
+}
 
 /** Whether a tenant gets this dataset seeded. */
 export function seedsInto(tenantId: string, kind: DatasetKind): boolean {

@@ -379,14 +379,6 @@ function build(): Built {
         expiryDate: expiry
       });
 
-      out.claims.push({
-        id: claimId,
-        claimNumber: claimId,
-        policyNumber: policyId,
-        customer: example.customer,
-        amount: money(example.claimed),
-        status: 'Settled'
-      });
 
       out.workflows.push({ claimId, stage: 'Closed', workflowStatus: 'Closed' });
 
@@ -454,6 +446,38 @@ function build(): Built {
           { at: certified, stage: 'Certificate', label: `Certificate of settlement ${certificateNumber} approved; claim settled`, by: STAFF.manager }
         ],
         settlement
+      });
+
+      const story = out.stories[out.stories.length - 1];
+      // The claim carries its own steps and settlement record, the same fields a
+      // real claim gets when people take it through its stages.
+      out.claims.push({
+        id: claimId,
+        claimNumber: claimId,
+        policyNumber: policyId,
+        customer: example.customer,
+        amount: money(example.claimed),
+        status: 'Settled',
+        steps: story.steps.map((step) => ({ ...step })),
+        settlement: {
+          claimed: settlement.claimed,
+          excess: settlement.excess,
+          notCovered: settlement.notCovered,
+          notCoveredReason: settlement.notCoveredReason,
+          approved: settlement.approved,
+          reserve: settlement.reserve,
+          approvedBy: STAFF.manager,
+          approvedOn: dateOnly(approvedAt),
+          dischargeSignedOn: settlement.dischargeSignedOn,
+          paidTo: settlement.paidTo,
+          method: settlement.method,
+          paidOn: settlement.paidOn,
+          paymentReference: settlement.paymentReference,
+          paymentRecordedBy: STAFF.finance,
+          certificateNumber: settlement.certificateNumber,
+          certificateApprovedBy: settlement.certificateApprovedBy,
+          certificateApprovedOn: settlement.certificateApprovedOn
+        }
       });
     });
   });

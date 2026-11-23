@@ -12,7 +12,7 @@ export { createMemoryAdapter, MemoryPaymentLedger, MemoryRepository } from "./me
 export { PostgresDatabase, createSqlClient, migrate, seedTenant, type SqlClient } from "./postgres-adapter";
 export { MIGRATIONS } from "./migrations";
 export { PostgresAuthStore } from "./postgres-auth-store";
-export { DATASETS, REPOSITORY_KEYS, type DatasetKind, type RepositoryKey } from "./datasets";
+export { DATASETS, REPOSITORY_KEYS, seedMarker, type DatasetKind, type RepositoryKey } from "./datasets";
 export { resolveTenantId, setTenantResolver, type TenantResolver } from "./tenant-context";
 
 function env(): Record<string, string | undefined> {

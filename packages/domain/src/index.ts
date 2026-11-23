@@ -2,6 +2,7 @@ export * from "./attachment";
 export * from "./audit";
 export * from "./base";
 export * from "./claim";
+export * from "./claim-progress";
 export * from "./claim-workflow";
 export * from "./comment";
 export * from "./customer";
