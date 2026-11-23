@@ -1,9 +1,10 @@
-﻿import { mockClaimWorkflows } from "@insuros/mocks";
+import { mockClaimWorkflows } from "@insuros/mocks";
 import {
   canSeeClaim,
   canSeePolicy,
   isPolicyInForce,
   ownPolicyNumbers,
+  type ClaimProgressResult,
   type OwnedClaim,
   type OwnedPolicy,
   type RecordReach
@@ -87,6 +88,25 @@ export class ClaimService {
       assignedToUserId: undefined
     } as OwnedClaim);
     return { ok: true, claim };
+  }
+
+  /**
+   * Take one step on a claim (start review, approve, decline, record payment,
+   * approve the certificate). The claim must be one this person may see; the
+   * step's own rules (claim-progress.ts) decide whether it is allowed. A record
+   * only: no money moves here.
+   */
+  async progressClaim(
+    reach: RecordReach,
+    id: string,
+    take: (claim: OwnedClaim) => ClaimProgressResult
+  ): Promise<{ ok: true; claim: OwnedClaim } | { ok: false; error: string }> {
+    const claim = await this.getClaimFor(reach, id);
+    if (!claim) return { ok: false, error: "That claim is not one of yours." };
+    const result = take(claim);
+    if (!result.ok) return result;
+    const updated = (await getPersistence().claims.update(claim.id, result.patch)) as OwnedClaim | undefined;
+    return updated ? { ok: true, claim: updated } : { ok: false, error: "The claim could not be saved. Try again." };
   }
 
   async getClaimWorkflows() {

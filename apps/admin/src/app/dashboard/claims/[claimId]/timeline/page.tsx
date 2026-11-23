@@ -6,7 +6,7 @@ export const metadata = { title: 'Claim timeline' };
 
 export default async function ClaimTimelinePage({ params }: { params: Promise<{ claimId: string }> }) {
   const { claimId } = await params;
-  const { claim, story, tabs } = await loadClaim(claimId);
+  const { claim, steps, tabs } = await loadClaim(claimId);
 
   return (
     <DomainModulePage
@@ -15,10 +15,10 @@ export default async function ClaimTimelinePage({ params }: { params: Promise<{ 
     >
       <Tabs items={tabs} activeId='timeline'>
         <Section title='Steps'>
-          {story ? (
+          {steps.length ? (
             <ol className='space-y-3'>
-              {story.steps.map((step, index) => (
-                <li key={step.stage} className='flex flex-wrap items-start justify-between gap-2 border-b border-line pb-3 text-sm last:border-0'>
+              {steps.map((step, index) => (
+                <li key={`${step.stage}-${index}`} className='flex flex-wrap items-start justify-between gap-2 border-b border-line pb-3 text-sm last:border-0'>
                   <div>
                     <p className='font-medium text-ink'>
                       {index + 1}. {step.label}
@@ -30,7 +30,7 @@ export default async function ClaimTimelinePage({ params }: { params: Promise<{ 
               ))}
             </ol>
           ) : (
-            <NotYet>Only the first notice has been recorded for this claim ({claim.status.toLowerCase()}).</NotYet>
+            <NotYet>No steps yet: the claim is {claim.status.toLowerCase()} and waiting for its review to start.</NotYet>
           )}
         </Section>
       </Tabs>

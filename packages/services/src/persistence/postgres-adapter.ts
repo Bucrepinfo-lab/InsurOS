@@ -5,7 +5,7 @@ import {
   type PaymentLedgerEntry,
   type PaymentStatus
 } from "@insuros/domain";
-import { DATASETS, REPOSITORY_KEYS, cloneRows, seedsInto, type AnyRepository } from "./datasets";
+import { DATASETS, REPOSITORY_KEYS, cloneRows, seedMarker, seedsInto, type AnyRepository } from "./datasets";
 import { MIGRATIONS } from "./migrations";
 import type { PaymentLedgerPort, PersistenceAdapter, Repository } from "./ports";
 
@@ -81,14 +81,14 @@ export async function seedTenant(sql: SqlClient, tenantId: string): Promise<void
     const done = new Set(seeded.map((row) => row.dataset));
     for (const key of REPOSITORY_KEYS) {
       const dataset = DATASETS[key];
-      if (done.has(dataset.collection) || !seedsInto(tenantId, dataset.kind)) continue;
+      if (done.has(seedMarker(dataset)) || !seedsInto(tenantId, dataset.kind)) continue;
       for (const row of cloneRows(dataset.rows())) {
         await tx`
           insert into insuros_documents (tenant_id, collection, id, data)
           values (${tenantId}, ${dataset.collection}, ${row.id}, ${tx.json(row)})
           on conflict do nothing`;
       }
-      await tx`insert into insuros_tenant_seeds (tenant_id, dataset) values (${tenantId}, ${dataset.collection}) on conflict do nothing`;
+      await tx`insert into insuros_tenant_seeds (tenant_id, dataset) values (${tenantId}, ${seedMarker(dataset)}) on conflict do nothing`;
     }
   });
 }
