@@ -160,8 +160,11 @@ export class MessagingService {
     const body = checkMessage(rawBody);
     if (!body.ok) return body;
     if (!conversation.participants.some((participant) => participant.userId === who.userId)) {
-      await this.db.conversations.update(id, { participants: [...conversation.participants, who] });
-      conversation.participants = [...conversation.participants, who];
+      // Build the list once: the stored row and this copy may be the same
+      // object (memory store), so appending twice listed the person twice.
+      const participants = [...conversation.participants, who];
+      await this.db.conversations.update(id, { participants });
+      conversation.participants = participants;
     }
     return { ok: true, value: await this.append(conversation, { kind: "staff", id: who.userId, name: who.name }, body.value, now, options.aiAssisted) };
   }

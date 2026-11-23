@@ -77,7 +77,7 @@ export default function WhyPage() {
             </a>
             <ShareButton tone='dark' title='Why InsurOS' text={pageText} url={`${SITE_URL}/why`} />
           </div>
-          <p className='mt-2 text-xs text-faint'>Email: telpeninfo@gmail.com</p>
+          <p className='mt-2 text-xs text-dim'>Email: telpeninfo@gmail.com</p>
         </section>
 
         <section aria-labelledby='facts' className='rounded-2xl border border-line bg-sheet p-5 sm:p-7'>
@@ -190,7 +190,7 @@ export default function WhyPage() {
           <div className='mt-5 flex flex-wrap gap-3'>
             <Link
               href='/sign-in'
-              className='rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-sealdark transition hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
+              className='rounded-lg bg-sheet px-5 py-2.5 text-sm font-semibold text-sealdark transition hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
             >
               Sign in with your phone
             </Link>

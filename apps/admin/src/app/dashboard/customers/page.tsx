@@ -12,13 +12,18 @@ import type { CustomerStatus, OwnedCustomer } from '@insuros/domain';
 import { CustomerService } from '@insuros/services';
 import { StatusFilter, applyStatusFilter } from '@/components/list-filters';
 import { currentReach } from '@/lib/record-scope';
+import { RecordLink } from '@/components/record-view';
 
 export const metadata = { title: 'Customers' };
 
 const CUSTOMER_STATUSES: readonly CustomerStatus[] = ['Active', 'Pending', 'Suspended', 'Archived'];
 
 const columns: DataTableColumn<OwnedCustomer>[] = [
-  { key: 'name', header: 'Name' },
+  {
+    key: 'name',
+    header: 'Name',
+    render: (row) => <RecordLink href={`/dashboard/customers/${encodeURIComponent(row.id)}`}>{row.name}</RecordLink>
+  },
   { key: 'type', header: 'Type' },
   { key: 'email', header: 'Email' },
   {

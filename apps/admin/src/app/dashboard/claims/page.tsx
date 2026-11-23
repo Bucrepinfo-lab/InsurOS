@@ -1,5 +1,5 @@
 import Link from 'next/link';
-﻿import {
+import {
   Badge,
   DomainEntityList,
   DomainModulePage,
@@ -12,18 +12,24 @@ import type { ClaimStatus, OwnedClaim } from '@insuros/domain';
 import { ClaimService } from '@insuros/services';
 import { StatusFilter, applyStatusFilter } from '@/components/list-filters';
 import { currentReach } from '@/lib/record-scope';
+import { RecordLink } from '@/components/record-view';
+import { claimTone } from '@/lib/records';
 
 const CLAIM_STATUSES: readonly ClaimStatus[] = ['Open', 'In Review', 'Approved', 'Settled', 'Closed'];
 
 const columns: DataTableColumn<OwnedClaim>[] = [
-  { key: 'claimNumber', header: 'Claim No.' },
+  {
+    key: 'claimNumber',
+    header: 'Claim No.',
+    render: (row) => <RecordLink href={`/dashboard/claims/${encodeURIComponent(row.id)}`}>{row.claimNumber}</RecordLink>
+  },
   { key: 'policyNumber', header: 'Policy No.' },
   { key: 'customer', header: 'Customer' },
-  { key: 'amount', header: 'Claimed Amount' },
+  { key: 'amount', header: 'Amount claimed' },
   {
     key: 'status',
     header: 'Status',
-    render: (row) => <Badge tone='warning'>{row.status}</Badge>
+    render: (row) => <Badge tone={claimTone(row.status)}>{row.status}</Badge>
   }
 ];
 
@@ -46,8 +52,8 @@ export default async function ClaimsPage({
 
   return (
     <DomainModulePage
-      title='Claims Management'
-      description='Manage FNOL, claim assessment, reserves, approvals, settlement, recovery, and closure.'
+      title='Claims'
+      description='Every claim from first notice to settlement. Open a claim to see its assessment, settlement and certificate.'
       actions={
         <Link href='/dashboard/claims/new' className='inline-flex items-center justify-center gap-2 rounded-lg bg-[linear-gradient(180deg,#22344f_0%,#1b2a41_100%)] px-4 py-2 text-sm font-medium text-paper shadow-[0_1px_2px_rgba(18,28,49,0.3),0_8px_20px_-10px_rgba(18,28,49,0.5)] transition-all duration-200 hover:-translate-y-px hover:bg-[linear-gradient(180deg,#128a6b_0%,#0f6e56_100%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal'>
           Register claim

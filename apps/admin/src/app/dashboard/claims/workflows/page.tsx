@@ -6,6 +6,8 @@ import {
   type DataTableColumn
 } from "@insuros/ui";
 import { ClaimService } from "@insuros/services";
+import { RecordLink } from "@/components/record-view";
+import { currentReach } from "@/lib/record-scope";
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
 
@@ -14,13 +16,20 @@ export const metadata = { title: 'Claim workflows' };
 const claimService = new ClaimService();
 
 export default async function ClaimWorkflowsPage() {
-  const workflows = await claimService.getClaimWorkflows();
+  // Only workflows of claims this person may see in this tenant: the workflow
+  // list itself is shared sample data and must not show claims that are not here.
+  const visible = new Set((await claimService.getClaimsFor(await currentReach("Claims"))).map((claim) => claim.id));
+  const workflows = (await claimService.getClaimWorkflows()).filter((workflow) => visible.has(workflow.claimId));
 
   type ClaimWorkflowRow = (typeof workflows)[number];
 
   const columns: DataTableColumn<ClaimWorkflowRow>[] = [
-    { key: "claimId", header: "Claim" },
-    { key: "stage", header: "Stage" },
+    {
+      key: "claimId",
+      header: "Claim",
+      render: (row) => <RecordLink href={`/dashboard/claims/${encodeURIComponent(row.claimId)}`}>{row.claimId}</RecordLink>
+    },
+    { key: "stage", header: "Stage", render: (row) => (row.stage === "FNOL" ? "First notice" : row.stage) },
     {
       key: "workflowStatus",
       header: "Status",
@@ -42,24 +51,24 @@ export default async function ClaimWorkflowsPage() {
 
   return (
     <DomainModulePage
-      title="Claim Workflows"
-      description="Track claim workflow stages and execution status across FNOL, assessment, investigation, settlement, and closure."
+      title="Claim workflow"
+      description="Where each claim stands: first notice, assessment, investigation, settlement and closure."
       actions={<ActionButton label='Configure Claim Workflow' action={queueDemoRequest.bind(null, 'Configure Claim Workflow')} />}
     >
       <div className="mb-6 grid gap-4 md:grid-cols-3">
-        <KPICard title="Claim Workflows" value={String(workflows.length)} change="Tracked claims" />
+        <KPICard title="Claims tracked" value={String(workflows.length)} />
         <KPICard title="In Review" value={String(workflows.filter((item) => item.workflowStatus === "In Review").length)} change="Needs action" />
-        <KPICard title="Approved" value={String(workflows.filter((item) => item.workflowStatus === "Approved").length)} change="Ready to progress" />
+        <KPICard title="Closed" value={String(workflows.filter((item) => item.workflowStatus === "Closed").length)} change="Settled and closed" />
       </div>
 
       <DomainEntityList
-        title="Claim Workflow Status"
-        description="Workflow state visibility for active claim journeys."
-        searchPlaceholder="Search claim workflows..."
+        title="Claims by stage"
+        description="Open a claim to see each step and its settlement."
+        searchPlaceholder="Search claims..."
         columns={columns}
         data={workflows}
-        emptyTitle="No claim workflows"
-        emptyDescription="No claim workflow records are currently available."
+        emptyTitle="No claims yet"
+        emptyDescription="A claim appears here once it is registered."
       />
     </DomainModulePage>
   );

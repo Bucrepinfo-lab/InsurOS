@@ -386,80 +386,50 @@ export async function refreshClerkPlan(): Promise<ActionResult> {
   return fail('Key required to execute', 'Plan refreshed, but running it needs CLERK_SECRET_KEY — provision it and this button goes live', { reference: 'CLERK_SECRET_KEY' });
 }
 
-/* ── Legacy-page actions: clone-from-template inserts + universal request log ── */
+/* ── Steps that are not built yet ──
+   These buttons used to copy a template row into shared sample data and report
+   success, which added look-alike rows for every tenant. They now save nothing
+   and say so plainly. */
 
-import {
-  mockAttachments,
-  mockAuditEvents,
-  mockComments,
-  mockFeatureFlags,
-  mockPlatformSettings,
-  mockProducts
-} from '@insuros/mocks';
-
-function cloneRow<T extends { id: string }>(rows: T[], overrides: Partial<T> = {}): T {
-  const template = { ...rows[0], id: `${rows[0].id}-d${Date.now() % 100000}`, ...overrides };
-  rows.push(template);
-  return template;
+function notBuiltYet(label: string): ActionResult {
+  return ok('Not built yet', `"${label}" is not available yet. Nothing was changed.`);
 }
 
-/**
- * Universal acknowledgment for operational requests: the request is
- * receipted into the audit trail so nothing pressed ever vanishes.
- */
+/** Stands in for a step that is not built yet. It saves nothing and says so. */
 export async function queueDemoRequest(label: string): Promise<ActionResult> {
   const denied = await denyUnless(null, 'View');
   if (denied) return denied;
-  const entry = cloneRow(mockAuditEvents as unknown as { id: string }[]) as Record<string, unknown>;
-  if ('description' in entry) entry.description = `${label} requested from the console`;
-  if ('action' in entry) entry.action = label;
-  if ('occurredAt' in entry) entry.occurredAt = new Date().toISOString();
-  if ('createdAt' in entry) entry.createdAt = new Date().toISOString();
-
-  revalidatePath('/dashboard/audit');
-  return ok('Request receipted', `"${label}" logged to the audit trail — full workflow lands with persistence`, {
-    reference: String(entry.id)
-  });
+  return notBuiltYet(label);
 }
 
 export async function createDemoProduct(): Promise<ActionResult> {
   const denied = await denyUnless('Marketplace', 'Create');
   if (denied) return denied;
-  const row = cloneRow(mockProducts);
-  revalidatePath('/dashboard/marketplace');
-  return ok('Product created', 'Draft product cloned — set pricing before publishing', { reference: row.id });
+  return notBuiltYet('Create product');
 }
 
 export async function addDemoComment(): Promise<ActionResult> {
   const denied = await denyUnless('Operations', 'Create');
   if (denied) return denied;
-  const row = cloneRow(mockComments);
-  revalidatePath('/dashboard/comments');
-  return ok('Comment receipted', 'Operational note recorded against the thread', { reference: row.id });
+  return notBuiltYet('Add comment');
 }
 
 export async function uploadDemoAttachment(): Promise<ActionResult> {
   const denied = await denyUnless('Operations', 'Create');
   if (denied) return denied;
-  const row = cloneRow(mockAttachments);
-  revalidatePath('/dashboard/attachments');
-  return ok('Attachment receipted', 'File registered — OCR intake picks it up next', { reference: row.id });
+  return notBuiltYet('Upload attachment');
 }
 
 export async function createDemoSetting(): Promise<ActionResult> {
   const denied = await denyUnless('Platform', 'Update');
   if (denied) return denied;
-  const row = cloneRow(mockPlatformSettings);
-  revalidatePath('/dashboard/operations/settings');
-  return ok('Setting registered', 'Runtime setting created — takes effect on next read', { reference: row.id });
+  return notBuiltYet('Create setting');
 }
 
 export async function createDemoFlag(): Promise<ActionResult> {
   const denied = await denyUnless('Platform', 'Update');
   if (denied) return denied;
-  const row = cloneRow(mockFeatureFlags);
-  revalidatePath('/dashboard/operations/feature-flags');
-  return ok('Flag registered', 'Feature flag created — disabled until you switch it on', { reference: row.id });
+  return notBuiltYet('Create feature flag');
 }
 
 /* ── Staff access: grant / revoke a role for a login phone ── */

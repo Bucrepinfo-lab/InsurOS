@@ -201,7 +201,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               </li>
             ))}
           </ul>
-          <p className='mx-auto mt-3 max-w-6xl text-xs text-faint'>The times every step is held to. A late step goes to the supervisor, then to the next level up.</p>
+          <p className='mx-auto mt-3 max-w-6xl text-xs text-dim'>The times every step is held to. A late step goes to the supervisor, then to the next level up.</p>
         </section>
 
         {/* Who it is for */}
@@ -324,7 +324,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <Link href='/delete-account' className='hover:text-ink'>Delete account</Link>
             <ThemeToggle />
           </nav>
-          <p className='w-full text-xs text-faint'>InsurOS is a product of Telpen Systems Ltd, Kenya. telpeninfo@gmail.com</p>
+          <p className='w-full text-xs text-dim'>InsurOS is a product of Telpen Systems Ltd, Kenya. telpeninfo@gmail.com</p>
         </div>
       </footer>
     </div>

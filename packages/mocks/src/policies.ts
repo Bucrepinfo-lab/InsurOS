@@ -1,4 +1,5 @@
 import type { Policy } from '@insuros/domain';
+import { samplePolicies } from './sample-book';
 
 export const mockPolicies: Policy[] = [
   {
@@ -8,5 +9,7 @@ export const mockPolicies: Policy[] = [
     product: 'Motor Comprehensive',
     premium: 'KES 42,000',
     status: 'Active'
-  }
+  },
+  // Worked examples for every kind of cover (sample-book.ts).
+  ...samplePolicies
 ];

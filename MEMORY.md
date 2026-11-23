@@ -3,6 +3,16 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 2026-11-23 — Flow audit: every record page follows the record you opened; three worked examples per kind of cover (owner asked; awaiting merge)
+- Owner (23/11/26): audit the whole app so each step hands over to the next, check buttons, links, wording and colours, and fill every kind of policy with worked examples sold, claimed and taken through to an approved certificate of settlement.
+- Found: claim, policy and customer detail pages were fixed mock-ups of CLM-2026-0001 / POL-2026-0001 whatever was opened; the lists did not link to them; the customer page linked to five policy pages that did not exist; the claim workflow list showed shared sample rows to every tenant; placeholder buttons said "logged to the audit trail" while saving nothing, and five of them copied template rows into shared sample data.
+- Fixed: `lib/records.ts` loads the record in the address bar (server-side reach, 404 otherwise). Claim tabs (overview, first notice, assessment, settlement with the certificate of settlement, documents, timeline), a new policy page `/dashboard/policies/[id]`, the holder tab and the customer page now show the real record and link customer → policy → claim. Old `/customers/[c]/policies/[p]/*` tabs redirect to the policy page. Lists link their first column; status colours follow the status. The claim workflow list shows only this tenant's visible claims.
+- Sample book `packages/mocks/src/sample-book.ts`: 21 kinds of cover (POLICY_LINES) × 3 = 63 customers, policies (product templates added to the catalogue) and settled claims, each with 7 steps (reported, documents, assessment, approval, discharge voucher, payment recorded, certificate approved), amounts = claimed − excess − not covered. Demo tenant only (datasets "sample"). Tests: `packages/mocks/test/sample-book.test.ts`.
+- Placeholder buttons now say "Not built yet. Nothing was changed." and add nothing.
+- Colours: success badge text uses `--color-sealink` (6.1:1 on dark, 5.4:1 on light; was 3.8:1 in dark); faint footer text raised to `text-dim`.
+- Also fixed: a staff reply listed the person twice in a conversation (`messaging.ts`); the existing test had been failing on main.
+- Not done, needs the owner: buttons that move a claim through its stages (assign, approve, record payment, approve the certificate) are claims settlement, a protected area; the live demo tenant was seeded before this change, so the examples appear there only after its sample datasets are re-seeded (a database write).
+
 ## 2026-11-20 (evening) — Sign-in without SMS: phone + PIN, joining codes (owner approved; awaiting merge)
 - Owner: no paid SMS codes (Africa's Talking is not global) and no codes or alerts from Africa's Talking; the app's own messaging instead. Supersedes the 07/11/26 SMS-code rule.
 - Only a staff phone (non-revoked appointment), a platform-owner phone or the store reviewer can sign in. Step 2 is the person's own 4-digit PIN on any device (`signInWithPin`). First time, forgotten or locked PIN: a 6-digit joining code given under Governance → Jurisdiction Access ("Give a joining code"; Identity:Create, only inside the giver's regions, owner phones only by an owner, never oneself) → `redeemJoiningCode` → choose a PIN.

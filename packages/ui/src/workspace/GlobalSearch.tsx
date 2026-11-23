@@ -74,7 +74,7 @@ export function GlobalSearch({ items = [], LinkComponent, onNavigate, onSearch }
               const body = (
                 <>
                   <span className='font-medium text-ink'>{item.label}</span>
-                  {item.group ? <span className='ml-2 text-xs text-faint'>{item.group}</span> : null}
+                  {item.group ? <span className='ml-2 text-xs text-dim'>{item.group}</span> : null}
                 </>
               );
               const className = 'block px-3 py-2.5 text-sm transition hover:bg-sealsoft/60 focus-visible:bg-sealsoft/60 focus-visible:outline-none';

@@ -21,6 +21,8 @@
   --color-sealbright: #17a37e;
   --color-sealdark: #06382f;
   --color-sealsoft: #e3f2ea;
+  /* Seal green for small text on sealsoft (badges); AA in both themes. */
+  --color-sealink: #0f6e56;
   --color-warnink: #8a5410;
   --color-warnsoft: #f8ecd7;
   --color-dangerink: #a32d2d;
@@ -51,6 +53,7 @@
     --color-sealbright: #3cc79f;
     --color-sealdark: #0b5141;
     --color-sealsoft: #12372e;
+    --color-sealink: #3cc79f;
     --color-warnink: #e2ad55;
     --color-warnsoft: #3a2c12;
     --color-dangerink: #f08a8a;
@@ -86,6 +89,7 @@
       --color-sealbright: #3cc79f;
       --color-sealdark: #0b5141;
       --color-sealsoft: #12372e;
+    --color-sealink: #3cc79f;
       --color-warnink: #e2ad55;
       --color-warnsoft: #3a2c12;
       --color-dangerink: #f08a8a;

@@ -1,98 +1,69 @@
-import Link from 'next/link';
-import { Badge, Card, CardContent, DomainModulePage } from '@insuros/ui';
-import { ActionButton } from '@/components/ActionButton';
-import { queueDemoRequest } from '@/app/dashboard/actions';
+import { Badge, DomainModulePage, Tabs } from '@insuros/ui';
+import { Fact, NotYet, RecordLink, Section } from '@/components/record-view';
+import { loadClaim, shortDateTime } from '@/lib/records';
 
 export const metadata = { title: 'Assessment' };
 
-const claimId = 'CLM-2026-0001';
+export default async function ClaimAssessmentPage({ params }: { params: Promise<{ claimId: string }> }) {
+  const { claimId } = await params;
+  const { claim, story, tabs } = await loadClaim(claimId);
 
-const checks = [
-  { label: 'Policy in force at incident', pass: true },
-  { label: 'Documents complete', pass: true },
-  { label: 'Incident within cover window', pass: true },
-  { label: 'No duplicate claim on record', pass: true },
-  { label: 'Amount within policy limit', pass: false }
-];
+  if (!story) {
+    return (
+      <DomainModulePage title={`Assessment · ${claim.claimNumber}`} description='Cover checks, fraud signals and the recommended amount.'>
+        <Tabs items={tabs} activeId='assessment'>
+          <Section title='Not assessed yet'>
+            <NotYet>
+              No assessment has been recorded for this claim. An adjuster checks the cover and recommends an amount; a
+              person records the decision in the{' '}
+              <RecordLink href='/dashboard/claims/workflows'>claim workflow</RecordLink>.
+            </NotYet>
+          </Section>
+        </Tabs>
+      </DomainModulePage>
+    );
+  }
 
-export default function ClaimAssessmentPage() {
-  const fraudScore = 18;
-  const passed = checks.filter((check) => check.pass).length;
+  const passed = story.checks.filter((check) => check.pass).length;
+  const assessed = story.steps.find((step) => step.stage === 'Assessment');
+  const risk = story.fraudScore < 40 ? 'Low risk' : story.fraudScore < 70 ? 'Review' : 'High risk';
 
   return (
     <DomainModulePage
-      title={`Assessment · ${claimId}`}
-      description='Automated triage of the claim: fraud signals, cover checks, and the recommended decision. A human adjuster owns the final call.'
-      actions={
-        <ActionButton label='Escalate to adjuster' action={queueDemoRequest.bind(null, 'Escalate assessment')} />
-      }
+      title={`Assessment · ${claim.claimNumber}`}
+      description='Cover checks, fraud signals and the amount the adjuster recommended. A person makes the decision.'
     >
-      <div className='mb-6'>
-        <Link
-          href={`/dashboard/claims/${claimId}`}
-          className='rounded-md border bg-white px-3 py-2 text-sm font-medium hover:bg-slate-50'
-        >
-          ← Back to claim
-        </Link>
-      </div>
-
-      <div className='grid gap-4 lg:grid-cols-3'>
-        <Card>
-          <CardContent>
-            <p className='text-sm text-slate-500'>Fraud score</p>
-            <p className='mt-2 text-2xl font-semibold'>{fraudScore}<span className='text-base text-slate-400'>/100</span></p>
-            <div className='mt-2'>
-              <Badge tone={fraudScore < 40 ? 'success' : fraudScore < 70 ? 'warning' : 'danger'}>
-                {fraudScore < 40 ? 'Low risk' : fraudScore < 70 ? 'Review' : 'High risk'}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent>
-            <p className='text-sm text-slate-500'>Cover checks</p>
-            <p className='mt-2 text-2xl font-semibold'>{passed}<span className='text-base text-slate-400'>/{checks.length}</span></p>
-            <div className='mt-2'>
-              <Badge tone={passed === checks.length ? 'success' : 'warning'}>
-                {passed === checks.length ? 'All clear' : 'Needs attention'}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent>
-            <p className='text-sm text-slate-500'>Recommended decision</p>
-            <div className='mt-2'>
-              <Badge tone='warning'>Manual review</Badge>
-            </div>
-            <p className='mt-2 text-sm text-slate-500'>Claimed amount exceeds the policy limit — route to an adjuster.</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className='mt-6'>
-        <Card>
-          <CardContent>
-            <p className='text-sm text-slate-500'>Assessment checklist</p>
-            <ul className='mt-3 space-y-2'>
-              {checks.map((check) => (
-                <li key={check.label} className='flex items-center justify-between border-b border-slate-100 pb-2 text-sm last:border-0'>
-                  <span className='text-slate-700'>{check.label}</span>
+      <Tabs items={tabs} activeId='assessment'>
+        <div className='grid gap-4 sm:grid-cols-3'>
+          <Fact label='Fraud score'>
+            {story.fraudScore}
+            <span className='text-dim'> / 100</span>{' '}
+            <Badge tone={story.fraudScore < 40 ? 'success' : story.fraudScore < 70 ? 'warning' : 'danger'}>{risk}</Badge>
+          </Fact>
+          <Fact label='Cover checks'>
+            {passed} of {story.checks.length} passed
+          </Fact>
+          <Fact label='Assessed'>{assessed ? `${shortDateTime(assessed.at)} · ${assessed.by}` : '—'}</Fact>
+        </div>
+        <div className='mt-6 grid gap-4 lg:grid-cols-2'>
+          <Section title='Cover checks'>
+            <ul className='space-y-2'>
+              {story.checks.map((check) => (
+                <li key={check.label} className='flex items-center justify-between gap-3 border-b border-line pb-2 text-sm last:border-0'>
+                  <span className='text-ink'>{check.label}</span>
                   <Badge tone={check.pass ? 'success' : 'danger'}>{check.pass ? 'Pass' : 'Fail'}</Badge>
                 </li>
               ))}
             </ul>
-            <p className='mt-4 text-sm text-slate-500'>
-              A person records the decision in the claim workflow.{' '}
-              <Link href='/dashboard/claims/workflows' className='font-medium text-seal underline underline-offset-2'>
-                Open the claim workflow
-              </Link>
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+          </Section>
+          <Section title="Adjuster's recommendation">
+            <p className='text-sm text-ink'>{story.assessorNote}</p>
+            {story.settlement.notCoveredReason ? (
+              <p className='mt-3 text-sm text-dim'>Not covered: {story.settlement.notCoveredReason}.</p>
+            ) : null}
+          </Section>
+        </div>
+      </Tabs>
     </DomainModulePage>
   );
 }
