@@ -69,6 +69,8 @@ export interface PaymentLedgerPort {
   history(txnId: string): Promise<PaymentLedgerEntry[]>;
   /** Latest entry of the transaction that carries this provider id. */
   latestByProviderTxnId(providerTxnId: string): Promise<PaymentLedgerEntry | undefined>;
+  /** Ids of payments whose reference starts with any of these prefixes ("PREM:<policyId>:"), oldest first. */
+  txnIdsForReferencePrefixes(prefixes: string[]): Promise<string[]>;
   /** Replace the payer phone with "redacted" and drop raw payloads. Returns rows changed. */
   deidentifyPhone(phone: string): Promise<number>;
 }

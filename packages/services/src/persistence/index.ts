@@ -89,6 +89,7 @@ function createRoutingAdapter(backend: Backend): PersistenceAdapter {
     append: async (entry) => (await pick()).paymentLedger.append(entry),
     history: async (txnId) => (await pick()).paymentLedger.history(txnId),
     latestByProviderTxnId: async (id) => (await pick()).paymentLedger.latestByProviderTxnId(id),
+    txnIdsForReferencePrefixes: async (prefixes) => (await pick()).paymentLedger.txnIdsForReferencePrefixes(prefixes),
     deidentifyPhone: async (phone) => (await pick()).paymentLedger.deidentifyPhone(phone)
   };
 

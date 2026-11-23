@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { Badge, DomainModulePage, Tabs } from '@insuros/ui';
+import { premiumInvoiceFor } from '@insuros/domain';
+import { PaymentLedgerService } from '@insuros/services';
 import { Fact, NotYet, RecordLink, Rows, Section } from '@/components/record-view';
 import { claimTone, loadPolicy, money, policyTone, shortDate } from '@/lib/records';
 
@@ -8,6 +10,9 @@ export const metadata = { title: 'Policy' };
 export default async function PolicyDetailPage({ params }: { params: Promise<{ policyId: string }> }) {
   const { policyId } = await params;
   const { policy, customer, claims, tabs } = await loadPolicy(policyId);
+  // Premium payments recorded for this policy (customer M-Pesa payments), newest first.
+  const payments = (await new PaymentLedgerService().findByReferencePrefixes([`PREM:${policy.id}:`])).reverse();
+  const invoice = premiumInvoiceFor(policy);
 
   return (
     <DomainModulePage
@@ -54,6 +59,30 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ p
                 <RecordLink href={`/dashboard/customers/${encodeURIComponent(customer.id)}`}>Open the customer</RecordLink>
               </p>
             ) : null}
+          </Section>
+        </div>
+
+        <div className='mt-6'>
+          <Section
+            title='Premium payments'
+            note={invoice ? `Invoice ${invoice.invoiceNumber} (${invoice.kind.toLowerCase()}) for ${money(invoice.amount)} is open; the customer pays it from their cover page.` : undefined}
+          >
+            {payments.length === 0 ? (
+              <NotYet>No premium paid through InsurOS on this policy yet.</NotYet>
+            ) : (
+              <ul className='divide-y divide-line text-sm'>
+                {payments.map((payment) => (
+                  <li key={payment.id} className='flex flex-wrap items-center justify-between gap-2 py-2'>
+                    <span className='font-mono text-ink'>{payment.policyReference?.split(':').pop()}</span>
+                    <span className='text-ink'>{money(payment.amount, payment.currency)}</span>
+                    <span className='text-dim'>{shortDate(payment.updatedAt)}</span>
+                    <Badge tone={payment.status === 'SUCCESS' ? 'success' : payment.status === 'FAILED' ? 'danger' : 'warning'}>
+                      {payment.status === 'SUCCESS' ? 'Paid' : payment.status === 'FAILED' ? 'Not completed' : 'Waiting for PIN'}
+                    </Badge>
+                  </li>
+                ))}
+              </ul>
+            )}
           </Section>
         </div>
 

@@ -220,6 +220,20 @@ class PostgresPaymentLedger implements PaymentLedgerPort {
     });
   }
 
+  async txnIdsForReferencePrefixes(prefixes: string[]): Promise<string[]> {
+    if (prefixes.length === 0) return [];
+    // LIKE patterns: escape the wildcards a policy id could contain.
+    const patterns = prefixes.map((prefix) => `${prefix.replace(/[\\%_]/g, (c) => `\\${c}`)}%`);
+    return this.run(async (tx) => {
+      const rows = await tx<{ txn_id: string }>`
+        select txn_id from payment_ledger_entries
+        where tenant_id = ${this.tenantId} and policy_reference like any(${patterns})
+        group by txn_id
+        order by min(seq)`;
+      return rows.map((row) => row.txn_id);
+    });
+  }
+
   async latestByProviderTxnId(providerTxnId: string): Promise<PaymentLedgerEntry | undefined> {
     return this.run(async (tx) => {
       const rows = await tx<LedgerRow>`
