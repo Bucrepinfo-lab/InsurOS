@@ -26,6 +26,8 @@ import { ShareCover } from '@/components/share-cover';
 import { PlusPay } from '@/components/plus-pay';
 import { paymentsEnabled } from '@/lib/payments-gate';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { PayPremium } from '@/components/pay-premium';
+import { customerReceipts, payablePolicies, premiumPaymentsEnabled } from '@/lib/premium-pay';
 
 export const metadata = { title: 'My cover', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
@@ -74,6 +76,8 @@ export default async function MyCoverPage({
   const [customer] = await db.customers.findWhere((candidate) => candidate.homeAccessHash === hash);
   if (!customer) notFound();
   const plus = await plusFor(customer);
+  const [payable, receipts] = await Promise.all([payablePolicies(customer), customerReceipts(customer)]);
+  const canPayHere = premiumPaymentsEnabled();
   const [allPolicies, allClaims, content, tenants] = await Promise.all([db.policies.findAll(), db.claims.findAll(), db.marketingContent.findAll(), db.tenants.findAll()]);
   const policies = policiesOfCustomer(allPolicies, customer);
   const numbers = new Set(policies.map((policy) => policy.policyNumber));
@@ -82,7 +86,9 @@ export default async function MyCoverPage({
   const lines = policies
     .map((policy) => ({ policy, expiry: expiryStatus(policy.expiryDate, now, clock.timeZone), value: policy.registration || policy.yearOfManufacture ? estimateVehicleValue(policy, now) : null }))
     .sort((a, b) => (a.expiry.days ?? 99999) - (b.expiry.days ?? 99999));
-  const due = lines.filter((line) => line.expiry.level === 'due-soon' || line.expiry.level === 'expired');
+  const invoiced = new Set(payable.map((row) => row.policy.id));
+  // Policies with an invoice are shown in "Premium due" with a Pay button; the reminder keeps the rest.
+  const due = lines.filter((line) => (line.expiry.level === 'due-soon' || line.expiry.level === 'expired') && !invoiced.has(line.policy.id));
   const insuredTotal = policies.reduce((sum, policy) => sum + (policy.sumInsured ?? 0), 0);
   const news = selectContent(content, 'CustomerHome', undefined, now.toISOString()).filter((item) => item.placement === 'CustomerHome').slice(0, 5);
   const firstName = customer.name.split(' ')[0] ?? customer.name;
@@ -153,6 +159,63 @@ export default async function MyCoverPage({
           </dl>
           <p className='mt-6 text-xs text-white/60'>{t('homeScreen', lang)}</p>
         </section>
+
+        {payable.length > 0 ? (
+          <section aria-labelledby='premium-due' className='grid gap-3'>
+            <h2 id='premium-due' className='font-display text-[22px] text-ink'>{t('premiumDue', lang)}</h2>
+            <ul className='grid gap-3'>
+              {payable.map(({ policy, invoice, state, txnId }) => (
+                <li key={invoice.reference} className='grid gap-4 rounded-2xl border border-seal/30 bg-sheet p-5 shadow-sm'>
+                  <div className='flex flex-wrap items-start justify-between gap-3'>
+                    <div>
+                      <p className='text-xs font-semibold uppercase tracking-wider text-sealink'>
+                        {invoice.kind === 'Renewal' ? t('renewalFor', lang) : t('newCoverFor', lang)}
+                      </p>
+                      <p className='font-display text-[20px] leading-snug text-ink'>{policy.insuredItem ?? policy.product}</p>
+                      <p className='text-sm text-dim'>
+                        {policy.product}, {policy.policyNumber}
+                      </p>
+                    </div>
+                    <p className='font-mono text-[22px] font-semibold text-ink'>{kes(invoice.amount)}</p>
+                  </div>
+                  <dl className='grid gap-1 text-sm sm:grid-cols-3'>
+                    <div><dt className='text-dim'>{t('invoiceNo', lang)}</dt><dd className='font-mono text-ink'>{invoice.invoiceNumber}</dd></div>
+                    <div><dt className='text-dim'>{t('coverPeriod', lang)}</dt><dd className='text-ink'>{ddmmyy(invoice.periodStart)} – {ddmmyy(invoice.periodEnd)}</dd></div>
+                    <div><dt className='text-dim'>{t('dueBy', lang)}</dt><dd className='text-ink'>{ddmmyy(invoice.dueDate)}</dd></div>
+                  </dl>
+                  {canPayHere || state !== 'due' ? (
+                    <PayPremium
+                      token={token}
+                      policyId={policy.id}
+                      amountLabel={kes(invoice.amount)}
+                      initialState={state}
+                      initialTxnId={txnId}
+                      words={{
+                        pay: t('payNow', lang),
+                        payTo: t('payPromptTo', lang),
+                        change: t('changeNumber', lang),
+                        phoneLabel: t('mpesaNumber', lang),
+                        checkPhone: t('enterPin', lang),
+                        paid: t('premiumPaid', lang),
+                        receipt: t('viewReceipt', lang),
+                        failed: t('payFailed', lang),
+                        orCard: t('payByCard', lang),
+                        noConnection: t('noConnection', lang)
+                      }}
+                    />
+                  ) : (
+                    <p className='text-sm text-dim'>
+                      {t('premiumPaySoon', lang)}{' '}
+                      <Link href={`/contact?topic=policy&reference=${encodeURIComponent(policy.policyNumber)}`} className='font-medium text-seal underline underline-offset-2'>
+                        {t('askRenew', lang)}
+                      </Link>
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         {/* My Cover Plus */}
         <section aria-label='My Cover Plus' className='grid gap-3 rounded-2xl border border-[#c9a227]/40 bg-sheet p-5'>
@@ -255,6 +318,30 @@ export default async function MyCoverPage({
                 <li key={claim.id} className='flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-sheet px-4 py-3 text-sm'>
                   <span className='text-ink'>{claim.claimNumber} on {claim.policyNumber}, {claim.amount}</span>
                   <span className='rounded-full bg-paper px-2.5 py-0.5 text-xs font-semibold text-ink'>{claim.status}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {receipts.length > 0 ? (
+          <section aria-labelledby='receipts' className='grid gap-3'>
+            <h2 id='receipts' className='font-display text-[22px] text-ink'>{t('receipts', lang)}</h2>
+            <ul className='grid gap-2'>
+              {receipts.map(({ txnId, receipt }) => (
+                <li key={txnId}>
+                  <a
+                    href={`/my/${token}/receipts/${encodeURIComponent(txnId)}`}
+                    className='flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-sheet px-4 py-3 text-sm hover:border-seal/50'
+                  >
+                    <span className='text-ink'>
+                      <span className='font-mono'>{receipt.receiptNumber}</span> · {receipt.product}, {receipt.policyNumber}
+                      {receipt.sample ? <span className='ml-2 rounded-full bg-warnsoft px-2 py-0.5 text-xs font-semibold text-warnink'>{t('sampleReceipt', lang)}</span> : null}
+                    </span>
+                    <span className='font-mono text-ink'>
+                      {kes(receipt.amount)} · {ddmmyy(receipt.paidAt)}
+                    </span>
+                  </a>
                 </li>
               ))}
             </ul>

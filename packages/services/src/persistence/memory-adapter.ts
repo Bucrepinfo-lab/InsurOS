@@ -76,6 +76,15 @@ export class MemoryPaymentLedger implements PaymentLedgerPort {
     return all[all.length - 1];
   }
 
+  async txnIdsForReferencePrefixes(prefixes: string[]): Promise<string[]> {
+    const ids: string[] = [];
+    for (const entry of this.entries) {
+      const reference = entry.policyReference;
+      if (reference && prefixes.some((prefix) => reference.startsWith(prefix)) && !ids.includes(entry.txnId)) ids.push(entry.txnId);
+    }
+    return ids;
+  }
+
   async deidentifyPhone(phone: string): Promise<number> {
     let changed = 0;
     for (const entry of this.entries) {

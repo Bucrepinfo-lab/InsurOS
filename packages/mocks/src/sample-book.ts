@@ -1,4 +1,4 @@
-import type { Claim, ClaimWorkflow, Customer, InsuranceProduct, Policy } from '@insuros/domain';
+import { premiumReference, type Claim, type ClaimWorkflow, type Customer, type InsuranceProduct, type Policy } from '@insuros/domain';
 
 /*
   Sample book: three worked examples for every kind of cover InsurOS lists
@@ -317,6 +317,19 @@ function day(base: string, add: number, hour = 9): string {
 }
 const dateOnly = (iso: string) => iso.slice(0, 10);
 
+/** A premium the sample customer paid when the cover began (shown as a sample receipt). */
+export interface SamplePremiumPayment {
+  txnId: string;
+  policyId: string;
+  reference: string;
+  amount: number;
+  currency: string;
+  paidAt: string;
+  method: string;
+  providerReference: string;
+  phone: string;
+}
+
 interface Built {
   products: InsuranceProduct[];
   customers: Customer[];
@@ -324,10 +337,11 @@ interface Built {
   claims: Claim[];
   workflows: ClaimWorkflow[];
   stories: SampleClaimStory[];
+  payments: SamplePremiumPayment[];
 }
 
 function build(): Built {
-  const out: Built = { products: [], customers: [], policies: [], claims: [], workflows: [], stories: [] };
+  const out: Built = { products: [], customers: [], policies: [], claims: [], workflows: [], stories: [], payments: [] };
   let n = 0;
   LINES.forEach((line, lineIndex) => {
     out.products.push({
@@ -451,6 +465,18 @@ function build(): Built {
       const story = out.stories[out.stories.length - 1];
       // The claim carries its own steps and settlement record, the same fields a
       // real claim gets when people take it through its stages.
+      out.payments.push({
+        txnId: `sample-pay-${number}`,
+        policyId,
+        reference: premiumReference(policyId, start),
+        amount: example.premium,
+        currency: SAMPLE_CURRENCY,
+        paidAt: day(start, -1, 10),
+        method: 'M-Pesa',
+        providerReference: `SMP${number}DEMO`,
+        phone: `+2547000${number.padStart(5, '0')}`
+      });
+
       out.claims.push({
         id: claimId,
         claimNumber: claimId,
@@ -493,6 +519,8 @@ export const samplePolicies: Policy[] = BOOK.policies;
 export const sampleClaims: Claim[] = BOOK.claims;
 export const sampleClaimWorkflows: ClaimWorkflow[] = BOOK.workflows;
 export const sampleClaimStories: SampleClaimStory[] = BOOK.stories;
+/** Premiums paid on the sample policies (sample receipts; never in the payment ledger). */
+export const samplePremiumPayments: SamplePremiumPayment[] = BOOK.payments;
 
 /** The worked story behind a sample claim, if the claim is one of them. */
 export function sampleClaimStory(claimId: string): SampleClaimStory | undefined {

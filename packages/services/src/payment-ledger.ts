@@ -92,6 +92,13 @@ export class PaymentLedgerService {
     return latest ? this.get(latest.txnId) : undefined;
   }
 
+  /** Payments whose reference starts with any of these prefixes (premium invoices), oldest first. */
+  async findByReferencePrefixes(prefixes: string[]): Promise<PaymentTxnView[]> {
+    const ids = await this.ledger.txnIdsForReferencePrefixes(prefixes);
+    const views = await Promise.all(ids.map((id) => this.get(id)));
+    return views.filter((view): view is PaymentTxnView => Boolean(view));
+  }
+
   /** Account deletion: keep the rows, remove the payer's phone and raw payloads. */
   async deidentifyPayer(phone: string): Promise<number> {
     return this.ledger.deidentifyPhone(phone);

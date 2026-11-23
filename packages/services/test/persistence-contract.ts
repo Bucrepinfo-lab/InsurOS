@@ -84,5 +84,19 @@ export function persistenceContract(
       expect(after.every((entry) => entry.phone === REDACTED_PHONE && entry.raw === undefined)).toBe(true);
       expect(after.map((entry) => entry.amount)).toEqual([500, 500, 500]);
     });
+
+    it("finds payments by invoice reference", async () => {
+      const db = await makeAdapter(`t-ref-${unique()}`);
+      const a = `pay-a-${unique()}`;
+      const b = `pay-b-${unique()}`;
+      await db.paymentLedger.append({ txnId: a, status: "REQUESTED", phone: "+254700000001", amount: 900, currency: "KES", policyReference: "PREM:P1:2026-01-05" });
+      await db.paymentLedger.append({ txnId: a, status: "PENDING", phone: "+254700000001", amount: 900, currency: "KES", policyReference: "PREM:P1:2026-01-05" });
+      await db.paymentLedger.append({ txnId: b, status: "REQUESTED", phone: "+254700000001", amount: 900, currency: "KES", policyReference: "PREM:P2:2026-01-05" });
+      expect(await db.paymentLedger.txnIdsForReferencePrefixes(["PREM:P1:"])).toEqual([a]);
+      expect(await db.paymentLedger.txnIdsForReferencePrefixes(["PREM:P1:", "PREM:P2:"])).toEqual([a, b]);
+      expect(await db.paymentLedger.txnIdsForReferencePrefixes(["PREM:P"])).toEqual([a, b]);
+      expect(await db.paymentLedger.txnIdsForReferencePrefixes(["PREM:P_:"])).toEqual([]);
+      expect(await db.paymentLedger.txnIdsForReferencePrefixes([])).toEqual([]);
+    });
   });
 }

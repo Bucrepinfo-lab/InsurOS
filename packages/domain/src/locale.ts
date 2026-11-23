@@ -133,6 +133,31 @@ export const CUSTOMER_TEXT = {
     en: "Founding price: join in the first year and keep it for as long as you stay subscribed.",
     sw: "Bei ya mwanzo: jiunge mwaka wa kwanza na uidumishe mradi uendelee kujisajili."
   },
+  premiumDue: { en: "Premium due", sw: "Malipo ya bima yanadaiwa" },
+  renewalFor: { en: "Renewal", sw: "Kuhuisha" },
+  newCoverFor: { en: "New cover", sw: "Bima mpya" },
+  invoiceNo: { en: "Invoice", sw: "Ankara" },
+  coverPeriod: { en: "Cover period", sw: "Muda wa bima" },
+  dueBy: { en: "Pay by", sw: "Lipa kabla ya" },
+  payNow: { en: "Pay", sw: "Lipa" },
+  payPromptTo: { en: "M-Pesa prompt goes to", sw: "Ombi la M-Pesa litaenda kwa" },
+  changeNumber: { en: "Change number", sw: "Badilisha nambari" },
+  mpesaNumber: { en: "Your M-Pesa number", sw: "Nambari yako ya M-Pesa" },
+  enterPin: {
+    en: "Check your phone and enter your M-Pesa PIN. This page updates by itself once the payment is confirmed.",
+    sw: "Angalia simu yako na uweke PIN yako ya M-Pesa. Ukurasa huu utajisasisha malipo yakithibitishwa."
+  },
+  premiumPaid: { en: "Paid. Thank you.", sw: "Imelipwa. Asante." },
+  viewReceipt: { en: "View and download your receipt", sw: "Ona na upakue risiti yako" },
+  payFailed: { en: "The payment was not completed. Tap Pay to try again.", sw: "Malipo hayakukamilika. Gusa Lipa ujaribu tena." },
+  payByCard: { en: "Pay by card instead", sw: "Lipa kwa kadi badala yake" },
+  noConnection: { en: "No connection. Please try again.", sw: "Hakuna mtandao. Tafadhali jaribu tena." },
+  premiumPaySoon: {
+    en: "Paying here opens soon. Until then, pay your agent as usual.",
+    sw: "Kulipa hapa kutafunguliwa hivi karibuni. Hadi hapo, mlipe wakala wako kama kawaida."
+  },
+  receipts: { en: "Payments and receipts", sw: "Malipo na risiti" },
+  sampleReceipt: { en: "Sample", sw: "Mfano" },
   payPrompt: {
     en: "Check your phone and enter your M-Pesa PIN. Plus switches on once the payment is confirmed; refresh this page in a minute.",
     sw: "Angalia simu yako na uweke PIN yako ya M-Pesa. Plus itawaka malipo yakithibitishwa; onyesha upya ukurasa huu baada ya dakika moja."
