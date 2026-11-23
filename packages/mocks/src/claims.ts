@@ -1,4 +1,5 @@
 import type { Claim } from '@insuros/domain';
+import { sampleClaims } from './sample-book';
 
 export const mockClaims: Claim[] = [
   {
@@ -8,5 +9,7 @@ export const mockClaims: Claim[] = [
     customer: 'Demo Customer',
     amount: 'KES 120,000',
     status: 'Open'
-  }
+  },
+  // Worked examples for every kind of cover (sample-book.ts).
+  ...sampleClaims
 ];

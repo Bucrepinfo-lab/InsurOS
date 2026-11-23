@@ -1,181 +1,64 @@
-import Link from 'next/link';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  DomainModulePage,
-  Tabs
-} from '@insuros/ui';
-import {
-  ClaimService,
-  WorkflowEngine,
-  WorkflowService,
-  WorkflowStateMachineService
-} from '@insuros/services';
-import { ActionButton } from '@/components/ActionButton';
-import { queueDemoRequest } from '@/app/dashboard/actions';
+import { Badge, DomainModulePage, Tabs } from '@insuros/ui';
+import { ClaimService } from '@insuros/services';
+import { Fact, RecordLink, Rows, Section } from '@/components/record-view';
+import { claimTone, loadClaim, money, shortDate } from '@/lib/records';
 
 export const metadata = { title: 'Claim' };
 
-const claimId = 'CLM-2026-0001';
-const claimService = new ClaimService();
-const workflowService = new WorkflowService();
-const stateMachineService = new WorkflowStateMachineService();
-const workflowEngine = new WorkflowEngine();
+/** What happens next, in plain words, for each claim status. */
+const NEXT_STEP: Record<string, string> = {
+  Open: 'Collect the documents and assign the claim to an officer.',
+  'In Review': 'The adjuster assesses the loss and recommends an amount.',
+  Approved: 'The claimant signs the discharge voucher; finance records the payment.',
+  Settled: 'Paid. The certificate of settlement is on the Settlement tab.',
+  Closed: 'Closed. Nothing more to do.'
+};
 
-const tabs = [
-  { id: 'overview', label: 'Overview', href: `/dashboard/claims/${claimId}` },
-  { id: 'fnol', label: 'FNOL', href: `/dashboard/claims/${claimId}/fnol` },
-  { id: 'assessment', label: 'Assessment', href: `/dashboard/claims/${claimId}/assessment` },
-  { id: 'settlement', label: 'Settlement', href: `/dashboard/claims/${claimId}/settlement` },
-  { id: 'documents', label: 'Documents', href: `/dashboard/claims/${claimId}/documents` },
-  { id: 'timeline', label: 'Timeline', href: `/dashboard/claims/${claimId}/timeline` }
-];
-
-export default async function ClaimDetailPage() {
-  const workflow = await claimService.getClaimWorkflow(claimId);
-  const rules = await workflowService.getTransitionRulesByWorkflowType('Claim Assessment');
-
-  const stateMachine = workflow
-    ? stateMachineService.build('Claim Assessment', workflow.workflowStatus, rules)
-    : null;
-
-  const previewAction = stateMachine?.allowedActions[0];
-
-  const executionPreview =
-    workflow && previewAction
-      ? workflowEngine.execute(
-          'Claim Assessment',
-          workflow.workflowStatus,
-          previewAction,
-          rules
-        )
-      : null;
+export default async function ClaimDetailPage({ params }: { params: Promise<{ claimId: string }> }) {
+  const { claimId } = await params;
+  const { claim, policy, story, tabs } = await loadClaim(claimId);
+  const workflow = await new ClaimService().getClaimWorkflow(claim.id);
 
   return (
     <DomainModulePage
-      title='Claim CLM-2026-0001'
-      description='Complete claim workspace for FNOL, assessment, reserves, settlement, documents, workflow, and audit history.'
-      actions={<ActionButton label='Assign Adjuster' action={queueDemoRequest.bind(null, 'Assign Adjuster')} />}
+      title={`Claim ${claim.claimNumber}`}
+      description={`${claim.customer} · ${policy?.product ?? 'Policy ' + claim.policyNumber}`}
     >
-      <div className='mb-6 flex flex-wrap gap-3'>
-        {tabs.map((tab) => (
-          <Link
-            key={tab.id}
-            href={tab.href}
-            className='rounded-md border bg-white px-3 py-2 text-sm font-medium hover:bg-slate-50'
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </div>
-
       <Tabs items={tabs} activeId='overview'>
-        <div className='grid gap-4 lg:grid-cols-4'>
-          <Card>
-            <CardContent>
-              <p className='text-sm text-slate-500'>Status</p>
-              <div className='mt-2'>
-                <Badge tone='warning'>Open</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent>
-              <p className='text-sm text-slate-500'>Policy</p>
-              <p className='mt-2 font-medium'>POL-2026-0001</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent>
-              <p className='text-sm text-slate-500'>Claimed Amount</p>
-              <p className='mt-2 font-medium'>KES 120,000</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent>
-              <p className='text-sm text-slate-500'>Assigned To</p>
-              <p className='mt-2 font-medium'>Unassigned</p>
-            </CardContent>
-          </Card>
+        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+          <Fact label='Status'>
+            <Badge tone={claimTone(claim.status)}>{claim.status}</Badge>
+          </Fact>
+          <Fact label='Policy'>
+            {policy ? (
+              <RecordLink href={`/dashboard/policies/${encodeURIComponent(policy.id)}`}>{claim.policyNumber}</RecordLink>
+            ) : (
+              claim.policyNumber
+            )}
+          </Fact>
+          <Fact label='Amount claimed'>{claim.amount}</Fact>
+          <Fact label='Amount paid'>{story ? money(story.settlement.approved) : claim.status === 'Settled' ? 'See Settlement' : 'Not paid yet'}</Fact>
         </div>
 
-        <div className='mt-6 grid gap-4 lg:grid-cols-3'>
-          <Card>
-            <CardContent>
-              <p className='text-sm text-slate-500'>Workflow Stage</p>
-              <p className='mt-2 font-medium'>{workflow?.stage ?? 'Not started'}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent>
-              <p className='text-sm text-slate-500'>Workflow Status</p>
-              <div className='mt-2'>
-                <Badge tone={workflow?.workflowStatus === 'Approved' ? 'success' : 'warning'}>
-                  {workflow?.workflowStatus ?? 'Unavailable'}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent>
-              <p className='text-sm text-slate-500'>Allowed Actions</p>
-              <div className='mt-2 flex flex-wrap gap-2'>
-                {stateMachine && stateMachine.allowedActions.length > 0 ? (
-                  stateMachine.allowedActions.map((action) => (
-                    <Badge key={action} tone='neutral'>
-                      {action}
-                    </Badge>
-                  ))
-                ) : (
-                  <span className='text-sm text-slate-500'>No actions available</span>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className='mt-6'>
-          <Card>
-            <CardContent>
-              <p className='text-sm text-slate-500'>Execution Preview</p>
-
-              {executionPreview ? (
-                <div className='mt-2 space-y-2'>
-                  <p className='text-sm'>
-                    Action:{' '}
-                    <span className='font-medium text-slate-950'>
-                      {previewAction}
-                    </span>
-                  </p>
-
-                  <p className='text-sm'>
-                    Result:{' '}
-                    <Badge tone={executionPreview.success ? 'success' : 'danger'}>
-                      {executionPreview.success ? 'Allowed' : 'Blocked'}
-                    </Badge>
-                  </p>
-
-                  <p className='text-sm'>
-                    Next Status:{' '}
-                    <span className='font-medium text-slate-950'>
-                      {executionPreview.nextStatus ?? 'N/A'}
-                    </span>
-                  </p>
-                </div>
-              ) : (
-                <p className='mt-2 text-sm text-slate-500'>
-                  No workflow execution preview is currently available.
-                </p>
-              )}
-            </CardContent>
-          </Card>
+        <div className='mt-6 grid gap-4 lg:grid-cols-2'>
+          <Section title='The claim'>
+            <Rows
+              rows={[
+                ['Customer', claim.customer],
+                ['What is insured', policy?.insuredItem ?? '—'],
+                ['Date of the incident', shortDate(story?.incidentDate)],
+                ['Reported by', story?.reportedVia ?? '—'],
+                ['Stage', workflow?.stage === 'FNOL' ? 'First notice' : (workflow?.stage ?? 'Not started')]
+              ]}
+            />
+            {story ? <p className='mt-3 text-sm text-ink'>{story.description}</p> : null}
+          </Section>
+          <Section title='Next step'>
+            <p className='text-sm text-ink'>{NEXT_STEP[claim.status] ?? '—'}</p>
+            <p className='mt-3 text-sm text-dim'>
+              A person makes every decision on a claim. InsurOS keeps the record; it never sends money.
+            </p>
+          </Section>
         </div>
       </Tabs>
     </DomainModulePage>

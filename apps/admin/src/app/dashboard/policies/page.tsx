@@ -12,6 +12,8 @@ import type { OwnedPolicy, PolicyStatus } from '@insuros/domain';
 import { PolicyService } from '@insuros/services';
 import { StatusFilter, applyStatusFilter } from '@/components/list-filters';
 import { currentReach } from '@/lib/record-scope';
+import { RecordLink } from '@/components/record-view';
+import { policyTone } from '@/lib/records';
 
 export const metadata = { title: 'Policies' };
 
@@ -20,14 +22,18 @@ const policyService = new PolicyService();
 const POLICY_STATUSES: readonly PolicyStatus[] = ['Active', 'Pending', 'Expired', 'Cancelled'];
 
 const columns: DataTableColumn<OwnedPolicy>[] = [
-  { key: 'policyNumber', header: 'Policy No.' },
+  {
+    key: 'policyNumber',
+    header: 'Policy No.',
+    render: (row) => <RecordLink href={`/dashboard/policies/${encodeURIComponent(row.id)}`}>{row.policyNumber}</RecordLink>
+  },
   { key: 'customer', header: 'Customer' },
   { key: 'product', header: 'Product' },
   { key: 'premium', header: 'Premium' },
   {
     key: 'status',
     header: 'Status',
-    render: (row) => <Badge tone={row.status === 'Active' ? 'success' : 'warning'}>{row.status}</Badge>
+    render: (row) => <Badge tone={policyTone(row.status)}>{row.status}</Badge>
   }
 ];
 
@@ -49,8 +55,8 @@ export default async function PoliciesPage({
 
   return (
     <DomainModulePage
-      title='Policy Lifecycle'
-      description='Manage policy issuance, servicing, endorsements, renewals, cancellations, and lifecycle operations.'
+      title='Policies'
+      description='Every policy sold, with its cover and claims. Open a policy to see what it covers and register a claim.'
       actions={
         <Link href='/dashboard/policies/new' className='inline-flex items-center justify-center gap-2 rounded-lg bg-[linear-gradient(180deg,#22344f_0%,#1b2a41_100%)] px-4 py-2 text-sm font-medium text-paper shadow-[0_1px_2px_rgba(18,28,49,0.3),0_8px_20px_-10px_rgba(18,28,49,0.5)] transition-all duration-200 hover:-translate-y-px hover:bg-[linear-gradient(180deg,#128a6b_0%,#0f6e56_100%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal'>
           Record policy
@@ -73,7 +79,7 @@ export default async function PoliciesPage({
         columns={columns}
         data={filtered}
         emptyTitle='No policies'
-        emptyDescription='Issue the first insurance policy.'
+        emptyDescription='Record the first policy.'
       />
     </DomainModulePage>
   );

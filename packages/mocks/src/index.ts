@@ -46,3 +46,4 @@ export * from "./scene-capture";
 export * from "./marketing";
 export * from "./subscriptions";
 export * from "./engagement";
+export * from "./sample-book";

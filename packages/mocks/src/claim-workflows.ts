@@ -1,4 +1,5 @@
 import type { ClaimWorkflow } from "@insuros/domain";
+import { sampleClaimWorkflows } from './sample-book';
 
 export const mockClaimWorkflows: ClaimWorkflow[] = [
   {
@@ -15,5 +16,7 @@ export const mockClaimWorkflows: ClaimWorkflow[] = [
     claimId: "CLM-2026-0003",
     stage: "Settlement",
     workflowStatus: "Approved"
-  }
+  },
+  // Worked examples for every kind of cover (sample-book.ts).
+  ...sampleClaimWorkflows
 ];

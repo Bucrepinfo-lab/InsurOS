@@ -1,23 +1,40 @@
-import { Badge, Card, CardContent, DomainModulePage } from '@insuros/ui';
+import { Badge, DomainModulePage, Tabs } from '@insuros/ui';
+import { Fact, NotYet, Rows, Section } from '@/components/record-view';
+import { claimTone, loadClaim, shortDate, shortDateTime } from '@/lib/records';
 
-export const metadata = { title: 'FNOL' };
+export const metadata = { title: 'First notice of loss' };
 
-const claimId = 'CLM-2026-0001';
+export default async function ClaimFnolPage({ params }: { params: Promise<{ claimId: string }> }) {
+  const { claimId } = await params;
+  const { claim, story, tabs } = await loadClaim(claimId);
+  const reported = story?.steps.find((step) => step.stage === 'Reported');
 
-export default function ClaimFnolPage() {
   return (
     <DomainModulePage
-      title={`First notice of loss · ${claimId}`}
-      description='The moment the claim was reported, captured with channel, time, and initial description.'
+      title={`First notice of loss · ${claim.claimNumber}`}
+      description='When and how the claim was first reported, and what the customer said happened.'
     >
-      <div className='grid gap-4 lg:grid-cols-3'>
-        <Card><CardContent><p className='text-sm text-slate-500'>Channel</p><p className='mt-2 font-medium'>Mobile app</p></CardContent></Card>
-        <Card><CardContent><p className='text-sm text-slate-500'>Reported</p><p className='mt-2 font-medium'>4 hours after incident</p></CardContent></Card>
-        <Card><CardContent><p className='text-sm text-slate-500'>Status</p><div className='mt-2'><Badge tone='warning'>Under review</Badge></div></CardContent></Card>
-      </div>
-      <div className='mt-6'>
-        <Card><CardContent><p className='text-sm text-slate-500'>Description</p><p className='mt-2 text-sm text-slate-700'>Rear-end collision on Waiyaki Way; no injuries reported. Photos captured live at the scene with a GPS fix.</p></CardContent></Card>
-      </div>
+      <Tabs items={tabs} activeId='fnol'>
+        <div className='grid gap-4 sm:grid-cols-3'>
+          <Fact label='Reported by'>{story?.reportedVia ?? '—'}</Fact>
+          <Fact label='Reported on'>{reported ? shortDateTime(reported.at) : '—'}</Fact>
+          <Fact label='Claim status'>
+            <Badge tone={claimTone(claim.status)}>{claim.status}</Badge>
+          </Fact>
+        </div>
+        <div className='mt-6'>
+          <Section title='What happened'>
+            {story ? (
+              <>
+                <Rows rows={[['Date of the incident', shortDate(story.incidentDate)], ['Amount claimed', claim.amount]]} />
+                <p className='mt-3 text-sm text-ink'>{story.description}</p>
+              </>
+            ) : (
+              <NotYet>No description has been recorded for this claim yet. The amount claimed is {claim.amount}.</NotYet>
+            )}
+          </Section>
+        </div>
+      </Tabs>
     </DomainModulePage>
   );
 }

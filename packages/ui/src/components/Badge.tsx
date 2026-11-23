@@ -8,7 +8,7 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 export function Badge({ tone = 'neutral', className, children, ...props }: BadgeProps) {
   const tones = {
     neutral: 'bg-ink/[0.06] text-dim ring-1 ring-inset ring-ink/10',
-    success: 'bg-sealsoft text-seal ring-1 ring-inset ring-seal/25',
+    success: 'bg-sealsoft text-sealink ring-1 ring-inset ring-seal/25',
     warning: 'bg-warnsoft text-warnink ring-1 ring-inset ring-warnink/25',
     danger: 'bg-dangersoft text-dangerink ring-1 ring-inset ring-dangerink/25'
   };
