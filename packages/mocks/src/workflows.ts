@@ -63,5 +63,25 @@ export const mockWorkflowTasks: WorkflowTask[] = [
     priority: "Critical",
     assignee: "Finance Manager",
     dueAt: "2026-07-02"
+  },
+  {
+    id: "task-004",
+    workflowId: "wf-001",
+    title: "Approve claim settlement for CLM-2026-0001",
+    module: "Claims",
+    status: "Open",
+    priority: "High",
+    assignee: "Claims Manager",
+    dueAt: "2026-11-26"
+  },
+  {
+    id: "task-005",
+    workflowId: "wf-002",
+    title: "Approve endorsement on POL-2026-0001",
+    module: "Policies",
+    status: "In Progress",
+    priority: "Normal",
+    assignee: "Underwriting",
+    dueAt: "2026-11-27"
   }
 ];

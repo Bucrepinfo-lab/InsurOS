@@ -7,9 +7,9 @@ describe("seed markers", () => {
     expect(seedMarker(DATASETS.taxJurisdictions)).toBe("tax_jurisdictions");
   });
 
-  it("re-seeds only the sample policies, claims and customers (demo tenant only)", () => {
+  it("re-seeds only the sample policies, claims, customers, follow-ups and messages (demo tenant only)", () => {
     const bumped = Object.values(DATASETS).filter((dataset) => (dataset.seedVersion ?? 1) > 1);
-    expect(bumped.map(seedMarker).sort()).toEqual(["claims@v2", "customers@v2", "policies@v2"]);
+    expect(bumped.map(seedMarker).sort()).toEqual(["claims@v2", "conversations@v2", "customers@v2", "follow_ups@v2", "messages@v2", "policies@v2"]);
     expect(bumped.every((dataset) => dataset.kind === "sample")).toBe(true);
   });
 });
