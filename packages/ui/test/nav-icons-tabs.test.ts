@@ -33,3 +33,25 @@ describe("record tabs keep no dead controls", () => {
     expect(visibleTabs([{ id: "x", label: "X" }], "x").hasChoice).toBe(false);
   });
 });
+
+import { phoneTabs } from "../src/workspace/PhoneTabBar";
+import { filterNavigationByPermissions } from "../src/navigation/permission-filter";
+
+describe("phone tab bar (owner 24/11/26)", () => {
+  const all = adminNavigation.flatMap((s) => s.items).filter((i) => !i.hidden);
+  it("shows Home, Claims, Policies and Follow-ups when the role sees them all", () => {
+    expect(phoneTabs(all).map((t) => t.label)).toEqual(["Home", "Claims", "Policies", "Follow-ups"]);
+  });
+  it("never shows a section the role cannot open, and fills the gap with one it can", () => {
+    const tabs = phoneTabs(all.filter((i) => i.id !== "claims"));
+    expect(tabs.map((t) => t.label)).toEqual(["Home", "Policies", "Follow-ups", "Messages"]);
+  });
+  it("only uses menu items the permission filter lets through", () => {
+    const visible = filterNavigationByPermissions(adminNavigation, { permissions: [] }).flatMap((s) => s.items);
+    const hrefs = new Set(visible.map((i) => i.href));
+    for (const tab of phoneTabs(visible)) expect(hrefs.has(tab.href)).toBe(true);
+  });
+  it("draws every quick tab with a real icon", () => {
+    for (const tab of phoneTabs(all)) expect(navIconName(tab.id)).not.toBe("dot");
+  });
+});

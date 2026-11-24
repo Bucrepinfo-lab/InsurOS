@@ -85,7 +85,7 @@ export function ActionButton({ label, action, variant = 'primary' }: ActionButto
       {result ? (
         <div
           role='status'
-          className='animate-toast fixed bottom-6 right-6 z-50 flex max-w-md items-start gap-3 rounded-xl px-4 py-3.5 text-sm text-white shadow-[0_18px_44px_-14px_rgba(6,30,25,0.6)]'
+          className='animate-toast fixed bottom-24 left-4 right-4 z-50 flex max-w-md sm:left-auto lg:bottom-6 lg:right-6 items-start gap-3 rounded-xl px-4 py-3.5 text-sm text-white shadow-[0_18px_44px_-14px_rgba(6,30,25,0.6)]'
           style={{
             backgroundImage: result.ok
               ? 'linear-gradient(135deg, #0a4a3c 0%, #06382f 100%)'
