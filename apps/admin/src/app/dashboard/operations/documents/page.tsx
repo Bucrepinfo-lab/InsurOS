@@ -8,12 +8,14 @@ import {
 } from '@insuros/ui';
 import { DOCUMENT_FIELD_LABELS, DOCUMENT_TYPE_LABELS } from '@insuros/domain';
 import { DocumentIntelligenceService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Document intelligence' };
 
 const documentIntelligenceService = new DocumentIntelligenceService();
 
 export default async function DocumentIntelligencePage() {
+  await requirePageAccess("/dashboard/operations/documents");
   const extractions = await documentIntelligenceService.getExtractions();
 
   type ExtractionRow = (typeof extractions)[number];

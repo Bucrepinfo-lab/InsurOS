@@ -8,12 +8,14 @@ import {
 import { ActionButton } from '@/components/ActionButton';
 import { enrolDemoMicroPolicy } from '@/app/dashboard/actions';
 import { MicroinsuranceService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Microinsurance' };
 
 const microinsuranceService = new MicroinsuranceService();
 
 export default async function MicroinsurancePage() {
+  await requirePageAccess("/dashboard/marketplace/micro");
   const products = await microinsuranceService.getProducts();
   const providers = await microinsuranceService.getProviders();
   const policies = await microinsuranceService.getPolicies();

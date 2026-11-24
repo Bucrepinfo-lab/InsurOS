@@ -1,10 +1,12 @@
 import { Badge, DomainModulePage, Tabs } from '@insuros/ui';
 import { Fact, NotYet, Rows, Section } from '@/components/record-view';
 import { claimTone, loadClaim, shortDate, shortDateTime } from '@/lib/records';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'First notice of loss' };
 
 export default async function ClaimFnolPage({ params }: { params: Promise<{ claimId: string }> }) {
+  await requirePageAccess("/dashboard/claims/[claimId]/fnol");
   const { claimId } = await params;
   const { claim, story, tabs } = await loadClaim(claimId);
   const reported = story?.steps.find((step) => step.stage === 'Reported');

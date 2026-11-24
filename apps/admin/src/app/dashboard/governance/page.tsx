@@ -8,12 +8,14 @@ import {
 import { ActionButton } from '@/components/ActionButton';
 import { createDemoRegion } from '@/app/dashboard/actions';
 import { AdminHierarchyService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Governance' };
 
 const adminHierarchyService = new AdminHierarchyService();
 
 export default async function GovernancePage() {
+  await requirePageAccess("/dashboard/governance");
   const regions = await adminHierarchyService.getRegions();
   const appointments = await adminHierarchyService.getAppointments();
 

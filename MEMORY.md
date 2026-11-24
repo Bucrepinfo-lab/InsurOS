@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 24/11/26 — Every workspace page checks access on the server (standing rule 13; owner: "make the appropriate decision", 24/11/26)
+- Audit found 60 of 79 dashboard pages relied on the menu alone: any signed-in role could open Finance, Tax, Tenants, Audit by typing the address.
+- `packages/domain/src/page-access.ts` (`PAGE_SCOPES`, `scopeForPage`) maps every page to the View permission it needs (longest prefix; unknown pages refused). `apps/admin/src/lib/auth/page-access.ts` `requirePageAccess(route)` is the first await of every `page.tsx`; refusal answers "not found" (does not reveal the page).
+- Same permissions as the menu, so no role loses a page it can see today; the Play reviewer still opens every page in its menu. Test: `packages/domain/test/page-access.test.ts` (every page calls it with its own route, first; every route is mapped).
+
 ## 24/11/26 — Full audit: menu shows the working flow, dead files gone, friendly error pages (owner asked 24/11/26)
 - Live crawl of all 67 static dashboard/public pages plus every claim/policy/product/customer detail tab: all 200, all under 0.8 s, no console errors on the 14 core screens; wrong claim/policy/customer ids answer "not found".
 - Menu (`packages/ui/src/navigation/navigation-config.ts`): 26 side pages flagged `hidden: true` (owner: hide, don't delete); the menu is now Dashboard, Follow-ups, Messages, Tenants, Identity, Jurisdiction Access, Marketplace, Customers, Customer home links, Policies, Claims, Finance, Escalations, Approvals, Audit. Escalations and Approvals were reachable only by address before. Hidden pages still open by address; delete the flag to bring one back. Test: `packages/ui/test/navigation.test.ts`.

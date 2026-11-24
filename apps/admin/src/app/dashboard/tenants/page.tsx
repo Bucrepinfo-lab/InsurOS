@@ -6,6 +6,7 @@ import {
 } from '@insuros/ui';
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Tenants' };
 
@@ -36,7 +37,8 @@ const columns: DataTableColumn<TenantRow>[] = [
   }
 ];
 
-export default function TenantsPage() {
+export default async function TenantsPage() {
+  await requirePageAccess("/dashboard/tenants");
   return (
     <DomainModulePage
       title='Tenant Management'

@@ -10,10 +10,12 @@
 import { FinanceService } from '@insuros/services';
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 const financeService = new FinanceService();
 
 export default async function FinancePage() {
+  await requirePageAccess("/dashboard/finance");
   const transactions = await financeService.getFinanceTransactions();
   const workflows = await financeService.getFinanceWorkflows();
 

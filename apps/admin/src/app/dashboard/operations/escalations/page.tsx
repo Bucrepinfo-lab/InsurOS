@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Badge, DomainEntityList, DomainModulePage, KPICard, formatDateTime, type DataTableColumn } from '@insuros/ui';
 import { findStaffRole, flowFor } from '@insuros/domain';
 import { FollowUpService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Escalations' };
 export const dynamic = 'force-dynamic';
@@ -14,6 +15,7 @@ const roleName = (roleId: string) => findStaffRole(roleId)?.name ?? roleId;
  * or the supervisor it has gone to.
  */
 export default async function EscalationsQueuePage() {
+  await requirePageAccess("/dashboard/operations/escalations");
   const lines = await new FollowUpService().escalated();
   const rows = lines.map((line) => {
     const flow = flowFor(line.item.area);

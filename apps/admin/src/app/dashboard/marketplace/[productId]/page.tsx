@@ -9,6 +9,7 @@ import {
 } from '@insuros/ui';
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Marketplace' };
 
@@ -21,7 +22,8 @@ const tabs = [
   { id: 'publishing', label: 'Publishing', href: `/dashboard/marketplace/${productId}/publishing` }
 ];
 
-export default function MarketplaceProductDetailPage() {
+export default async function MarketplaceProductDetailPage() {
+  await requirePageAccess("/dashboard/marketplace/[productId]");
   return (
     <DomainModulePage
       title='Motor Comprehensive'

@@ -3,6 +3,7 @@ import { ClaimService } from '@insuros/services';
 import { RecordLink } from '@/components/record-view';
 import { currentReach } from '@/lib/record-scope';
 import { claimStage } from '@/lib/records';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Claim workflow' };
 
@@ -23,6 +24,7 @@ const columns: DataTableColumn<Row>[] = [
 ];
 
 export default async function ClaimWorkflowsPage() {
+  await requirePageAccess("/dashboard/claims/workflows");
   // Built from this tenant's claims that this person may see, so a step taken
   // on a claim shows here at once and no other tenant's claims appear.
   const claims = await new ClaimService().getClaimsFor(await currentReach('Claims'));

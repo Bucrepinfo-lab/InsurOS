@@ -6,12 +6,14 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { WorkflowService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Transitions' };
 
 const workflowService = new WorkflowService();
 
 export default async function WorkflowTransitionsPage() {
+  await requirePageAccess("/dashboard/operations/transitions");
   const transitions = await workflowService.getTransitions();
 
   type TransitionRow = (typeof transitions)[number];

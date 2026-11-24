@@ -13,6 +13,7 @@ import {
   SceneCaptureService,
   evaluateSceneIntegrity
 } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Scene evidence' };
 
@@ -20,6 +21,7 @@ const sceneCaptureService = new SceneCaptureService();
 const claimsAutomationService = new ClaimsAutomationService();
 
 export default async function SceneEvidencePage() {
+  await requirePageAccess("/dashboard/claims/evidence");
   const photos = await sceneCaptureService.getPhotos();
   const fnols = await claimsAutomationService.getFnols();
 

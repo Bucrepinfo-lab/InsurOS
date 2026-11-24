@@ -4,10 +4,12 @@ import { premiumInvoiceFor } from '@insuros/domain';
 import { PaymentLedgerService } from '@insuros/services';
 import { Fact, NotYet, RecordLink, Rows, Section } from '@/components/record-view';
 import { claimTone, loadPolicy, money, policyTone, shortDate } from '@/lib/records';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Policy' };
 
 export default async function PolicyDetailPage({ params }: { params: Promise<{ policyId: string }> }) {
+  await requirePageAccess("/dashboard/policies/[policyId]");
   const { policyId } = await params;
   const { policy, customer, claims, tabs } = await loadPolicy(policyId);
   // Premium payments recorded for this policy (customer M-Pesa payments), newest first.

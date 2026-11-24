@@ -8,12 +8,14 @@ import {
 import { ActionButton } from '@/components/ActionButton';
 import { recordDemoAcceptance } from '@/app/dashboard/actions';
 import { TermsService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Legal and terms' };
 
 const termsService = new TermsService();
 
 export default async function LegalPage() {
+  await requirePageAccess("/dashboard/legal");
   const documents = await termsService.getTermsDocuments();
   const acceptances = await termsService.getAcceptances();
 

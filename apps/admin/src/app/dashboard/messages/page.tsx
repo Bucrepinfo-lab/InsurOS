@@ -4,6 +4,7 @@ import { TOPIC_LABELS, replyDueAt, type InboxLine, type InboxStanding } from '@i
 import { MessagingService } from '@insuros/services';
 import { getAuthState } from '@/lib/auth/session';
 import { messengerFor } from '@/lib/messaging';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Messages' };
 export const dynamic = 'force-dynamic';
@@ -46,6 +47,7 @@ function Row({ line }: { line: InboxLine }) {
 }
 
 export default async function MessagesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  await requirePageAccess("/dashboard/messages");
   const params = await searchParams;
   const filter = FILTERS.find((candidate) => candidate.id === params.show)?.id ?? 'all';
   const state = await getAuthState();

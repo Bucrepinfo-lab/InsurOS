@@ -8,12 +8,14 @@ import {
 import { ActionButton } from '@/components/ActionButton';
 import { addDemoRegionalRule } from '@/app/dashboard/actions';
 import { RegionalTaxService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Regional tax' };
 
 const regionalTaxService = new RegionalTaxService();
 
 export default async function RegionalTaxPage() {
+  await requirePageAccess("/dashboard/finance/tax/regional");
   const rules = await regionalTaxService.getRules();
 
   // Worked example: motor premium written in California.

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { DomainModulePage } from '@insuros/ui';
 import { COUNTRY_PROFILES, POLICY_LINES, canSell, splitCommission } from '@insuros/domain';
 import { CountryPills, CountryStatus, money, numberParam, pickCountry } from '@/components/country-pills';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Commission plan' };
 
@@ -17,6 +18,7 @@ export default async function CommissionPlanPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageAccess("/dashboard/sales/commission-plan");
   const params = await searchParams;
   const profile = pickCountry(params.country, COUNTRY_PROFILES);
   const premium = numberParam(params.premium, profile.countryCode === 'KE' ? 60000 : 1000);

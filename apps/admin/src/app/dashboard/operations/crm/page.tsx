@@ -9,12 +9,14 @@ import {
 import { ActionButton } from '@/components/ActionButton';
 import { createDemoContent } from '@/app/dashboard/actions';
 import { MarketingService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'CRM content' };
 
 const marketingService = new MarketingService();
 
 export default async function CrmContentPage() {
+  await requirePageAccess("/dashboard/operations/crm");
   const contents = await marketingService.getAllContent();
   const [preview] = await marketingService.getContentFor('All');
 

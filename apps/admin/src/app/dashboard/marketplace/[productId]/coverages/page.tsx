@@ -6,6 +6,7 @@ import {
 } from '@insuros/ui';
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Coverages' };
 
@@ -42,7 +43,8 @@ const columns: DataTableColumn<CoverageRow>[] = [
   }
 ];
 
-export default function ProductCoveragesPage() {
+export default async function ProductCoveragesPage() {
+  await requirePageAccess("/dashboard/marketplace/[productId]/coverages");
   return (
     <DomainModulePage
       title='Coverage Builder'

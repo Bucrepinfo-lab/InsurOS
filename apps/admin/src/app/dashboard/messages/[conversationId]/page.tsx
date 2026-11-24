@@ -9,6 +9,7 @@ import { CustomerLinkPanel } from '@/components/customer-link-panel';
 import { getAuthState } from '@/lib/auth/session';
 import { directoryForPrincipal, messengerFor } from '@/lib/messaging';
 import { assignConversation, replyToConversation, setConversationStatus } from '../actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Conversation' };
 export const dynamic = 'force-dynamic';
@@ -16,6 +17,7 @@ export const dynamic = 'force-dynamic';
 const roleName = (roleId: string) => findStaffRole(roleId)?.name ?? roleId;
 
 export default async function ConversationPage({ params }: { params: Promise<{ conversationId: string }> }) {
+  await requirePageAccess("/dashboard/messages/[conversationId]");
   const { conversationId } = await params;
   const state = await getAuthState();
   if (state.status !== 'active') notFound();

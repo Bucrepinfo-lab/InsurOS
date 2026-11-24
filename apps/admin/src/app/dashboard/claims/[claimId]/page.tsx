@@ -4,6 +4,7 @@ import { ClaimSteps } from '@/components/claim-steps';
 import { getAuthState, principalCan } from '@/lib/auth/session';
 import { Fact, RecordLink, Rows, Section } from '@/components/record-view';
 import { claimStage, claimTone, loadClaim, money, shortDate } from '@/lib/records';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Claim' };
 
@@ -17,6 +18,7 @@ const NEXT_STEP: Record<string, string> = {
 };
 
 export default async function ClaimDetailPage({ params }: { params: Promise<{ claimId: string }> }) {
+  await requirePageAccess("/dashboard/claims/[claimId]");
   const { claimId } = await params;
   const { claim, policy, story, settlement, tabs } = await loadClaim(claimId);
   const auth = await getAuthState();

@@ -8,12 +8,14 @@ import {
 import { WorkflowService } from '@insuros/services';
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Operations' };
 
 const workflowService = new WorkflowService();
 
 export default async function OperationsPage() {
+  await requirePageAccess("/dashboard/operations");
   const workflows = await workflowService.getWorkflows();
   const escalated = await workflowService.getEscalatedWorkflows();
 

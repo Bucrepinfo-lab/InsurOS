@@ -8,12 +8,14 @@ import {
 import { ActionButton } from '@/components/ActionButton';
 import { recordDemoSnapshot } from '@/app/dashboard/actions';
 import { AnalyticsService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Analytics' };
 
 const analyticsService = new AnalyticsService();
 
 export default async function AnalyticsPage() {
+  await requirePageAccess("/dashboard/finance/analytics");
   const reports = await analyticsService.getReports();
 
   const latest = reports[reports.length - 1];
