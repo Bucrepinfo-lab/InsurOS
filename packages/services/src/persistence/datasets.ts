@@ -11,6 +11,9 @@ import {
   mockCustomers,
   mockEngagementItems,
   mockFnolSubmissions,
+  mockConversations,
+  mockFollowUps,
+  mockMessages,
   mockJurisdictionAssignments,
   mockKpiSnapshots,
   mockMarketingContent,
@@ -125,9 +128,11 @@ export const DATASETS: Record<RepositoryKey, DatasetDefinition> = {
   },
   // Nothing is seeded: counts start at zero in every tenant.
   usageCounters: { collection: "usage_counters", kind: "reference", rows: () => [] },
-  followUps: { collection: "follow_ups", kind: "reference", rows: () => [] },
-  conversations: { collection: "conversations", kind: "reference", rows: () => [] },
-  messages: { collection: "messages", kind: "reference", rows: () => [] },
+  // v2 (24/11/26): three worked follow-ups in the demo tenant (escalated: claim, policy, customer).
+  followUps: { collection: "follow_ups", kind: "sample", rows: () => mockFollowUps, seedVersion: 2 },
+  // v2 (24/11/26): three worked conversations in the demo tenant.
+  conversations: { collection: "conversations", kind: "sample", rows: () => mockConversations, seedVersion: 2 },
+  messages: { collection: "messages", kind: "sample", rows: () => mockMessages, seedVersion: 2 },
   aiUsage: { collection: "ai_usage", kind: "reference", rows: () => [] },
   signatures: { collection: "signatures", kind: "reference", rows: () => [] }
 };

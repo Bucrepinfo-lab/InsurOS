@@ -3,6 +3,13 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 24/11/26 — Demo tenant: three worked examples on every page in the menu (owner: examples are for testing the flow)
+- Follow-ups + Escalations: 3 overdue follow-ups (claim CLM-2026-0001 review, policy POL-2026-0001 underwriting, customer sample-amina-hassan details) owned by the store reviewer, so a tester signed in as the reviewer can confirm them (`packages/mocks/src/follow-ups.ts`).
+- Messages: 3 customer conversations (claim, policy, renewal) with 4 messages, owned by the reviewer, no customer link (`packages/mocks/src/messages.ts`).
+- Seeded into the demo tenant `play-review` only: `follow_ups`, `conversations`, `messages` are now `sample` datasets with `seedVersion: 2` (`persistence/datasets.ts`, owner: "make the appropriate decision"). Production tenant untouched.
+- Finance list 2 → 4 transactions (premium invoice, receipt matched); Approvals 1 → 3 approval tasks. NOTE: Finance and Approvals still read static sample files with no tenant check, so every organisation sees these sample rows until those pages are wired to real records (open item before onboarding real agencies).
+- Already >= 3: Customers, Policies, Claims (64 each), Marketplace (22 products), Jurisdiction Access (6), Audit (3 + 3). Test: `packages/services/test/demo-examples.test.ts`.
+
 ## 24/11/26 — Guardrails: no do-nothing buttons on menu pages; revoking access asks first
 - Removed 9 placeholder buttons that only answered "not built yet" (Create invoice, Run reconciliation, Create/Edit product, Add coverage, Add pricing rule, Add tenant, Configure approvals). Hidden pages keep theirs. Test: `packages/ui/test/no-dead-buttons.test.ts`.
 - "Revoke access" (removes every role for a phone in one tap) now needs a required "I understand" tick.
