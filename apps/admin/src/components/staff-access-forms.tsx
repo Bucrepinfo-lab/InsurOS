@@ -72,6 +72,11 @@ export function RevokeStaffAccessForm() {
         Revoke access for phone
         <input name='phone' required inputMode='tel' placeholder='0712 345 678' className={field} />
       </label>
+      {/* Guardrail (audit 24/11/26): removing every role is one tap, so ask first. */}
+      <label className='flex basis-full items-center gap-2 text-sm text-ink/70'>
+        <input type='checkbox' name='confirm' required />
+        I understand this person loses all their roles until an administrator grants them again.
+      </label>
       <button type='submit' disabled={pending} className='rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 disabled:opacity-60'>
         {pending ? 'Revoking…' : 'Revoke'}
       </button>

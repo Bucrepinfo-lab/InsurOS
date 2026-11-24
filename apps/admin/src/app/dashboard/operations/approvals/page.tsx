@@ -6,8 +6,6 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { WorkflowService } from '@insuros/services';
-import { ActionButton } from '@/components/ActionButton';
-import { queueDemoRequest } from '@/app/dashboard/actions';
 import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Approvals' };
@@ -48,7 +46,6 @@ export default async function ApprovalQueuePage() {
     <DomainModulePage
       title='Approval Queue'
       description='Review workflow items awaiting approval across policies, claims, finance, and marketplace operations.'
-      actions={<ActionButton label='Configure Approvals' action={queueDemoRequest.bind(null, 'Configure Approvals')} />}
     >
       <div className='mb-6 grid gap-4 md:grid-cols-3'>
         <KPICard title='Pending Approvals' value={String(approvals.length)} change='Awaiting decision' />

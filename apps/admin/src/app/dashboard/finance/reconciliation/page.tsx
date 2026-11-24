@@ -5,8 +5,6 @@ import {
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
-import { ActionButton } from '@/components/ActionButton';
-import { queueDemoRequest } from '@/app/dashboard/actions';
 import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Reconciliation' };
@@ -54,7 +52,6 @@ export default async function FinanceReconciliationPage() {
     <DomainModulePage
       title='Finance Reconciliation'
       description='Match invoices, payments, payouts, refunds, bank entries, and ledger records.'
-      actions={<ActionButton label='Run Reconciliation' action={queueDemoRequest.bind(null, 'Run Reconciliation')} />}
     >
       <DomainEntityList
         title='Reconciliation Items'

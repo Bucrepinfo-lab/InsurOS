@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 24/11/26 — Guardrails: no do-nothing buttons on menu pages; revoking access asks first
+- Removed 9 placeholder buttons that only answered "not built yet" (Create invoice, Run reconciliation, Create/Edit product, Add coverage, Add pricing rule, Add tenant, Configure approvals). Hidden pages keep theirs. Test: `packages/ui/test/no-dead-buttons.test.ts`.
+- "Revoke access" (removes every role for a phone in one tap) now needs a required "I understand" tick.
+- Already sound: ActionButton locks while working (no double submit) and shows the result; account deletion needs DELETE typed.
+
 ## 24/11/26 — Every workspace page checks access on the server (standing rule 13; owner: "make the appropriate decision", 24/11/26)
 - Audit found 60 of 79 dashboard pages relied on the menu alone: any signed-in role could open Finance, Tax, Tenants, Audit by typing the address.
 - `packages/domain/src/page-access.ts` (`PAGE_SCOPES`, `scopeForPage`) maps every page to the View permission it needs (longest prefix; unknown pages refused). `apps/admin/src/lib/auth/page-access.ts` `requirePageAccess(route)` is the first await of every `page.tsx`; refusal answers "not found" (does not reveal the page).

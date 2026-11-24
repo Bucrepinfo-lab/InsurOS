@@ -4,8 +4,6 @@ import {
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
-import { ActionButton } from '@/components/ActionButton';
-import { queueDemoRequest } from '@/app/dashboard/actions';
 import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Tenants' };
@@ -43,7 +41,6 @@ export default async function TenantsPage() {
     <DomainModulePage
       title='Tenant Management'
       description='Manage insurers, brokerages, partners, employers, government programs, and internal platform organizations.'
-      actions={<ActionButton label='Add Tenant' action={queueDemoRequest.bind(null, 'Add Tenant')} />}
     >
       <DomainEntityList
         title='Organizations'

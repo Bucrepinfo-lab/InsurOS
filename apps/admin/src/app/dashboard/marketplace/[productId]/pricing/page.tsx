@@ -4,8 +4,6 @@ import {
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
-import { ActionButton } from '@/components/ActionButton';
-import { queueDemoRequest } from '@/app/dashboard/actions';
 import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Pricing' };
@@ -53,7 +51,6 @@ export default async function ProductPricingPage() {
     <DomainModulePage
       title='Pricing Rules'
       description='Configure premiums, rating inputs, loadings, discounts, taxes, fees, and pricing formulas.'
-      actions={<ActionButton label='Add Pricing Rule' action={queueDemoRequest.bind(null, 'Add Pricing Rule')} />}
     >
       <DomainEntityList
         title='Pricing Rules'
