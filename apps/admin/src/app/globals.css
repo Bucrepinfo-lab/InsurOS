@@ -230,16 +230,18 @@ h1, h2, h3 {
 /* Touch and keyboard feel (UI polish 24/11/26). Taps get no grey flash;
    buttons and links press in slightly; keyboard focus always shows a seal
    ring, never a mouse click. */
-html {
-  -webkit-tap-highlight-color: transparent;
-}
-:where(button, [role="button"], a.btn, summary):not(:disabled):active {
-  transform: translateY(1px) scale(0.985);
-}
-:where(button, a, [role="button"], [tabindex], input, select, textarea, summary):focus-visible {
-  outline: 2px solid var(--color-sealbright);
-  outline-offset: 2px;
-  border-radius: 6px;
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  :where(button, [role="button"], a.btn, summary):not(:disabled):active {
+    transform: translateY(1px) scale(0.985);
+  }
+  :where(button, a, [role="button"], [tabindex], input, select, textarea, summary):focus-visible {
+    outline: 2px solid var(--color-sealbright);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
 }
 /* Tab strips scroll sideways on a phone: no scrollbar, a soft right-edge fade. */
 .tab-strip {
