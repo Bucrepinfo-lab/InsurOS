@@ -62,14 +62,33 @@ export function SidebarNav({ title = 'InsurOS', items, groups, footer, LinkCompo
       onClick={onNavigate}
       aria-current={item.isActive ? 'page' : undefined}
       className={cn(
-        'group flex items-center gap-3 rounded-lg border-l-2 px-3 py-2 text-[13px] font-medium transition-all duration-200',
+        'nav-link group relative flex min-h-10 items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium outline-none transition-[background-color,color,transform] duration-200 focus-visible:ring-2 focus-visible:ring-sealbright/70',
         item.isActive
-          ? 'border-sealbright bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
-          : 'border-transparent text-white/55 hover:translate-x-0.5 hover:bg-white/[0.06] hover:text-white'
+          ? 'bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
+          : 'text-white/60 hover:bg-white/[0.06] hover:text-white'
       )}
     >
-      {item.icon ? <span className='text-base'>{item.icon}</span> : null}
-      <span>{item.label}</span>
+      {/* The seal bar marks the current page; on hover a faint one previews it. */}
+      <span
+        aria-hidden='true'
+        className={cn(
+          'absolute inset-y-1.5 left-0 w-[3px] origin-center rounded-full transition-transform duration-200',
+          item.isActive ? 'scale-y-100 bg-sealbright' : 'scale-y-0 bg-white/30 group-hover:scale-y-75'
+        )}
+      />
+      {item.icon ? (
+        <span
+          className={cn(
+            'flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-[background-color,color,transform] duration-200',
+            item.isActive
+              ? 'bg-sealbright/15 text-sealbright'
+              : 'text-white/45 group-hover:scale-110 group-hover:text-sealbright'
+          )}
+        >
+          {item.icon}
+        </span>
+      ) : null}
+      <span className='truncate transition-transform duration-200 group-hover:translate-x-0.5'>{item.label}</span>
     </Link>
   );
 

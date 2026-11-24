@@ -3,6 +3,12 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 24/11/26 — Menu icons, record tabs and touch feel (owner asked 24/11/26: make tabs and icons responsive and attractive)
+- Menu: a line icon per section (`packages/ui/src/navigation/nav-icons.tsx`, one stroke weight, `NAV_ICON_FOR` by menu id; a test makes every menu item have a real icon). Hover brightens the icon to seal green and previews the seal bar; the current page has a full seal bar and a tinted icon tile; keyboard focus shows a ring; rows are at least 40px tall for thumbs.
+- Record tabs (claim, policy, product): switch through the router (`apps/admin/src/components/record-tabs.tsx` passes `next/link`), never wrap ("First notice" on one line), scroll sideways on a phone with no scrollbar and a soft right-edge fade, bring the current tab into view, hover tint and a seal underline that grows in; current tab has a solid seal underline.
+- Phones: the avatar opens a small account menu (theme, Delete account, Sign out), so the top bar no longer spills off the screen at 375px; wide screens unchanged.
+- Global (`globals.css`): no grey tap flash, buttons press in slightly, seal focus ring for keyboard only; all transitions and the press effect are switched off under reduced motion.
+
 ## 24/11/26 — Back and Home from every page (owner asked 24/11/26: nobody left without a way back)
 - Workspace: `components/workspace-nav-bar.tsx` on every page except Home: "← Back", "Home", and breadcrumbs (Home › Claims › CLM-2026-0001 › Settlement) named like the menu; a level links only when it is a real page.
 - "Back" (`components/back-link.tsx`) returns to the previous InsurOS page of this visit (trail of pages in this tab, sessionStorage, `TrailRecorder` in the root layout); when the visit began on this page (WhatsApp link, Play app first screen) it goes to the real page above instead, so it never leaves the app. Pure logic: `packages/domain/src/navigation-trail.ts`; route list `apps/admin/src/lib/page-routes.ts` (test keeps it in sync with the app folder).

@@ -39,11 +39,11 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       <DashboardShell
         baseUrl={SITE_URL}
         userActions={
-          <div className='flex items-center gap-2'>
+          <div className='flex flex-wrap items-center gap-2'>
             <ThemeToggle />
             {getAuthMode() === 'supabase' ? (
               <>
-                <Link href='/account/delete' className='hidden text-xs text-slate-500 underline sm:inline'>
+                <Link href='/account/delete' className='text-xs text-dim underline-offset-2 transition-colors hover:text-ink hover:underline'>
                   Delete account
                 </Link>
                 <SignOutButton />

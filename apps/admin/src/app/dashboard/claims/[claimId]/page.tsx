@@ -1,4 +1,5 @@
-import { Badge, DomainModulePage, Tabs } from '@insuros/ui';
+import { Badge, DomainModulePage } from '@insuros/ui';
+import { Tabs } from '@/components/record-tabs';
 import { nextClaimStep } from '@insuros/domain';
 import { ClaimSteps } from '@/components/claim-steps';
 import { getAuthState, principalCan } from '@/lib/auth/session';

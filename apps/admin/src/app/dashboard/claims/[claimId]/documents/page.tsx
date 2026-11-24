@@ -1,4 +1,5 @@
-import { Badge, DomainEntityList, DomainModulePage, Tabs, type DataTableColumn } from '@insuros/ui';
+import { Badge, DomainEntityList, DomainModulePage, type DataTableColumn } from '@insuros/ui';
+import { Tabs } from '@/components/record-tabs';
 import { NotYet, RecordLink, Section } from '@/components/record-view';
 import { loadClaim, shortDate } from '@/lib/records';
 import { requirePageAccess } from "@/lib/auth/page-access";

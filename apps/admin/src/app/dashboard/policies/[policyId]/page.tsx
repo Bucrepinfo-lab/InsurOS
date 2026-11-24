@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Badge, DomainModulePage, Tabs } from '@insuros/ui';
+import { Badge, DomainModulePage } from '@insuros/ui';
+import { Tabs } from '@/components/record-tabs';
 import { premiumInvoiceFor } from '@insuros/domain';
 import { PaymentLedgerService } from '@insuros/services';
 import { Fact, NotYet, RecordLink, Rows, Section } from '@/components/record-view';
