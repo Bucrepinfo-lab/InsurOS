@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseEnabled } from "./lib/supabase-enabled";
+// Deep import keeps the middleware bundle to this one pure file.
+import { PLAY_APP_COOKIE, shouldMarkPlayApp } from "@insuros/domain/src/play-app";
 
 const PROTECTED_PREFIXES = ["/dashboard", "/access-pending", "/account", "/set-pin"];
 const SESSION_COOKIE = "insuros_session";
@@ -13,6 +15,16 @@ const SESSION_COOKIE = "insuros_session";
  * Open dev mode (no Supabase) exists only outside production.
  */
 export function middleware(request: NextRequest) {
+  const res = guard(request);
+  // Remember the Play app (Android TWA) for this browser session, from its launch
+  // referrer, so My Cover Plus is not sold there (Google Play payments policy).
+  if (shouldMarkPlayApp(request.headers.get("referer"), request.cookies.get(PLAY_APP_COOKIE)?.value)) {
+    res.cookies.set(PLAY_APP_COOKIE, "1", { path: "/", httpOnly: true, secure: true, sameSite: "lax" });
+  }
+  return res;
+}
+
+function guard(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
   const isProtected = PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
   if (!isProtected) return NextResponse.next();

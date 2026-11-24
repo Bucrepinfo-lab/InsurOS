@@ -1,6 +1,6 @@
 # Google Play listing — InsurOS (v1, staff/agency operations tool)
 
-Prepared 07/11/26. Goal: closed testing from ~05/01/27, production ~30/01/27.
+Prepared 07/11/26, updated 24/11/26 (owner: business tool, payments off for the first release; app created in Play Console 24/11/26). Goal: closed testing from ~05/01/27, production ~30/01/27.
 Everything below matches the code on `main` as of this date. Items marked
 **OWNER** need a decision or a value only the owner has.
 
@@ -17,41 +17,47 @@ Everything below matches the code on `main` as of this date. Items marked
 | Contains ads | **No** |
 | In-app purchases | **No** |
 | Target audience | **18+ only** (workplace tool; not designed for children) |
-| Start URL in the TWA | `https://insuros.fly.dev/?source=twa` |
+| Start URL in the TWA | `https://getinsuros.com/?source=twa` |
 
-Use the custom domain instead of `insuros.fly.dev` everywhere below if one is attached before submission (**OWNER**).
+The custom domain getinsuros.com is attached and serves every URL below (checked 24/11/26).
 
 ## URLs (public, no sign-in)
 
-- Privacy policy: `https://insuros.fly.dev/privacy`
-- Terms: `https://insuros.fly.dev/terms`
-- Delete account (Data safety "delete account URL"): `https://insuros.fly.dev/delete-account`
+- Privacy policy: `https://getinsuros.com/privacy`
+- Terms: `https://getinsuros.com/terms`
+- Delete account (Data safety "delete account URL"): `https://getinsuros.com/delete-account`
 - In-app deletion (signed in): `/account/delete` (top bar → *Delete account*)
-- Digital Asset Links: `https://insuros.fly.dev/.well-known/assetlinks.json` — set Fly secret `ANDROID_CERT_FINGERPRINTS` to BOTH SHA-256 fingerprints (Play App Signing key + upload key), comma-separated.
+- Digital Asset Links: `https://getinsuros.com/.well-known/assetlinks.json` — set Fly secret `ANDROID_CERT_FINGERPRINTS` to BOTH SHA-256 fingerprints (Play App Signing key + upload key), comma-separated.
 
 ## Store listing text
 
 **Short description (≤ 80 chars)**
 
-> Operations workspace for insurers, agencies and agents: policies and claims.
+> Insurance workspace for agencies: customers, policies, claims and renewals.
 
 **Full description**
 
-> InsurOS is the operations workspace for insurance companies, insurance agencies and their field agents in Kenya.
+> InsurOS is the workspace for insurance agencies, insurers and their agents in Kenya.
 >
-> It is a staff tool: your organisation's administrator gives you access to your phone number, and you see only the areas your role covers.
+> Staff sign in with their phone number and their own 4-digit PIN. The organisation's administrator gives each person access, and everyone sees only the work their role covers.
 >
-> • Claims desk — register claim notices, attach supporting documents and scene evidence, and route every claim to an adjuster. Claim decisions are made by people.
-> • Policies and customers — keep policy and customer records for your organisation in one place.
-> • Finance and tax views — invoices, reconciliation, commissions and statutory tax summaries for your finance team.
-> • Role-based access — claims officers, underwriters, agents, finance and operations staff each see their own work; administrators keep the overall view. Access is enforced on our servers, not just hidden in menus.
-> • Phone sign-in — your mobile number and your own 4-digit PIN. No SMS. Your administrator gives you a one-time joining code the first time. Administrators can sign a staff member out of all devices at once.
+> • Customers and policies: keep every customer, policy, cover period and renewal date in one place.
+> • Claims: register a claim notice, attach documents and photos from the scene, and follow it through review, decision and settlement. Decisions are made by people, and every step is recorded.
+> • Renewals: see which policies are due soon, so no customer's cover lapses unnoticed.
+> • Customer page: the agency can share a private link with a customer, who sees what they have insured, when cover ends, and can report a claim or message their agent.
+> • Finance views: invoices, commissions and tax summaries for the finance team.
+> • Role-based access, enforced on our servers. Administrators can sign a staff member out of every device at once.
+> • Customer pages in English and Kiswahili.
 >
-> InsurOS does not sell insurance to the public and does not take payments in the app.
+> InsurOS does not sell insurance and takes no payments in the app.
 >
-> InsurOS is provided by Telpen Systems Ltd, Kenya. Privacy policy: https://insuros.fly.dev/privacy
+> InsurOS is provided by Telpen Systems Ltd, Kenya. Privacy policy: https://getinsuros.com/privacy
 
 **Graphics:** app icon = `apps/admin/public/icons/icon-512.png`. **OWNER/Chrome:** feature graphic (1024×500) and 2–8 phone screenshots (take them on the demo tenant via reviewer access, so no real customer data appears).
+
+## Google Play payments rule (24/11/26)
+
+Inside the Play app (TWA), My Cover Plus is never offered or sold: no price, no pay button, and `/api/my/plus` refuses with `not_in_app` (`packages/domain/src/play-app.ts`, cookie `insuros_play_app` set from the `android-app://` launch referrer). Kenya is not in Play's alternative-billing programmes. Premiums are a real-world financial service and are not affected, and they stay off anyway while `PAYMENTS_ENABLED` is unset.
 
 ## App access (reviewer instructions)
 
@@ -100,4 +106,4 @@ v1 offers **no consumer financial features**: no payments, no premium collection
 Fly app `insuros` secrets (names only): `AUTH_SECRET`, `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `PLATFORM_OWNER_PHONES`, `PLAY_REVIEW_PHONE`, `PLAY_REVIEW_PIN`, `ANDROID_CERT_FINGERPRINTS`. Leave `PAYMENTS_ENABLED` unset.
 Supabase: the Send-SMS hook is **off** (owner 20/11/26: no SMS); sign-in is phone + PIN with joining codes from admins. Email sign-in is not used.
 GitHub repo secrets for the deploy workflow: `FLY_API_TOKEN`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-Then confirm `https://insuros.fly.dev/api/health` returns `"status":"ok"` with `"persistence":"postgres"`.
+Then confirm `https://getinsuros.com/api/health` returns `"status":"ok"` with `"persistence":"postgres"`.

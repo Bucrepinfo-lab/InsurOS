@@ -27,6 +27,7 @@ import { PlusPay } from '@/components/plus-pay';
 import { paymentsEnabled } from '@/lib/payments-gate';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { PayPremium } from '@/components/pay-premium';
+import { digitalPurchasesAllowedHere } from '@/lib/play-app-server';
 import { customerReceipts, payablePolicies, premiumPaymentsEnabled } from '@/lib/premium-pay';
 
 export const metadata = { title: 'My cover', robots: { index: false, follow: false } };
@@ -78,6 +79,8 @@ export default async function MyCoverPage({
   const plus = await plusFor(customer);
   const [payable, receipts] = await Promise.all([payablePolicies(customer), customerReceipts(customer)]);
   const canPayHere = premiumPaymentsEnabled();
+  // Google Play payments policy: My Cover Plus is not sold inside the Android app (premiums are unaffected).
+  const plusSoldHere = await digitalPurchasesAllowedHere();
   const [allPolicies, allClaims, content, tenants] = await Promise.all([db.policies.findAll(), db.claims.findAll(), db.marketingContent.findAll(), db.tenants.findAll()]);
   const policies = policiesOfCustomer(allPolicies, customer);
   const numbers = new Set(policies.map((policy) => policy.policyNumber));
@@ -105,7 +108,9 @@ export default async function MyCoverPage({
         ? tf('plusTrial', lang, { n: plus.daysLeft ?? 0, date: plus.trialEndsOn ? ddmmyy(plus.trialEndsOn) : '' })
         : plus.state === 'paid'
           ? t('plusPaid', lang)
-          : tf('plusPaused', lang, { price });
+          : plusSoldHere
+            ? tf('plusPaused', lang, { price })
+            : t('plusNotInApp', lang);
 
   return (
     <main className='min-h-screen bg-paper px-4 py-6 sm:py-10'>
@@ -224,9 +229,9 @@ export default async function MyCoverPage({
             <span className='rounded-full bg-[#c9a227]/15 px-2.5 py-0.5 font-mono text-xs font-semibold text-warnink'>{tf('priceLine', lang, { month: price, year: yearPrice })}</span>
           </div>
           <p className='text-sm text-ink'>{plusLine}</p>
-          <p className='text-xs font-medium text-warnink'>{plus.price.locked ? t('foundingLocked', lang) : t('foundingOffer', lang)}</p>
-          {plus.state === 'paused' && !paymentsEnabled() ? <p className='text-sm text-dim'>{t('plusPaySoon', lang)}</p> : null}
-          {plus.state === 'paused' && paymentsEnabled() ? (
+          {plusSoldHere ? <p className='text-xs font-medium text-warnink'>{plus.price.locked ? t('foundingLocked', lang) : t('foundingOffer', lang)}</p> : null}
+          {plusSoldHere && plus.state === 'paused' && !paymentsEnabled() ? <p className='text-sm text-dim'>{t('plusPaySoon', lang)}</p> : null}
+          {plusSoldHere && plus.state === 'paused' && paymentsEnabled() ? (
             <PlusPay
               token={token}
               card={plusCardCheckout(customer, plus)}

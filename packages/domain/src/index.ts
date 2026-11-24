@@ -81,3 +81,4 @@ export * from "./customer-plus";
 export * from "./paddle";
 export * from "./payment-rails";
 export * from "./premium-invoice";
+export * from "./play-app";
