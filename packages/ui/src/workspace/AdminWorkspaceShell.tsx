@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from 'react';
+import { PhoneTabBar, phoneTabs } from './PhoneTabBar';
 import { WorkspaceLayout } from '../layouts';
 import { NavIcon, SidebarNav, adminNavigation, filterNavigationByPermissions, type NavLinkComponent } from '../navigation';
 import { useEnvironment, usePermissions, useTenant, useUser } from '../platform';
@@ -72,6 +73,7 @@ export function AdminWorkspaceShell({
   const searchItems = sections.flatMap((section) =>
     section.items.map((item) => ({ label: item.label, href: item.href, group: section.title }))
   );
+  const quickTabs = phoneTabs(sections.flatMap((section) => section.items));
   const canSeeNotifications = searchItems.some((item) => item.href === '/dashboard/notifications');
 
   return (
@@ -112,7 +114,11 @@ export function AdminWorkspaceShell({
       >
         {banner}
         {children}
+        {/* Room under the last card for the phone tab bar. */}
+        <div aria-hidden='true' className='h-24 lg:hidden' />
       </WorkspaceLayout>
+
+      <PhoneTabBar tabs={quickTabs} currentHref={current} onOpenMenu={() => setMenuOpen(true)} LinkComponent={LinkComponent} />
 
       {menuOpen ? (
         <div className='fixed inset-0 z-40 lg:hidden'>

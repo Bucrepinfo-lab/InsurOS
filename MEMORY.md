@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 24/11/26 — Phone tab bar (owner: "Fix", on the idea of a Stawi-style bottom bar)
+- `packages/ui/src/workspace/PhoneTabBar.tsx`: on phones (below lg) a bar fixed to the bottom with Home, Claims, Policies, Follow-ups and Menu (opens the full drawer), using the same line icons as the menu. The current section has a seal-soft pill and seal text (a claim's page lights Claims, via the menu's longest-match). Respects the phone's safe area; 56px targets; keyboard ring; press-in on tap.
+- Least privilege: `phoneTabs` builds the four from the permission-filtered menu only; a role that cannot open Claims or Policies gets the next it can (Messages, Customers, Escalations, Approvals), so no tab ever leads to a refusal. Tests in `packages/ui/test/nav-icons-tabs.test.ts`.
+- Pages get bottom room on phones so the last card is never hidden; the action toast (`ActionButton`) sits above the bar on phones (bottom-24) and keeps its place on wide screens.
+
 ## 24/11/26 — Menu icons, record tabs and touch feel (owner asked 24/11/26: make tabs and icons responsive and attractive)
 - Menu: a line icon per section (`packages/ui/src/navigation/nav-icons.tsx`, one stroke weight, `NAV_ICON_FOR` by menu id; a test makes every menu item have a real icon). Hover brightens the icon to seal green and previews the seal bar; the current page has a full seal bar and a tinted icon tile; keyboard focus shows a ring; rows are at least 40px tall for thumbs.
 - Record tabs (claim, policy, product): switch through the router (`apps/admin/src/components/record-tabs.tsx` passes `next/link`), never wrap ("First notice" on one line), scroll sideways on a phone with no scrollbar and a soft right-edge fade, bring the current tab into view, hover tint and a seal underline that grows in; current tab has a solid seal underline.

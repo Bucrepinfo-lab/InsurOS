@@ -5,3 +5,4 @@ export * from './GlobalSearch';
 export * from './NotificationBell';
 export * from './UserMenu';
 export * from './AdminWorkspaceShell';
+export * from './PhoneTabBar';
