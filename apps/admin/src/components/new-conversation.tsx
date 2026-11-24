@@ -6,6 +6,7 @@ import type { ActionResult } from '@/lib/action-result';
 import { startColleagueConversation, startCustomerConversation } from '@/app/dashboard/messages/actions';
 import { AiHelpBar } from './message-composer';
 import { ShareButton } from './value/share-button';
+import { ReviewBeforeSend } from '@/components/review-before-send';
 
 const field = 'mt-1 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5 text-[15px] text-ink outline-none focus:border-seal focus:ring-2 focus:ring-seal/20';
 const label = 'block text-sm font-medium text-ink';
@@ -61,7 +62,7 @@ export function NewCustomerConversation() {
     );
   }
   return (
-    <form action={action} className='grid max-w-2xl gap-4 rounded-2xl border border-line bg-sheet p-5'>
+    <ReviewBeforeSend><form action={action} className='grid max-w-2xl gap-4 rounded-2xl border border-line bg-sheet p-5'>
       <input type='hidden' name='aiAssisted' value={assisted ? 'yes' : 'no'} />
       <div className='grid gap-4 sm:grid-cols-2'>
         <label className={label}>
@@ -84,7 +85,7 @@ export function NewCustomerConversation() {
         <button type='submit' disabled={pending} className='rounded-lg bg-seal px-5 py-2.5 text-sm font-semibold text-white hover:bg-sealdark disabled:opacity-60'>{pending ? 'Starting…' : 'Start and get the customer link'}</button>
         {result && !result.ok ? <span role='status' className='text-sm text-red-800'>{result.message}</span> : null}
       </div>
-    </form>
+    </form></ReviewBeforeSend>
   );
 }
 
@@ -97,7 +98,7 @@ export function NewColleagueConversation({ people }: { people: { userId: string;
   }
   const groups = [...new Set(people.map((person) => person.group))];
   return (
-    <form action={action} className='grid max-w-2xl gap-4 rounded-2xl border border-line bg-sheet p-5'>
+    <ReviewBeforeSend><form action={action} className='grid max-w-2xl gap-4 rounded-2xl border border-line bg-sheet p-5'>
       <input type='hidden' name='aiAssisted' value={assisted ? 'yes' : 'no'} />
       <fieldset>
         <legend className={label}>To</legend>
@@ -130,6 +131,6 @@ export function NewColleagueConversation({ people }: { people: { userId: string;
         <button type='submit' disabled={pending} className='rounded-lg bg-seal px-5 py-2.5 text-sm font-semibold text-white hover:bg-sealdark disabled:opacity-60'>{pending ? 'Sending…' : 'Send'}</button>
         {result && !result.ok ? <span role='status' className='text-sm text-red-800'>{result.message}</span> : null}
       </div>
-    </form>
+    </form></ReviewBeforeSend>
   );
 }

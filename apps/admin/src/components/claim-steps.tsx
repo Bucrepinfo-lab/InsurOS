@@ -9,6 +9,7 @@ import {
   recordClaimPayment,
   startClaimReview
 } from '@/app/dashboard/claims/[claimId]/actions';
+import { ReviewBeforeSend } from '@/components/review-before-send';
 
 /*
   The one next step on a claim, as a form a person fills in and confirms.
@@ -75,7 +76,7 @@ function StepForm({
 }) {
   const [result, run, pending] = useActionState(action, null);
   return (
-    <form action={run} className='grid gap-4'>
+    <ReviewBeforeSend><form action={run} className='grid gap-4'>
       <input type='hidden' name='claimId' value={claimId} />
       {children}
       <Result result={result} />
@@ -84,7 +85,7 @@ function StepForm({
           {pending ? working : submit}
         </button>
       </div>
-    </form>
+    </form></ReviewBeforeSend>
   );
 }
 

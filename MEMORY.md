@@ -3,6 +3,12 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 24/11/26 — Review before sending (owner asked 24/11/26)
+- `apps/admin/src/components/review-before-send.tsx` `<ReviewBeforeSend>`: pressing a form's send button first opens "Check before you send" with every filled field in the screen's own words (choices under their question, hints left out, PINs masked) and every chosen file (name, size, picture thumbnail), then Edit or the same send button. Confirming submits the same form, so all server checks still run; the browser's own "missing field" messages still come first. English and Kiswahili on customer pages (`reviewTitle`, `reviewHint`, `reviewEdit` in `locale.ts`).
+- Wrapped: staff message composer, new conversation (both), customer reply (`/c/[token]`), public contact form, news for customers, documents, new customer / policy / claim, claim steps (approve amount, decline with reason, record payment).
+- Claim photos: each photo is prepared and shown (time-and-place stamped copy) and goes only on "Send this photo"; "Take again" replaces it. Progress counts sent photos only.
+- Not reviewed, with reasons (sign-in, PIN, payments via M-Pesa PIN prompt, calculators, admin access, follow-up confirm): listed in `packages/ui/test/review-before-send.test.ts`, which fails any new form that is neither wrapped nor listed.
+
 ## 24/11/26 — Demo tenant: three worked examples on every page in the menu (owner: examples are for testing the flow)
 - Follow-ups + Escalations: 3 overdue follow-ups (claim CLM-2026-0001 review, policy POL-2026-0001 underwriting, customer sample-amina-hassan details) owned by the store reviewer, so a tester signed in as the reviewer can confirm them (`packages/mocks/src/follow-ups.ts`).
 - Messages: 3 customer conversations (claim, policy, renewal) with 4 messages, owned by the reviewer, no customer link (`packages/mocks/src/messages.ts`).

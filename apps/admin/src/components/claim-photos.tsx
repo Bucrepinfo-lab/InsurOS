@@ -97,6 +97,8 @@ export function ClaimPhotoCapture({
   const [where, setWhere] = useState<Where>(null);
   const [whereNote, setWhereNote] = useState<string | null>(null);
   const [asked, setAsked] = useState(false);
+  // Review before sending (owner 24/11/26): a photo is prepared and shown first; it goes only when confirmed.
+  const [staged, setStaged] = useState<Record<string, { file: File; clear: Blob; takenAt: string; here: Where }>>({});
 
   const done = new Map(existing.map((photo) => [photo.slot, photo]));
 
@@ -113,7 +115,7 @@ export function ClaimPhotoCapture({
     );
   }
 
-  async function send(slot: string, file: File | undefined) {
+  async function prepare(slot: string, file: File | undefined) {
     if (!file) return;
     setBusy(slot);
     try {
@@ -141,6 +143,25 @@ export function ClaimPhotoCapture({
       });
       const clear = await makeClearCopy(file, stamp);
       setPreviews((current) => ({ ...current, [slot]: { clear: URL.createObjectURL(clear), original: URL.createObjectURL(file) } }));
+      setStaged((current) => ({ ...current, [slot]: { file, clear, takenAt: facts.when, here } }));
+      setNotes((current) => ({ ...current, [slot]: 'Check the photo. If it is clear, tap Send this photo; if not, take it again.' }));
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message !== 'no canvas' && error.message !== 'no blob'
+          ? error.message
+          : 'This photo could not be prepared on this phone. Try taking it again with the camera.';
+      setNotes((current) => ({ ...current, [slot]: message }));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function send(slot: string) {
+    const photo = staged[slot];
+    if (!photo) return;
+    const { file, clear, here } = photo;
+    setBusy(slot);
+    try {
       setNotes((current) => ({ ...current, [slot]: 'Sending…' }));
       const form = new FormData();
       for (const [key, value] of Object.entries(fields)) form.set(key, value);
@@ -148,7 +169,7 @@ export function ClaimPhotoCapture({
       form.set('slot', slot);
       form.set('original', file, file.name || 'photo');
       form.set('view', clear, 'clear.jpg');
-      form.set('takenAt', facts.when);
+      form.set('takenAt', photo.takenAt);
       if (here) {
         form.set('latitude', String(here.latitude));
         form.set('longitude', String(here.longitude));
@@ -158,6 +179,11 @@ export function ClaimPhotoCapture({
       const data = (await response.json().catch(() => ({}))) as { error?: string; onTheSpot?: boolean };
       if (!response.ok) throw new Error(data.error ?? 'The photo was not sent. Try again.');
       setNotes((current) => ({ ...current, [slot]: data.onTheSpot ? 'Sent. Recorded as taken on the spot.' : 'Sent.' }));
+      setStaged((current) => {
+        const next = { ...current };
+        delete next[slot];
+        return next;
+      });
       router.refresh();
     } catch (error) {
       const message =
@@ -171,7 +197,8 @@ export function ClaimPhotoCapture({
   }
 
   const guide = PHOTO_GUIDES[kind];
-  const count = guide.slots.filter((slot) => done.has(slot.id) || previews[slot.id]).length;
+  // A photo counts once it is sent, not while it waits to be checked.
+  const count = guide.slots.filter((slot) => done.has(slot.id) || (previews[slot.id] && !staged[slot.id])).length;
 
   return (
     <section aria-labelledby='photos' className='grid gap-4 rounded-2xl border border-line bg-sheet p-4 sm:p-5'>
@@ -227,7 +254,7 @@ export function ClaimPhotoCapture({
                     disabled={busy !== null}
                     className='sr-only'
                     onChange={(event) => {
-                      void send(slot.id, event.target.files?.[0]);
+                      void prepare(slot.id, event.target.files?.[0]);
                       event.target.value = '';
                     }}
                   />
@@ -240,11 +267,16 @@ export function ClaimPhotoCapture({
                     disabled={busy !== null}
                     className='sr-only'
                     onChange={(event) => {
-                      void send(slot.id, event.target.files?.[0]);
+                      void prepare(slot.id, event.target.files?.[0]);
                       event.target.value = '';
                     }}
                   />
                 </label>
+                {staged[slot.id] ? (
+                  <button type='button' disabled={busy !== null} onClick={() => void send(slot.id)} className='rounded-lg bg-sealdark px-3 py-2 text-sm font-semibold text-white hover:bg-seal disabled:opacity-60'>
+                    Send this photo
+                  </button>
+                ) : null}
                 {preview ? (
                   <button type='button' onClick={() => setShowOriginal((s) => ({ ...s, [slot.id]: !s[slot.id] }))} className='text-xs font-medium text-seal underline underline-offset-2'>
                     {showOriginal[slot.id] ? 'Show the clear copy' : 'Show the original'}

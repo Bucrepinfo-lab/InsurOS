@@ -68,7 +68,7 @@ export default async function CustomerConversationPage({
             );
           })}
         </ol>
-        <CustomerReplyForm token={token} words={{ label: t('writeToUs', lang), send: t('send', lang), sending: t('sending', lang) }} />
+        <CustomerReplyForm token={token} words={{ label: t('writeToUs', lang), send: t('send', lang), sending: t('sending', lang) }} lang={lang} />
         {c.topic === 'claim' ? (
           <ClaimPhotoCapture
             endpoint='/api/c/photos'

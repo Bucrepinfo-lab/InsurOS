@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react';
 import { archiveAnnouncement, postAnnouncement } from '@/app/dashboard/customers/announcements/actions';
+import { ReviewBeforeSend } from '@/components/review-before-send';
 
 const field = 'mt-1 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5 text-[15px] text-ink outline-none focus:border-seal focus:ring-2 focus:ring-seal/20';
 const label = 'block text-sm font-medium text-ink';
@@ -9,7 +10,7 @@ const label = 'block text-sm font-medium text-ink';
 export function AnnouncementForm() {
   const [result, action, pending] = useActionState(postAnnouncement, null);
   return (
-    <form action={action} className='grid max-w-2xl gap-4 rounded-2xl border border-line bg-sheet p-5'>
+    <ReviewBeforeSend><form action={action} className='grid max-w-2xl gap-4 rounded-2xl border border-line bg-sheet p-5'>
       <label className={label}>
         Headline
         <input name='headline' required minLength={4} maxLength={90} placeholder='Renew before 31/12 and keep your no-claim discount' className={field} />
@@ -34,7 +35,7 @@ export function AnnouncementForm() {
         </button>
         {result ? <span role='status' className={`text-sm ${result.ok ? 'text-seal' : 'text-red-800'}`}><strong>{result.title}.</strong> {result.message}</span> : null}
       </div>
-    </form>
+    </form></ReviewBeforeSend>
   );
 }
 

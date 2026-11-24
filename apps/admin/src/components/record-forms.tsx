@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useActionState, type ReactNode } from 'react';
 import type { ActionResult } from '@/lib/action-result';
 import { addCustomer, recordPolicy, registerClaim } from '@/app/dashboard/record-actions';
+import { ReviewBeforeSend } from '@/components/review-before-send';
 
 const field =
   'mt-1 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5 text-[15px] text-ink outline-none transition focus:border-seal focus:ring-2 focus:ring-seal/20';
@@ -51,7 +52,7 @@ function FormShell({
   children: ReactNode;
 }) {
   return (
-    <form action={action} className='grid max-w-2xl gap-5 rounded-2xl border border-line bg-sheet p-5 sm:p-7'>
+    <ReviewBeforeSend><form action={action} className='grid max-w-2xl gap-5 rounded-2xl border border-line bg-sheet p-5 sm:p-7'>
       {children}
       <div className='flex flex-wrap items-center gap-3'>
         <button
@@ -65,7 +66,7 @@ function FormShell({
           Cancel
         </Link>
       </div>
-    </form>
+    </form></ReviewBeforeSend>
   );
 }
 
