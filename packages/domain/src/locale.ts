@@ -103,6 +103,10 @@ export const CUSTOMER_TEXT = {
     en: "My Cover Plus is paused this month. {price} switches it on until the month ends; nothing is charged for months you skip.",
     sw: "My Cover Plus imesimamishwa mwezi huu. {price} inaiwasha hadi mwisho wa mwezi; hakuna malipo kwa miezi unayoruka."
   },
+  plusNotInApp: {
+    en: "My Cover Plus can't be bought in the Android app. Everything that is always free works here.",
+    sw: "My Cover Plus haiwezi kununuliwa kwenye programu ya Android. Kila kilicho bure daima kinafanya kazi hapa."
+  },
   plusPaySoon: { en: "Paying by M-Pesa is being switched on. Your agent will tell you when.", sw: "Malipo kwa M-Pesa yanawashwa. Wakala wako atakujulisha." },
   plusIncludes: { en: "Plus includes", sw: "Plus inajumuisha" },
   plusAlwaysFree: {

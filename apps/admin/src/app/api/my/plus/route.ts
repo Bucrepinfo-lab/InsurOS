@@ -5,6 +5,7 @@ import { hashCustomerToken, isCustomerToken } from '@/lib/customer-link';
 import { plusFor, plusRails } from '@/lib/customer-plus';
 import { requestPremiumCheckout } from '@/lib/payments';
 import { paymentsEnabled } from '@/lib/payments-gate';
+import { digitalPurchasesAllowedHere } from '@/lib/play-app-server';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +25,8 @@ function allowed(key: string, now = Date.now()): boolean {
  */
 export async function POST(req: Request) {
   if (!paymentsEnabled()) return NextResponse.json({ error: 'payments_disabled' }, { status: 403 });
+  // Google Play payments policy: My Cover Plus is not sold inside the Android app.
+  if (!(await digitalPurchasesAllowedHere())) return NextResponse.json({ error: 'not_in_app' }, { status: 403 });
   // Owner rules 19/11/26: M-Pesa wherever it is a way to pay (it leads in Kenya); elsewhere Plus is paid by card.
   if (!plusRails().includes('MPESA')) return NextResponse.json({ error: 'Plus is paid by card here. Use the card buttons.' }, { status: 409 });
   const body = (await req.json().catch(() => null)) as { token?: unknown; phone?: unknown; plan?: unknown } | null;

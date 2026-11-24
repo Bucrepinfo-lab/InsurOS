@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 24/11/26 — Play readiness audit (owner: business tool, payments off for the first release)
+- Gap fixed: My Cover Plus is never offered or sold inside the Play app (Google Play payments policy), same rule as Telpen Edu and HarvestHub. `packages/domain/src/play-app.ts` (+ tests), cookie `insuros_play_app` set by the middleware from the `android-app://` launch referrer, `/api/my/plus` refuses with `not_in_app`, the customer page hides the Plus price and pay buttons and shows `plusNotInApp` instead. Premiums unaffected.
+- `docs/PLAY-LISTING.md` updated: getinsuros.com everywhere, listing text matches today's features (customer page, claims to settlement, renewals), payments rule.
+- Still owner-only before review: Fly secrets `PLAY_REVIEW_PHONE` + `PLAY_REVIEW_PIN` (reviewer demo sign-in) and `PLATFORM_OWNER_BOOTSTRAP_CODE` (owner's own first sign-in); the Android build (PWABuilder, package `com.telpen.insuros`, keystore kept in email + Drive) and then `ANDROID_CERT_FINGERPRINTS`.
+
 ## 24/11/26 — Supabase keep-alive (owner yes 24/11/26)
 - Supabase emailed (23/11) that the free project `insuros` was about to be paused for inactivity, which would stop sign-in and claim photos. `/api/health` never calls Supabase, so Fly's checks don't count as activity.
 - Activity made by hand on 24/11 at the owner's request (read-only `select now();` in the SQL editor). New `.github/workflows/supabase-keepalive.yml`: every third day at 08:17 Nairobi, two read-only requests (Auth health and Auth settings; the REST root refuses the anon key with 401, seen on the first run 24/11) with the existing `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` GitHub secrets. Writes nothing; a failed run emails the owner. If Supabase warns again despite green runs, the next step is a read-only RPC.
