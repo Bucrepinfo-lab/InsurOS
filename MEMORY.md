@@ -3,6 +3,13 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 24/11/26 — Full audit: menu shows the working flow, dead files gone, friendly error pages (owner asked 24/11/26)
+- Live crawl of all 67 static dashboard/public pages plus every claim/policy/product/customer detail tab: all 200, all under 0.8 s, no console errors on the 14 core screens; wrong claim/policy/customer ids answer "not found".
+- Menu (`packages/ui/src/navigation/navigation-config.ts`): 26 side pages flagged `hidden: true` (owner: hide, don't delete); the menu is now Dashboard, Follow-ups, Messages, Tenants, Identity, Jurisdiction Access, Marketplace, Customers, Customer home links, Policies, Claims, Finance, Escalations, Approvals, Audit. Escalations and Approvals were reachable only by address before. Hidden pages still open by address; delete the flag to bring one back. Test: `packages/ui/test/navigation.test.ts`.
+- Removed as dead: `apps/admin/src/lib/routes.ts` (imported nowhere), the stub invoice/payout detail pages (unlinked, showed one hard-coded invoice for any id), `ocr_write_test.txt`. Kept `ocr-import/` (planned cross-project work).
+- New `app/not-found.tsx`, `app/error.tsx` (+ dashboard copies that keep the menu on screen): plain-language message, "Try again", support email and the error reference; never the technical error.
+- Owner, Android app 24/11/26: PWABuilder package `com.telpen.insuros` 1.0.0.0 uploaded as an internal-testing draft (not rolled out); keystore in Drive "InsurOS - Google Play package 24-11-26" and emailed to telpeninfo@gmail.com; `ANDROID_CERT_FINGERPRINTS` live with both fingerprints.
+
 ## 24/11/26 — Play readiness audit (owner: business tool, payments off for the first release)
 - Gap fixed: My Cover Plus is never offered or sold inside the Play app (Google Play payments policy), same rule as Telpen Edu and HarvestHub. `packages/domain/src/play-app.ts` (+ tests), cookie `insuros_play_app` set by the middleware from the `android-app://` launch referrer, `/api/my/plus` refuses with `not_in_app`, the customer page hides the Plus price and pay buttons and shows `plusNotInApp` instead. Premiums unaffected.
 - `docs/PLAY-LISTING.md` updated: getinsuros.com everywhere, listing text matches today's features (customer page, claims to settlement, renewals), payments rule.
