@@ -5,7 +5,7 @@ change as the work (docs/STANDING_RULES.md §5).
 
 ## 24/11/26 — Supabase keep-alive (owner yes 24/11/26)
 - Supabase emailed (23/11) that the free project `insuros` was about to be paused for inactivity, which would stop sign-in and claim photos. `/api/health` never calls Supabase, so Fly's checks don't count as activity.
-- Owner ran it by hand on 24/11 (read-only `select now();` in the SQL editor). New `.github/workflows/supabase-keepalive.yml`: every third day at 08:17 Nairobi, two read-only requests (Auth health, REST root) with the existing `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` GitHub secrets. Writes nothing; a failed run emails the owner. If Supabase warns again despite green runs, the next step is a read-only RPC.
+- Activity made by hand on 24/11 at the owner's request (read-only `select now();` in the SQL editor). New `.github/workflows/supabase-keepalive.yml`: every third day at 08:17 Nairobi, two read-only requests (Auth health, REST root) with the existing `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` GitHub secrets. Writes nothing; a failed run emails the owner. If Supabase warns again despite green runs, the next step is a read-only RPC.
 
 ## 2026-11-23 (late) — Premiums paid in one tap from the customer page; receipts (owner asked; awaiting merge; switched off)
 - Owner: pre-fill the invoice so the customer only taps "Pay"; M-Pesa STK first (PIN only), card second; a well-designed, downloadable receipt with the insurer, type of policy, amount and the invoice particulars.
