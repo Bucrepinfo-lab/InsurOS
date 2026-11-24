@@ -4,8 +4,6 @@ import {
   DomainModulePage,
   type DataTableColumn
 } from '@insuros/ui';
-import { ActionButton } from '@/components/ActionButton';
-import { queueDemoRequest } from '@/app/dashboard/actions';
 import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Coverages' };
@@ -49,7 +47,6 @@ export default async function ProductCoveragesPage() {
     <DomainModulePage
       title='Coverage Builder'
       description='Configure mandatory and optional product coverages, limits, deductibles, and exclusions.'
-      actions={<ActionButton label='Add Coverage' action={queueDemoRequest.bind(null, 'Add Coverage')} />}
     >
       <DomainEntityList
         title='Coverages'
