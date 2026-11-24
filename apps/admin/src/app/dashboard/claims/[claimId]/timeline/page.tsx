@@ -1,4 +1,5 @@
-import { Badge, DomainModulePage, Tabs } from '@insuros/ui';
+import { Badge, DomainModulePage } from '@insuros/ui';
+import { Tabs } from '@/components/record-tabs';
 import { NotYet, Section } from '@/components/record-view';
 import { loadClaim, shortDateTime } from '@/lib/records';
 import { requirePageAccess } from "@/lib/auth/page-access";

@@ -1,11 +1,6 @@
 import Link from 'next/link';
-import {
-  Badge,
-  Card,
-  CardContent,
-  DomainModulePage,
-  Tabs
-} from '@insuros/ui';
+import { Badge, Card, CardContent, DomainModulePage } from '@insuros/ui';
+import { Tabs } from '@/components/record-tabs';
 import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'New product' };

@@ -227,12 +227,49 @@ h1, h2, h3 {
   animation: seal-pulse 2.6s ease-in-out infinite;
 }
 
+/* Touch and keyboard feel (UI polish 24/11/26). Taps get no grey flash;
+   buttons and links press in slightly; keyboard focus always shows a seal
+   ring, never a mouse click. */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+:where(button, [role="button"], a.btn, summary):not(:disabled):active {
+  transform: translateY(1px) scale(0.985);
+}
+:where(button, a, [role="button"], [tabindex], input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--color-sealbright);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+/* Tab strips scroll sideways on a phone: no scrollbar, a soft right-edge fade. */
+.tab-strip {
+  scrollbar-width: none;
+  scroll-padding-inline: 16px;
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+}
+.tab-strip::-webkit-scrollbar {
+  display: none;
+}
+@media (min-width: 768px) {
+  .tab-strip {
+    mask-image: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-rise,
   .stagger > *,
   .animate-toast,
   .seal-dot {
     animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+  :where(button, [role="button"], a.btn, summary):active {
+    transform: none;
   }
 }
 

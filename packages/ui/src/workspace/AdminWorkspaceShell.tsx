@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import { WorkspaceLayout } from '../layouts';
-import { SidebarNav, adminNavigation, filterNavigationByPermissions, type NavLinkComponent } from '../navigation';
+import { NavIcon, SidebarNav, adminNavigation, filterNavigationByPermissions, type NavLinkComponent } from '../navigation';
 import { useEnvironment, usePermissions, useTenant, useUser } from '../platform';
 import {
   EnvironmentBadge,
@@ -62,7 +62,12 @@ export function AdminWorkspaceShell({
   const navGroups = sections.map((section) => ({
     id: section.id,
     title: section.title,
-    items: section.items.map((item) => ({ label: item.label, href: item.href, isActive: item.href === current }))
+    items: section.items.map((item) => ({
+      label: item.label,
+      href: item.href,
+      icon: <NavIcon id={item.id} />,
+      isActive: item.href === current
+    }))
   }));
   const searchItems = sections.flatMap((section) =>
     section.items.map((item) => ({ label: item.label, href: item.href, group: section.title }))
