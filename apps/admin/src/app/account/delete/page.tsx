@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { deleteMyAccount } from "@/lib/delete-account";
+import { BackLink } from "@/components/back-link";
 
 const ERRORS: Record<string, string> = {
   unauthenticated: "Your session has ended. Sign in again, then retry.",
@@ -38,6 +39,7 @@ export default function DeleteAccountPage() {
   return (
     <main className="grid min-h-screen place-items-center bg-slate-50 px-4">
       <div className="w-full max-w-md space-y-5 rounded-2xl border border-slate-200 bg-white p-6">
+        <BackLink home="/dashboard" fallback="/dashboard" label="Back to my workspace" />
         <h1 className="text-xl font-semibold text-red-700">Delete your account</h1>
         <p className="text-sm text-slate-600">
           This permanently deletes your InsurOS sign-in account and erases your staff

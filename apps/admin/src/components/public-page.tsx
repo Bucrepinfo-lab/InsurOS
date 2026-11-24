@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { InsurOSLogo } from "@insuros/ui";
 import type { ReactNode } from "react";
+import { BackLink } from "@/components/back-link";
 
 /** Plain, readable shell for public pages (no sign-in required). */
 export function PublicPage({ title, updated, children }: { title: string; updated?: string; children: ReactNode }) {
@@ -19,6 +20,11 @@ export function PublicPage({ title, updated, children }: { title: string; update
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-4 py-10">
+        {/* A way back from every public page (owner 24/11/26). */}
+        <div className="mb-4 flex flex-wrap items-center gap-2 text-sm">
+          <BackLink home="/" />
+          <Link href="/" className="rounded-lg px-2.5 py-1.5 font-medium text-slate-700 hover:bg-slate-100">Home</Link>
+        </div>
         <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
         {updated ? <p className="mt-1 text-sm text-slate-500">Last updated {updated}</p> : null}
         <div className="prose-public mt-6 space-y-4 text-[15px] leading-7">{children}</div>

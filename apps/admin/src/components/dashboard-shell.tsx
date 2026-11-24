@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 import { AdminWorkspaceShell } from '@insuros/ui';
 import { ValueBanner } from '@/components/value/value-banner';
+import { WorkspaceNavBar } from '@/components/workspace-nav-bar';
 import { track } from '@/lib/usage';
 
 /**
@@ -32,7 +33,12 @@ export function DashboardShell({
       LinkComponent={Link}
       onNavigate={(href) => router.push(href)}
       onSearch={(query, found) => track(found ? 'search' : 'search-miss', query)}
-      banner={<ValueBanner pathname={pathname} baseUrl={baseUrl} onUse={(value) => track('click', value)} />}
+      banner={
+        <>
+          <WorkspaceNavBar />
+          <ValueBanner pathname={pathname} baseUrl={baseUrl} onUse={(value) => track('click', value)} />
+        </>
+      }
     >
       {children}
     </AdminWorkspaceShell>

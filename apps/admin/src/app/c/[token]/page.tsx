@@ -9,6 +9,7 @@ import { customerLanguage } from '@/lib/customer-language';
 import { LanguageSwitch } from '@/components/language-switch';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { CustomerReplyForm } from './reply-form';
+import { BackLink } from '@/components/back-link';
 
 export const metadata = { title: 'Your conversation', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
@@ -40,7 +41,10 @@ export default async function CustomerConversationPage({
     <main className='min-h-screen bg-paper px-4 py-8 sm:py-12'>
       <div className='mx-auto grid max-w-2xl gap-5'>
         <div className='flex flex-wrap items-center justify-between gap-2'>
-          <LanguageSwitch current={lang} languages={clock.languages} path={`/c/${token}`} />
+          <div className='flex flex-wrap items-center gap-2'>
+            <BackLink label={t('back', lang)} home='/' />
+            <LanguageSwitch current={lang} languages={clock.languages} path={`/c/${token}`} />
+          </div>
           <ThemeToggle />
         </div>
         <header lang={lang}>
