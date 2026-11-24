@@ -14,6 +14,10 @@ export function filterNavigationByPermissions(
     .map((section) => ({
       ...section,
       items: section.items.filter((item) => {
+        if (item.hidden) {
+          return false;
+        }
+
         if (!item.requiredPermission) {
           return true;
         }
