@@ -3,6 +3,9 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 24/11/26 — Standing rule 20: our own pictures, with the words kept (owner: apply to all projects)
+- Added to `docs/STANDING_RULES.md`: menu and tab pictures are our own drawings, never emoji; words stay with the picture; new pictures are tested with real users. The menu and the phone tab bar already comply (hand-drawn line icons in `nav-icons.tsx`, each with its label).
+
 ## 24/11/26 — Phone tab bar (owner: "Fix", on the idea of a Stawi-style bottom bar)
 - `packages/ui/src/workspace/PhoneTabBar.tsx`: on phones (below lg) a bar fixed to the bottom with Home, Claims, Policies, Follow-ups and Menu (opens the full drawer), using the same line icons as the menu. The current section has a seal-soft pill and seal text (a claim's page lights Claims, via the menu's longest-match). Respects the phone's safe area; 56px targets; keyboard ring; press-in on tap.
 - Least privilege: `phoneTabs` builds the four from the permission-filtered menu only; a role that cannot open Claims or Policies gets the next it can (Messages, Customers, Escalations, Approvals), so no tab ever leads to a refusal. Tests in `packages/ui/test/nav-icons-tabs.test.ts`.
