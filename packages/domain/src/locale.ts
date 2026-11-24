@@ -161,6 +161,18 @@ export const CUSTOMER_TEXT = {
     sw: "Kulipa hapa kutafunguliwa hivi karibuni. Hadi hapo, mlipe wakala wako kama kawaida."
   },
   receipts: { en: "Payments and receipts", sw: "Malipo na risiti" },
+  // Review before sending (owner 24/11/26): a last look before anything goes.
+  reviewTitle: { en: "Check before you send", sw: "Angalia kabla ya kutuma" },
+  reviewHint: {
+    en: "This is exactly what will be sent. Is it what you meant?",
+    sw: "Hiki ndicho hasa kitakachotumwa. Je, ndicho ulichokusudia?"
+  },
+  reviewEdit: { en: "Edit", sw: "Rekebisha" },
+  reviewFiles: { en: "Files", sw: "Faili" },
+  // Way back from every page (owner 24/11/26).
+  back: { en: "Back", sw: "Rudi" },
+  backToMyCover: { en: "Back to my cover", sw: "Rudi kwenye bima yangu" },
+  home: { en: "Home", sw: "Mwanzo" },
   sampleReceipt: { en: "Sample", sw: "Mfano" },
   payPrompt: {
     en: "Check your phone and enter your M-Pesa PIN. Plus switches on once the payment is confirmed; refresh this page in a minute.",

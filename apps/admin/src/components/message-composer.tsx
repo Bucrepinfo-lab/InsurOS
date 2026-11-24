@@ -4,6 +4,7 @@ import { useActionState, useRef, useState, useTransition } from 'react';
 import { AI_TASK_LABELS, MESSAGE_MAX, type AiTask } from '@insuros/domain';
 import type { ActionResult } from '@/lib/action-result';
 import { aiHelp } from '@/app/dashboard/messages/actions';
+import { ReviewBeforeSend } from '@/components/review-before-send';
 
 const box =
   'mt-1 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5 text-[15px] leading-relaxed text-ink outline-none transition focus:border-seal focus:ring-2 focus:ring-seal/20';
@@ -81,7 +82,7 @@ export function ReplyComposer({
   if (closed) return <p className='rounded-xl border border-line bg-sheet p-4 text-sm text-dim'>This conversation is closed. Reopen it to reply.</p>;
 
   return (
-    <form
+    <ReviewBeforeSend><form
       ref={form}
       action={async (formData) => {
         await formAction(formData);
@@ -113,6 +114,6 @@ export function ReplyComposer({
         </button>
         {result && !result.ok ? <span role='status' className='text-sm text-red-800'>{result.message}</span> : null}
       </div>
-    </form>
+    </form></ReviewBeforeSend>
   );
 }

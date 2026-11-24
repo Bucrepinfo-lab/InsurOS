@@ -12,6 +12,7 @@ import {
 } from '@insuros/domain';
 import type { ActionResult } from '@/lib/action-result';
 import { recordDocument } from '@/app/dashboard/record-actions';
+import { ReviewBeforeSend } from '@/components/review-before-send';
 
 const field =
   'mt-1 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5 text-[15px] text-ink outline-none transition focus:border-seal focus:ring-2 focus:ring-seal/20';
@@ -114,7 +115,7 @@ export function DocumentForm({ claims }: { claims: string[] }) {
         </div>
       ) : null}
 
-      <form onSubmit={onSubmit} className='grid gap-5 rounded-2xl border border-line bg-sheet p-5 sm:p-7'>
+      <ReviewBeforeSend><form onSubmit={onSubmit} className='grid gap-5 rounded-2xl border border-line bg-sheet p-5 sm:p-7'>
         <label className={label}>
           Kind of document
           <select
@@ -211,7 +212,7 @@ export function DocumentForm({ claims }: { claims: string[] }) {
             Cancel
           </Link>
         </div>
-      </form>
+      </form></ReviewBeforeSend>
     </div>
   );
 }

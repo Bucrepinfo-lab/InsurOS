@@ -1,20 +1,23 @@
 'use client';
 
 import { useActionState, useState } from 'react';
-import { MESSAGE_MAX } from '@insuros/domain';
+import { MESSAGE_MAX, type LanguageTag } from '@insuros/domain';
 import { customerReply } from '../actions';
+import { ReviewBeforeSend } from '@/components/review-before-send';
 
 export function CustomerReplyForm({
   token,
-  words = { label: 'Write to us', send: 'Send', sending: 'Sending…' }
+  words = { label: 'Write to us', send: 'Send', sending: 'Sending…' },
+  lang = 'en'
 }: {
   token: string;
   words?: { label: string; send: string; sending: string };
+  lang?: LanguageTag;
 }) {
   const [result, action, pending] = useActionState(customerReply, null);
   const [text, setText] = useState('');
   return (
-    <form action={async (formData) => { await action(formData); setText(''); }} className='grid gap-3 rounded-2xl border border-line bg-sheet p-4'>
+    <ReviewBeforeSend lang={lang}><form action={async (formData) => { await action(formData); setText(''); }} className='grid gap-3 rounded-2xl border border-line bg-sheet p-4'>
       <input type='hidden' name='token' value={token} />
       <label className='block text-sm font-medium text-ink'>
         {words.label}
@@ -26,6 +29,6 @@ export function CustomerReplyForm({
         </button>
         {result ? <span role='status' className={`text-sm ${result.ok ? 'text-seal' : 'text-red-800'}`}>{result.message}</span> : null}
       </div>
-    </form>
+    </form></ReviewBeforeSend>
   );
 }
