@@ -3,6 +3,12 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 24/11/26 — Back and Home from every page (owner asked 24/11/26: nobody left without a way back)
+- Workspace: `components/workspace-nav-bar.tsx` on every page except Home: "← Back", "Home", and breadcrumbs (Home › Claims › CLM-2026-0001 › Settlement) named like the menu; a level links only when it is a real page.
+- "Back" (`components/back-link.tsx`) returns to the previous InsurOS page of this visit (trail of pages in this tab, sessionStorage, `TrailRecorder` in the root layout); when the visit began on this page (WhatsApp link, Play app first screen) it goes to the real page above instead, so it never leaves the app. Pure logic: `packages/domain/src/navigation-trail.ts`; route list `apps/admin/src/lib/page-routes.ts` (test keeps it in sync with the app folder).
+- Also on: public pages (Privacy, Terms, Delete account), Why, the customer contact page and conversation page (in English/Kiswahili), the delete-my-account screen ("Back to my workspace"). The receipt page already had "Back to my cover".
+- Downloads (receipt, cover summary, career record, claim pack) are all sent as file downloads, never opened in place; a test keeps it that way.
+
 ## 24/11/26 — Review before sending (owner asked 24/11/26)
 - `apps/admin/src/components/review-before-send.tsx` `<ReviewBeforeSend>`: pressing a form's send button first opens "Check before you send" with every filled field in the screen's own words (choices under their question, hints left out, PINs masked) and every chosen file (name, size, picture thumbnail), then Edit or the same send button. Confirming submits the same form, so all server checks still run; the browser's own "missing field" messages still come first. English and Kiswahili on customer pages (`reviewTitle`, `reviewHint`, `reviewEdit` in `locale.ts`).
 - Wrapped: staff message composer, new conversation (both), customer reply (`/c/[token]`), public contact form, news for customers, documents, new customer / policy / claim, claim steps (approve amount, decline with reason, record payment).

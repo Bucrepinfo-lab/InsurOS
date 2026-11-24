@@ -3,6 +3,7 @@ import { publicStories, publicStrengths, storyShareText, storyShareUrl } from '@
 import { ACCENT_GRADIENT, ACCENT_SOLID, Motif } from '@/components/value/motif';
 import { ShareButton } from '@/components/value/share-button';
 import { SITE_URL } from '@/lib/site';
+import { BackLink } from '@/components/back-link';
 
 export const metadata = {
   title: 'Why InsurOS — the problems insurance teams live with, and what we do about each',
@@ -60,6 +61,9 @@ export default function WhyPage() {
       </header>
 
       <main className='mx-auto max-w-6xl px-4 pb-16 sm:px-6'>
+        <div className='pt-4'>
+          <BackLink home='/' />
+        </div>
         <section className='py-10 sm:py-14'>
           <h1 className='max-w-3xl font-display text-[34px] leading-tight tracking-tight sm:text-[46px]'>
             Insurance loses customers in the silence between a claim and an answer.

@@ -3,6 +3,7 @@ import { Fraunces, Onest, Spline_Sans_Mono } from 'next/font/google';
 import type { ReactNode } from 'react';
 import './globals.css';
 import { ServiceWorkerRegister } from '@/components/service-worker-register';
+import { TrailRecorder } from '@/components/back-link';
 import { THEME_BOOT_SCRIPT } from '@/components/theme-toggle';
 
 export const metadata: Metadata = {
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         {children}
         <ServiceWorkerRegister />
+        <TrailRecorder />
       </body>
     </html>
   );
