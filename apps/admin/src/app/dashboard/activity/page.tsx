@@ -6,12 +6,14 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { PlatformActivityService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Activity' };
 
 const activityService = new PlatformActivityService();
 
 export default async function ActivityPage() {
+  await requirePageAccess("/dashboard/activity");
   const events = await activityService.getActivityEvents();
 
   type ActivityRow = (typeof events)[number];

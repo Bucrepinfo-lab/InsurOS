@@ -8,12 +8,14 @@ import {
 import { FeatureFlagService } from '@insuros/services';
 import { ActionButton } from '@/components/ActionButton';
 import { createDemoFlag } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Feature flags' };
 
 const featureFlagService = new FeatureFlagService();
 
 export default async function FeatureFlagsPage() {
+  await requirePageAccess("/dashboard/operations/feature-flags");
   const flags = await featureFlagService.getFeatureFlags();
 
   type FeatureFlagRow = (typeof flags)[number];

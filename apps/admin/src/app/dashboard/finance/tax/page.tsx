@@ -8,12 +8,14 @@ import {
 import { ActionButton } from '@/components/ActionButton';
 import { computeDemoRemittance } from '@/app/dashboard/actions';
 import { TaxRemittanceService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Tax remittance' };
 
 const taxService = new TaxRemittanceService();
 
 export default async function TaxRemittancePage() {
+  await requirePageAccess("/dashboard/finance/tax");
   const jurisdictions = await taxService.getJurisdictions();
   const remittances = await taxService.getRemittances();
 

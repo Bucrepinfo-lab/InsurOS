@@ -1,10 +1,12 @@
 import { Badge, DomainModulePage } from '@insuros/ui';
 import { Fact, NotYet, RecordLink, Section } from '@/components/record-view';
 import { claimTone, loadCustomer, policyTone, shortDate } from '@/lib/records';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Customer' };
 
 export default async function CustomerDetailPage({ params }: { params: Promise<{ customerId: string }> }) {
+  await requirePageAccess("/dashboard/customers/[customerId]");
   const { customerId } = await params;
   const { customer, policies, claims } = await loadCustomer(customerId);
   const inForce = policies.filter((policy) => policy.status === 'Active').length;

@@ -3,12 +3,14 @@ import { expiryStatus, policiesOfCustomer } from '@insuros/domain';
 import { CustomerService, PolicyService } from '@insuros/services';
 import { HomeLinkButton } from '@/components/home-link-button';
 import { currentReach } from '@/lib/record-scope';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Customer home links' };
 export const dynamic = 'force-dynamic';
 
 /** Give each customer a private page with everything they hold: policies, items, values, expiry dates. */
 export default async function HomeLinksPage() {
+  await requirePageAccess("/dashboard/customers/home-links");
   const [customers, policies] = await Promise.all([
     new CustomerService().getCustomersFor(await currentReach('Customers')),
     new PolicyService().getPoliciesFor(await currentReach('Policies'))

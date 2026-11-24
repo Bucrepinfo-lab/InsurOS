@@ -4,11 +4,13 @@ import { findStaffRole } from '@insuros/domain';
 import { NewColleagueConversation, NewCustomerConversation } from '@/components/new-conversation';
 import { getAuthState } from '@/lib/auth/session';
 import { directoryForPrincipal } from '@/lib/messaging';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'New message' };
 export const dynamic = 'force-dynamic';
 
 export default async function NewMessagePage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  await requirePageAccess("/dashboard/messages/new");
   const params = await searchParams;
   const to = params.to === 'colleague' ? 'colleague' : 'customer';
   const state = await getAuthState();

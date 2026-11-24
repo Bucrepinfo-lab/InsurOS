@@ -1,10 +1,12 @@
 import { Badge, DomainModulePage, Tabs } from '@insuros/ui';
 import { Fact, RecordLink, Section } from '@/components/record-view';
 import { loadPolicy } from '@/lib/records';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Policy holder' };
 
 export default async function PolicyHolderPage({ params }: { params: Promise<{ policyId: string }> }) {
+  await requirePageAccess("/dashboard/policies/[policyId]/holder");
   const { policyId } = await params;
   const { policy, customer, tabs } = await loadPolicy(policyId);
 

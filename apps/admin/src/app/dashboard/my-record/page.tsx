@@ -3,6 +3,7 @@ import { CareerService } from '@insuros/services';
 import { getAuthState } from '@/lib/auth/session';
 import { followUpViewerFor } from '@/lib/follow-up-viewer';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'My career record' };
 export const dynamic = 'force-dynamic';
@@ -16,6 +17,7 @@ const pct = (part: number, whole: number) => (whole > 0 ? `${Math.round((part / 
  * download it to take to their next job.
  */
 export default async function MyRecordPage() {
+  await requirePageAccess("/dashboard/my-record");
   const state = await getAuthState();
   if (state.status !== 'active') return null;
   const record = await new CareerService().recordFor({ name: state.principal.name, userIds: followUpViewerFor(state.principal).userIds });

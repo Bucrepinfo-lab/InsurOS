@@ -1,6 +1,7 @@
 import { Badge, DomainEntityList, DomainModulePage, Tabs, type DataTableColumn } from '@insuros/ui';
 import { NotYet, RecordLink, Section } from '@/components/record-view';
 import { loadClaim, shortDate } from '@/lib/records';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Claim documents' };
 
@@ -14,6 +15,7 @@ const columns: DataTableColumn<DocumentRow>[] = [
 ];
 
 export default async function ClaimDocumentsPage({ params }: { params: Promise<{ claimId: string }> }) {
+  await requirePageAccess("/dashboard/claims/[claimId]/documents");
   const { claimId } = await params;
   const { claim, story, tabs } = await loadClaim(claimId);
 

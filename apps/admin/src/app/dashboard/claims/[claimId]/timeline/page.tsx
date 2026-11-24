@@ -1,10 +1,12 @@
 import { Badge, DomainModulePage, Tabs } from '@insuros/ui';
 import { NotYet, Section } from '@/components/record-view';
 import { loadClaim, shortDateTime } from '@/lib/records';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Claim timeline' };
 
 export default async function ClaimTimelinePage({ params }: { params: Promise<{ claimId: string }> }) {
+  await requirePageAccess("/dashboard/claims/[claimId]/timeline");
   const { claimId } = await params;
   const { claim, steps, tabs } = await loadClaim(claimId);
 

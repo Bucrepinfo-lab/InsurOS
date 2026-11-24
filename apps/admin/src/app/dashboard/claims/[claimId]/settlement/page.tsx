@@ -1,10 +1,12 @@
 import { Badge, DomainModulePage, Tabs } from '@insuros/ui';
 import { Fact, NotYet, RecordLink, Rows, Section } from '@/components/record-view';
 import { loadClaim, money, shortDate } from '@/lib/records';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Settlement' };
 
 export default async function ClaimSettlementPage({ params }: { params: Promise<{ claimId: string }> }) {
+  await requirePageAccess("/dashboard/claims/[claimId]/settlement");
   const { claimId } = await params;
   const { claim, policy, settlement: s, tabs } = await loadClaim(claimId);
   const description =

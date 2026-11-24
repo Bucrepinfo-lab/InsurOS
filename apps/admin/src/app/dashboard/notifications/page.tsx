@@ -8,6 +8,7 @@ import {
 import { NotificationEventService, NotificationService } from '@insuros/services';
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Notifications' };
 
@@ -15,6 +16,7 @@ const notificationService = new NotificationService();
 const notificationEventService = new NotificationEventService();
 
 export default async function NotificationsPage() {
+  await requirePageAccess("/dashboard/notifications");
   const notifications = await notificationService.getNotifications();
   const unread = await notificationService.getUnreadNotifications();
   const events = await notificationEventService.getNotificationEvents();

@@ -8,6 +8,7 @@ import {
 import { ActionButton } from '@/components/ActionButton';
 import { nameDemoAgent } from '@/app/dashboard/actions';
 import { AdminHierarchyService, SalesHierarchyService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Sales portal' };
 
@@ -15,6 +16,7 @@ const salesService = new SalesHierarchyService();
 const adminHierarchyService = new AdminHierarchyService();
 
 export default async function SalesPortalPage() {
+  await requirePageAccess("/dashboard/sales");
   const agents = await salesService.getAgents();
   const assignments = await salesService.getAssignments();
   const regions = await adminHierarchyService.getRegions();

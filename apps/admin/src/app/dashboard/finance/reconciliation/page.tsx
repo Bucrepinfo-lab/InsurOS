@@ -7,6 +7,7 @@ import {
 } from '@insuros/ui';
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Reconciliation' };
 
@@ -47,7 +48,8 @@ const columns: DataTableColumn<ReconciliationRow>[] = [
   }
 ];
 
-export default function FinanceReconciliationPage() {
+export default async function FinanceReconciliationPage() {
+  await requirePageAccess("/dashboard/finance/reconciliation");
   return (
     <DomainModulePage
       title='Finance Reconciliation'

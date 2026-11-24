@@ -10,6 +10,7 @@ import {
   type PolicyLineId
 } from '@insuros/domain';
 import { CountryPills, CountryStatus, money, numberParam, pickCountry } from '@/components/country-pills';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Break-even price' };
 
@@ -28,6 +29,7 @@ export default async function BreakEvenPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageAccess("/dashboard/marketplace/break-even");
   const params = await searchParams;
   const profile = pickCountry(params.country, COUNTRY_PROFILES);
   const lines = POLICY_LINES.filter((line) => profile.caps[line.id]);

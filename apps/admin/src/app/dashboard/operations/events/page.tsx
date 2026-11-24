@@ -8,12 +8,14 @@ import {
 import { PlatformEventService } from '@insuros/services';
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Events' };
 
 const platformEventService = new PlatformEventService();
 
 export default async function PlatformEventsPage() {
+  await requirePageAccess("/dashboard/operations/events");
   const events = await platformEventService.getPlatformEvents();
 
   type PlatformEventRow = (typeof events)[number];

@@ -8,12 +8,14 @@ import {
 import { WorkflowService } from "@insuros/services";
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Policies' };
 
 const workflowService = new WorkflowService();
 
 export default async function WorkflowPoliciesPage() {
+  await requirePageAccess("/dashboard/operations/policies");
   const policies = await workflowService.getWorkflowPolicies();
 
   type PolicyRow = (typeof policies)[number];

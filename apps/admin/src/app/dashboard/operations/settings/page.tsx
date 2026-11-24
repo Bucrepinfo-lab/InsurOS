@@ -8,12 +8,14 @@ import {
 import { PlatformSettingService } from '@insuros/services';
 import { ActionButton } from '@/components/ActionButton';
 import { createDemoSetting } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Platform settings' };
 
 const platformSettingService = new PlatformSettingService();
 
 export default async function PlatformSettingsPage() {
+  await requirePageAccess("/dashboard/operations/settings");
   const settings = await platformSettingService.getSettings();
 
   type SettingRow = (typeof settings)[number];

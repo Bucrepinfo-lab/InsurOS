@@ -13,6 +13,7 @@ import { CustomerService } from '@insuros/services';
 import { StatusFilter, applyStatusFilter } from '@/components/list-filters';
 import { currentReach } from '@/lib/record-scope';
 import { RecordLink } from '@/components/record-view';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Customers' };
 
@@ -38,6 +39,7 @@ export default async function CustomersPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageAccess("/dashboard/customers");
   const params = await searchParams;
   const query = readParam(params, 'q');
   const status = readParam(params, 'status');

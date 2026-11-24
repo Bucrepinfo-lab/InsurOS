@@ -1,4 +1,5 @@
 import { Badge, Card, CardContent, DomainModulePage } from '@insuros/ui';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Templates' };
 
@@ -8,7 +9,8 @@ const templates = [
   { name: 'Claim approved (SMS)', channel: 'SMS', status: 'Draft' }
 ];
 
-export default function TemplatesPage() {
+export default async function TemplatesPage() {
+  await requirePageAccess("/dashboard/operations/templates");
   return (
     <DomainModulePage title='Message templates' description='Reusable, versioned copy for the notifications policyholders receive.'>
       <Card>

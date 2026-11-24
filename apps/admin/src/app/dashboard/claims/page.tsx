@@ -14,6 +14,7 @@ import { StatusFilter, applyStatusFilter } from '@/components/list-filters';
 import { currentReach } from '@/lib/record-scope';
 import { RecordLink } from '@/components/record-view';
 import { claimTone } from '@/lib/records';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 const CLAIM_STATUSES: readonly ClaimStatus[] = ['Open', 'In Review', 'Approved', 'Settled', 'Closed'];
 
@@ -38,6 +39,7 @@ export default async function ClaimsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageAccess("/dashboard/claims");
   const params = await searchParams;
   const query = readParam(params, 'q');
   const status = readParam(params, 'status');

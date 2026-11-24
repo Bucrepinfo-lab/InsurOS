@@ -8,12 +8,14 @@ import {
 import { AttachmentService } from '@insuros/services';
 import { ActionButton } from '@/components/ActionButton';
 import { uploadDemoAttachment } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Attachments' };
 
 const attachmentService = new AttachmentService();
 
 export default async function AttachmentsPage() {
+  await requirePageAccess("/dashboard/attachments");
   const attachments = await attachmentService.getAttachments();
 
   type AttachmentRow = (typeof attachments)[number];

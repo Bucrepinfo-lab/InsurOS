@@ -8,6 +8,7 @@ import {
 import { ActionButton } from '@/components/ActionButton';
 import { accrueDemoPremium } from '@/app/dashboard/actions';
 import { CommissionService, SalesHierarchyService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Commissions' };
 
@@ -15,6 +16,7 @@ const commissionService = new CommissionService();
 const salesService = new SalesHierarchyService();
 
 export default async function CommissionsPage() {
+  await requirePageAccess("/dashboard/sales/commissions");
   const schedules = await commissionService.getSchedules();
   const accruals = await commissionService.getAccruals();
   const agents = await salesService.getAgents();

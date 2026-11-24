@@ -9,12 +9,14 @@ import { ActionButton } from '@/components/ActionButton';
 import { submitDemoFnol } from '@/app/dashboard/actions';
 import { ClaimsAutomationService, claimantMessageFor } from '@insuros/services';
 import { paymentsEnabled } from '@/lib/payments-gate';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Claims automation' };
 
 const claimsAutomationService = new ClaimsAutomationService();
 
 export default async function ClaimsAutomationPage() {
+  await requirePageAccess("/dashboard/claims/automation");
   const fnols = await claimsAutomationService.getFnols();
   const rules = await claimsAutomationService.getRules();
   const decisions = await claimsAutomationService.getDecisions();

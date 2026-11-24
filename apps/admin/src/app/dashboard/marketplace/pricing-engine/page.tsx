@@ -8,12 +8,14 @@ import {
 import { ActionButton } from '@/components/ActionButton';
 import { captureDemoBenchmark } from '@/app/dashboard/actions';
 import { PricingService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Pricing engine' };
 
 const pricingService = new PricingService();
 
 export default async function PricingEnginePage() {
+  await requirePageAccess("/dashboard/marketplace/pricing-engine");
   const factors = await pricingService.getRiskFactors();
   const bands = await pricingService.getAffordabilityBands();
   const benchmarks = await pricingService.getBenchmarks();

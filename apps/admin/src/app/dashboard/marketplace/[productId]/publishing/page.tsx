@@ -1,10 +1,12 @@
 import { Badge, Card, CardContent, DomainModulePage } from '@insuros/ui';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Publishing' };
 
 const productId = 'PROD-MOTOR-001';
 
-export default function ProductPublishingPage() {
+export default async function ProductPublishingPage() {
+  await requirePageAccess("/dashboard/marketplace/[productId]/publishing");
   return (
     <DomainModulePage title={`Publishing · ${productId}`} description='Where this product is live, its pricing state, and approval status before it reaches policyholders.'>
       <div className='grid gap-4 lg:grid-cols-3'>

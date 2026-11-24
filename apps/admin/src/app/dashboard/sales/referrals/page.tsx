@@ -5,6 +5,7 @@ import { CustomerService } from '@insuros/services';
 import { CountryPills, CountryStatus, money, pickCountry } from '@/components/country-pills';
 import { getAuthState } from '@/lib/auth/session';
 import { actorIdFor, reachFor } from '@/lib/record-scope';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Referrals' };
 export const dynamic = 'force-dynamic';
@@ -21,6 +22,7 @@ export default async function ReferralsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageAccess("/dashboard/sales/referrals");
   const params = await searchParams;
   const profile = pickCountry(params.country, COUNTRY_PROFILES);
   const state = await getAuthState();

@@ -8,12 +8,14 @@ import {
 import { WorkflowService } from '@insuros/services';
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Approvals' };
 
 const workflowService = new WorkflowService();
 
 export default async function ApprovalQueuePage() {
+  await requirePageAccess("/dashboard/operations/approvals");
   const tasks = await workflowService.getTasks();
   const approvals = tasks.filter((task) =>
     task.title.toLowerCase().includes('approve')

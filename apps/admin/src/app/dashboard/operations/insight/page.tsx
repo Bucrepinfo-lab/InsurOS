@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Card, CardContent, DomainModulePage } from '@insuros/ui';
 import { UsageInsightService, type UsageLine } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'What people use' };
 export const dynamic = 'force-dynamic';
@@ -45,6 +46,7 @@ export default async function InsightPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageAccess("/dashboard/operations/insight");
   const params = await searchParams;
   const asked = Number(Array.isArray(params.days) ? params.days[0] : params.days);
   const days = WINDOWS.some((period) => period.days === asked) ? asked : 7;

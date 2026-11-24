@@ -8,12 +8,14 @@ import {
 import { ActionButton } from '@/components/ActionButton';
 import { refreshClerkPlan } from '@/app/dashboard/actions';
 import { PrincipalService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Clerk sync' };
 
 const principalService = new PrincipalService();
 
 export default async function ClerkSyncPage() {
+  await requirePageAccess("/dashboard/identity/clerk-sync");
   const plan = await principalService.getClerkSyncPlan();
 
   type PlanRow = (typeof plan)[number];

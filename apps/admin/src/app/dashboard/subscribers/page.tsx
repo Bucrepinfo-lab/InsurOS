@@ -14,6 +14,7 @@ import {
   SubscriptionService,
   computePolicyHealth
 } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Subscribers' };
 
@@ -23,6 +24,7 @@ const microinsuranceService = new MicroinsuranceService();
 const pricingService = new PricingService();
 
 export default async function SubscriberExperiencePage() {
+  await requirePageAccess("/dashboard/subscribers");
   const plans = await subscriptionService.getPlans();
   const subscriptions = await subscriptionService.getSubscriptions();
   const alerts = await subscriptionService.getAlerts();

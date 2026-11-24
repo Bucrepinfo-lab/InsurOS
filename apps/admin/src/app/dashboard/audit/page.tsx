@@ -6,6 +6,7 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { AuditEventService, AuditService } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Audit' };
 
@@ -13,6 +14,7 @@ const auditService = new AuditService();
 const auditEventService = new AuditEventService();
 
 export default async function AuditCenterPage() {
+  await requirePageAccess("/dashboard/audit");
   const records = await auditService.getAuditRecords();
   const events = await auditEventService.getAuditEvents();
 

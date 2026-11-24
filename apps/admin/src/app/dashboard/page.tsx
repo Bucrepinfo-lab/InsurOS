@@ -6,6 +6,7 @@ import { ACCENT_SOLID, Motif } from '@/components/value/motif';
 import { getAuthState } from '@/lib/auth/session';
 import { followUpViewerFor } from '@/lib/follow-up-viewer';
 import { reachFor } from '@/lib/record-scope';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Home' };
 
@@ -24,6 +25,7 @@ const FLOW: { href: string; permission: string }[] = [
 ];
 
 export default async function DashboardHomePage() {
+  await requirePageAccess("/dashboard");
   const state = await getAuthState();
   const principal = state.status === 'active' ? state.principal : null;
   const can = (permission: string) => principal?.permissions.includes(permission) ?? false;

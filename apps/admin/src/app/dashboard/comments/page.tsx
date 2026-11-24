@@ -8,12 +8,14 @@ import {
 import { CommentService } from '@insuros/services';
 import { ActionButton } from '@/components/ActionButton';
 import { addDemoComment } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Comments' };
 
 const commentService = new CommentService();
 
 export default async function CommentsPage() {
+  await requirePageAccess("/dashboard/comments");
   const comments = await commentService.getComments();
 
   type CommentRow = (typeof comments)[number];

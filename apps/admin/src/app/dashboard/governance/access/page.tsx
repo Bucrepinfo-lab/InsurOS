@@ -14,6 +14,7 @@ import {
   JurisdictionAuthorizationService,
   RoleService
 } from '@insuros/services';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Jurisdiction access' };
 
@@ -61,6 +62,7 @@ const previewRequests: ScopedAccessRequest[] = [
 ];
 
 export default async function JurisdictionAccessPage() {
+  await requirePageAccess("/dashboard/governance/access");
   const assignments = await authorizationService.getAssignments();
   const regions = await adminHierarchyService.getRegions();
   const roles = await roleService.getRoles();

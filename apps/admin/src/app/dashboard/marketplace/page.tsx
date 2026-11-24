@@ -10,12 +10,14 @@ import {
 import { MarketplaceService } from "@insuros/services";
 import { ActionButton } from '@/components/ActionButton';
 import { createDemoProduct } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Marketplace' };
 
 const marketplaceService = new MarketplaceService();
 
 export default async function MarketplacePage() {
+  await requirePageAccess("/dashboard/marketplace");
   const products = await marketplaceService.getProducts();
   const workflows = await marketplaceService.getMarketplaceWorkflows();
 

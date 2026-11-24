@@ -14,6 +14,7 @@ import { FollowUpService } from '@insuros/services';
 import { FollowUpConfirm } from '@/components/follow-up-confirm';
 import { getAuthState } from '@/lib/auth/session';
 import { followUpViewerFor } from '@/lib/follow-up-viewer';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Follow-ups' };
 export const dynamic = 'force-dynamic';
@@ -67,6 +68,7 @@ export default async function FollowUpsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageAccess("/dashboard/follow-ups");
   const params = await searchParams;
   const asked = Array.isArray(params.area) ? params.area[0] : params.area;
   const area = SECTION_FLOWS.find((flow) => flow.area === asked)?.area as FlowArea | undefined;

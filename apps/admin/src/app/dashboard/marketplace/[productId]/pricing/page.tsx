@@ -6,6 +6,7 @@ import {
 } from '@insuros/ui';
 import { ActionButton } from '@/components/ActionButton';
 import { queueDemoRequest } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Pricing' };
 
@@ -46,7 +47,8 @@ const columns: DataTableColumn<PricingRuleRow>[] = [
   }
 ];
 
-export default function ProductPricingPage() {
+export default async function ProductPricingPage() {
+  await requirePageAccess("/dashboard/marketplace/[productId]/pricing");
   return (
     <DomainModulePage
       title='Pricing Rules'

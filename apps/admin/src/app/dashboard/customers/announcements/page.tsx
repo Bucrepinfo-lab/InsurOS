@@ -3,12 +3,14 @@ import { hasPermission } from '@insuros/domain';
 import { getPersistence } from '@insuros/services';
 import { AnnouncementForm, TakeDown } from '@/components/announcement-forms';
 import { getAuthState } from '@/lib/auth/session';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'News for customers' };
 export const dynamic = 'force-dynamic';
 
 /** News and offers on every customer's own page (part of My Cover Plus). */
 export default async function AnnouncementsPage() {
+  await requirePageAccess("/dashboard/customers/announcements");
   const state = await getAuthState();
   const canPost = state.status === 'active' && hasPermission(state.principal.permissions, 'Operations', 'Create');
   const posts = (await getPersistence().marketingContent.findAll())

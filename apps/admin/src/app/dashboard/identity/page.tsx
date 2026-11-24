@@ -16,6 +16,7 @@ import {
 } from '@insuros/services';
 import { ActionButton } from '@/components/ActionButton';
 import { appointDemoAdmin } from '@/app/dashboard/actions';
+import { requirePageAccess } from "@/lib/auth/page-access";
 
 export const metadata = { title: 'Identity' };
 
@@ -55,6 +56,7 @@ const userColumns: DataTableColumn<UserRow>[] = [
 ];
 
 export default async function IdentityPage() {
+  await requirePageAccess("/dashboard/identity");
   const workflows = await identityService.getIdentityWorkflows();
   const permissions = await permissionService.getPermissions();
   const roles = await roleService.getRoles();
