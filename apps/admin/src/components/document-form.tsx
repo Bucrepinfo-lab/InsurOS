@@ -25,10 +25,19 @@ type ReadState =
   | { kind: 'done'; filled: number }
   | { kind: 'failed' };
 
-/** Read the text on a photo in this browser. The photo is not sent anywhere. */
+/**
+ * Read the text on a photo in this browser. The photo is not sent anywhere.
+ * Tesseract.js 7, English + Kiswahili; the engine and models are served from
+ * our own site (/ocr, copied at build by scripts/copy-ocr-assets.mjs) rather
+ * than a third-party CDN (owner standing rule 25/11/26).
+ */
 async function readPhoto(file: File): Promise<string> {
   const { createWorker } = await import('tesseract.js');
-  const worker = await createWorker('eng');
+  const worker = await createWorker(['eng', 'swa'], 1, {
+    workerPath: '/ocr/worker.min.js',
+    corePath: '/ocr',
+    langPath: '/ocr/lang'
+  });
   try {
     const result = await worker.recognize(file);
     return result.data.text ?? '';

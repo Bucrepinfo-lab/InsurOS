@@ -3,6 +3,10 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 25/11/26 — Document reading: Tesseract 7, English + Kiswahili, self-hosted (owner standing rule: best OCR and photo tools, all projects)
+- `document-form.tsx` read photos with tesseract.js 5.1.1, English only, engine from a third-party CDN. Now 7.0.0 with English + Kiswahili compact models served from our own site (/ocr, copied at build by `apps/admin/scripts/copy-ocr-assets.mjs`, git-ignored). The photo still never leaves the browser.
+- Deliberately NOT applied to claim photos: claim evidence is kept exactly as taken (no looks, crop or editing); only the existing view copies are made for display. Editing evidence would invite fraud.
+
 ## 24/11/26 — Standing rule 20: our own pictures, with the words kept (owner: apply to all projects)
 - Added to `docs/STANDING_RULES.md`: menu and tab pictures are our own drawings, never emoji; words stay with the picture; new pictures are tested with real users. The menu and the phone tab bar already comply (hand-drawn line icons in `nav-icons.tsx`, each with its label).
 
