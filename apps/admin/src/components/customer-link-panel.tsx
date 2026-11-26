@@ -13,7 +13,7 @@ export function CustomerLinkPanel({ conversationId }: { conversationId: string }
       {result?.ok && result.link ? (
         <div className='mt-2 grid gap-2'>
           <p className='break-all rounded-lg bg-paper p-2 font-mono text-[12.5px] text-ink'>{result.link}</p>
-          <ShareButton tone='dark' title='Your conversation with us' text='Read and reply to your insurance agent here:' url={result.link} />
+          <ShareButton privateLink tone='dark' title='Your conversation with us' text='Read and reply to your insurance agent here:' url={result.link} />
         </div>
       ) : (
         <form action={action} className='mt-2'>
