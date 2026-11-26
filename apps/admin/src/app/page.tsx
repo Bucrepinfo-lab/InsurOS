@@ -83,6 +83,25 @@ function Tick() {
  * Public landing. The installed Android app (TWA) opens /?source=twa and goes
  * straight to the workspace (which sends signed-out users to sign-in).
  */
+/**
+ * "What would you like to do?" (owner 26/11/26): one plain choice for each
+ * kind of visitor, so nobody has to read the whole page to find their door.
+ */
+const CHOICES = [
+  { who: 'I work at an insurer or agency', title: 'Sign in with my phone', body: 'Your administrator adds your number. Then your phone and a 4-digit PIN.', cta: 'Sign in', href: '/sign-in' },
+  { who: 'I want to see it first', title: 'Look around the demo', body: 'A view-only visit with sample policies and claims. No account, phone or PIN.', cta: 'Open the demo', href: '/sign-in' },
+  { who: 'I am a customer', title: 'Report a claim or ask a question', body: 'Use the link your insurer or agent sent you, or write to us here and we will pass it on.', cta: 'Contact us', href: '/contact?topic=claim' },
+  { who: 'I run an agency', title: 'Bring my agency onto InsurOS', body: 'Tell us about your team. We set you up and show you around.', cta: 'Talk to us', href: '/contact?topic=general' },
+] as const;
+
+/** The order an agency team really follows, in plain words. */
+const STEPS = [
+  { title: 'Your number is added', body: 'Your administrator adds your phone number and your role. Nobody else sees your work.' },
+  { title: 'Sign in with phone and PIN', body: 'No email and no SMS code. The phone remembers you.' },
+  { title: 'Record policies and claims', body: 'Customers send photos and sign on their own phone through a link. You can speak your notes.' },
+  { title: 'Every step is timed and kept', body: 'Late steps go to the supervisor. Your own work record is yours to download.' },
+] as const;
+
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ source?: string }> }) {
   const { source } = await searchParams;
   if (source === 'twa' || source === 'pwa') redirect('/dashboard');
@@ -140,9 +159,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               >
                 Sign in with your phone
               </Link>
-              <Link href='/why' className='rounded-xl border border-white/25 bg-white/5 px-6 py-3.5 font-semibold text-white backdrop-blur transition hover:border-white/60'>
-                See why teams switch
-              </Link>
+              <a href='#how' className='rounded-xl border border-white/25 bg-white/5 px-6 py-3.5 font-semibold text-white backdrop-blur transition hover:border-white/60'>
+                How it works
+              </a>
             </div>
             <p className='mt-5 max-w-lg text-xs leading-relaxed text-white/55'>
               For staff and agents of organisations using InsurOS; your administrator grants access to your phone number. InsurOS does
@@ -205,6 +224,40 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </section>
 
         {/* Who it is for */}
+        {/* The path for people who are not technical (owner 26/11/26): choose, then the steps. */}
+        <section aria-labelledby='choose' className='mx-auto max-w-6xl px-4 pt-20 sm:px-6'>
+          <h2 id='choose' className='text-[30px] leading-tight text-ink [text-wrap:balance] sm:text-[38px]'>What would you like to do?</h2>
+          <p className='mt-2 text-[15px] text-dim'>Tap the one that fits you.</p>
+          <ul className='mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
+            {CHOICES.map((c) => (
+              <li key={c.title}>
+                <Link href={c.href} className='group flex h-full flex-col gap-2 rounded-2xl border border-line bg-sheet p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-seal/50 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal active:scale-[0.99] motion-reduce:transform-none motion-reduce:transition-none'>
+                  <span className='text-sm font-semibold text-seal'>{c.who}</span>
+                  <span className='font-display text-[20px] leading-snug text-ink'>{c.title}</span>
+                  <span className='text-sm leading-relaxed text-dim'>{c.body}</span>
+                  <span className='mt-auto pt-2 text-sm font-semibold text-seal'>
+                    {c.cta} <span aria-hidden='true' className='inline-block transition group-hover:translate-x-0.5'>→</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section id='how' aria-labelledby='how-heading' className='mx-auto max-w-6xl scroll-mt-6 px-4 pt-20 sm:px-6'>
+          <h2 id='how-heading' className='text-[30px] leading-tight text-ink sm:text-[38px]'>How it works</h2>
+          <p className='mt-2 text-[15px] text-dim'>Four steps for an agency team, all on the phone.</p>
+          <ol className='mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
+            {STEPS.map((step, index) => (
+              <li key={step.title} className='rounded-2xl border border-line bg-sheet p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none'>
+                <span className='grid h-10 w-10 place-items-center rounded-full bg-seal font-mono text-lg font-bold text-white'>{index + 1}</span>
+                <p className='mt-3 font-display text-[18px] leading-snug text-ink'>{step.title}</p>
+                <p className='mt-1 text-sm leading-relaxed text-dim'>{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
         <section aria-labelledby='who' className='mx-auto max-w-6xl px-4 pt-24 sm:px-6'>
           <div className='max-w-2xl'>
             <h2 id='who' className='text-[32px] leading-tight text-ink [text-wrap:balance] sm:text-[40px]'>One ledger for everyone in the chain</h2>
@@ -315,7 +368,22 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </section>
       </main>
 
-      <footer className='border-t border-line'>
+      <section aria-labelledby='help-heading' className='px-4 pb-16 sm:px-6'>
+        <div className='mx-auto max-w-3xl rounded-2xl border border-line bg-sheet p-6 text-center'>
+          <h2 id='help-heading' className='text-[24px] text-ink'>Need help?</h2>
+          <p className='mt-2 text-[15px] text-dim'>
+            Write to <span className='select-all font-semibold text-ink'>telpeninfo@gmail.com</span> and tell us what you tapped. We answer the same day.
+          </p>
+        </div>
+      </section>
+
+      {/* Phones: the two main doors stay one thumb away. */}
+      <nav aria-label='Quick actions' className='fixed inset-x-0 bottom-0 z-40 flex gap-3 border-t border-line bg-sheet/95 px-4 pt-3 backdrop-blur sm:hidden' style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+        <Link href='/sign-in' className='flex min-h-12 flex-1 items-center justify-center rounded-xl bg-[#c9a227] font-semibold text-[#101c31]'>Sign in</Link>
+        <a href='#how' className='flex min-h-12 flex-1 items-center justify-center rounded-xl border border-seal font-semibold text-seal'>How it works</a>
+      </nav>
+
+      <footer className='border-t border-line pb-20 sm:pb-0'>
         <div className='mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm text-dim sm:px-6'>
           <InsurOSLogo size={30} tagline />
           <nav aria-label='Legal' className='flex flex-wrap items-center gap-4'>

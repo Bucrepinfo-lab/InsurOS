@@ -3,6 +3,10 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 26/11/26 — Homepage path for non-technical visitors; audit clean-up (owner 22:29)
+- Homepage now: hero (Sign in with your phone / How it works) → service targets → "What would you like to do?" (I work at an insurer or agency → sign in; I want to see it first → the demo; I am a customer → contact; I run an agency → talk to us) → How it works (number added → phone + PIN → record policies and claims → every step timed and kept) → the existing sections → Help (email). Phones get a fixed Sign in / How it works dock.
+- Clean-up: removed `ocr-import/` (the portable OCR snippet kept on 07/11/26 as planned cross-project work; OCR has since shipped in every project with self-hosted Tesseract, and the snippet loaded Tesseract from a CDN) and the unused `@supabase/ssr` package. `.dockerignore` still lists `ocr-import` (deploy config, harmless, left alone).
+
 ## 26/11/26 — Speak instead of type, and a profile block on My record (owner, 21:38)
 - Owner: profile details, language, dictation, and a personal record a person can download as their own appraisal when moving to a new job.
 - Audit: the appraisal already exists. `/dashboard/my-record` builds each person's career record from their own work (customers, policies, premium, claims, steps on time, replies within 4 hours, roles held) and `/api/my-record` downloads it as a PDF with a fingerprint the agency can confirm. Customer pages already have English and Kiswahili (`packages/domain/src/locale.ts`).
