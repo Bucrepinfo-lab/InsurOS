@@ -29,13 +29,7 @@ export const adminNavigation: NavigationSection[] = [
       { id: 'messages', label: 'Messages', href: '/dashboard/messages' },
       { id: 'my-record', label: 'My career record', href: '/dashboard/my-record', hidden: true },
       { id: 'tenants', label: 'Tenants', href: '/dashboard/tenants', requiredPermission: 'Platform:View' },
-      { id: 'identity', label: 'Identity', href: '/dashboard/identity', requiredPermission: 'Identity:View' },
-      {
-        id: 'clerk-sync',
-        label: 'Clerk Sync',
-        href: '/dashboard/identity/clerk-sync', requiredPermission: 'Identity:View',
-        hidden: true
-      }
+      { id: 'identity', label: 'Identity', href: '/dashboard/identity', requiredPermission: 'Identity:View' }
     ]
   },
   {
