@@ -10,7 +10,7 @@ export function HomeLinkButton({ customerId, name }: { customerId: string; name:
     return (
       <div className='grid gap-2'>
         <p className='break-all rounded-lg bg-paper p-2 font-mono text-[12px] text-ink'>{result.link}</p>
-        <ShareButton tone='dark' title={`${name}: your policies`} text='Your policies, what is insured, values and expiry dates:' url={result.link} />
+        <ShareButton privateLink tone='dark' title={`${name}: your policies`} text='Your policies, what is insured, values and expiry dates:' url={result.link} />
       </div>
     );
   }

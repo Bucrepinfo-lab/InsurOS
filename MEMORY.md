@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 26/11/26 — Share where people are; private links stay one-to-one (owner: "come up with the most popular tools")
+- Owner saw the computer's own share box (OneNote, Outlook, Copilot). `ShareButton` now opens the phone's share sheet on phones and, on computers, a menu: WhatsApp, Facebook, X, Telegram, LinkedIn, SMS, email, "TikTok, Instagram & more" (copies with a hint) and copy. `ShareCover` ("show a friend", public join link) shows the same buttons.
+- PRIVATE links (a customer's own policies page, their conversation with the agent) use `privateLink`: WhatsApp, SMS and email only — never Facebook, X or LinkedIn (customer-link-panel, new-conversation, home-link-button).
+- `@insuros/domain` `share-targets.ts` (+ test; `socialShareMessage`/`SocialChannel` names avoid the existing `shareMessage`). Order from Media Council of Kenya 2026, Communications Authority, GeoPoll 2025.
+
 ## 26/11/26 — "Look around the demo" on the sign-in page (owner: "yes, build it")
 - Testers and prospects could only see the public pages: sign-in is for staff. Now "Look around the demo" (`startDemoVisit`) opens a view-only visit to the isolated demo tenant (`DEMO_TENANT_ID`, the same sample data the Play reviewer sees). No account, phone, PIN or code; rate-limited per IP; off with `DEMO_VISITS=off`.
 - `@insuros/domain` `demo-visit.ts`: sentinel identity `demo-visitor` (not a phone number, so no real number can match), permissions View only (claims, policies, customers, marketplace, finance, operations; nothing that creates, changes, approves or pays; no Identity/Platform). Routed to the demo tenant in `tenant-context.ts`, reach in `record-scope.ts`, delete-account treats it like the reviewer. Test: `packages/domain/test/demo-visit.test.ts`.

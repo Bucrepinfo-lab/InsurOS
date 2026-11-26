@@ -62,6 +62,7 @@ export * from "./tenant";
 export * from "./payment-ledger";
 export * from "./device-auth";
 export * from "./demo-visit";
+export * from "./share-targets";
 export * from "./value-story";
 export * from "./usage-insight";
 export * from "./record-forms";

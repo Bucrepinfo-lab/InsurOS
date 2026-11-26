@@ -55,7 +55,7 @@ export function NewCustomerConversation() {
         <p><strong>{result.title}.</strong> {result.message}</p>
         <p className='break-all rounded-lg bg-white p-3 font-mono text-[13px]'>{result.link}</p>
         <div className='flex flex-wrap gap-3'>
-          <ShareButton tone='dark' title='Your conversation with us' text='Read and reply to your insurance agent here:' url={result.link} />
+          <ShareButton privateLink tone='dark' title='Your conversation with us' text='Read and reply to your insurance agent here:' url={result.link} />
           <a href={`/dashboard/messages/${result.reference}`} className='rounded-lg px-3 py-2 font-medium text-seal underline underline-offset-2'>Open the conversation</a>
         </div>
       </div>
