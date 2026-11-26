@@ -149,6 +149,37 @@ export function deviceAuthContract(name: string, makeStore: () => AuthStore) {
       expect(await auth.userIdForPhone(phone, "new-id")).toBe(uid);
     });
 
+    it("no codes (owner 26/11/26): a first PIN is chosen at sign-in, never over an existing or locked PIN", async () => {
+      const auth = service(makeStore());
+      const uid = `u-${unique()}`;
+      const phone = phoneFor();
+      expect(await auth.chooseFirstPin(uid, phone, "1111")).toEqual({ ok: false, reason: "invalid" });
+      expect(await auth.chooseFirstPin(uid, phone, "4829")).toEqual({ ok: true });
+      expect(await auth.verifyPin(uid, "4829")).toEqual({ outcome: "ok" });
+      // A second "first PIN" cannot replace the working one.
+      expect(await auth.chooseFirstPin(uid, phone, "6071")).toEqual({ ok: false, reason: "has_pin" });
+      expect(await auth.verifyPin(uid, "4829")).toEqual({ outcome: "ok" });
+      // Locked after 5 wrong tries: still cannot be replaced from the sign-in page.
+      for (let i = 0; i < PIN_MAX_ATTEMPTS; i += 1) await auth.verifyPin(uid, "0000");
+      expect(await auth.verifyPin(uid, "4829")).toEqual({ outcome: "locked" });
+      expect(await auth.chooseFirstPin(uid, phone, "6071")).toEqual({ ok: false, reason: "has_pin" });
+    });
+
+    it("an administrator clears a forgotten or locked PIN; the person then chooses a new one", async () => {
+      const auth = service(makeStore());
+      const uid = `u-${unique()}`;
+      const phone = phoneFor();
+      await auth.setPin(uid, phone, "4829");
+      for (let i = 0; i < PIN_MAX_ATTEMPTS; i += 1) await auth.verifyPin(uid, "0000");
+      expect(await auth.verifyPin(uid, "4829")).toEqual({ outcome: "locked" });
+
+      await auth.clearPin(uid, phone);
+      expect(await auth.verifyPin(uid, "4829")).toEqual({ outcome: "no_pin" });
+      expect(await auth.userIdForPhone(phone, "other")).toBe(uid);
+      expect(await auth.chooseFirstPin(uid, phone, "6071")).toEqual({ ok: true });
+      expect(await auth.verifyPin(uid, "6071")).toEqual({ outcome: "ok" });
+    });
+
     it("stores no PIN or device secret in clear", async () => {
       const store = makeStore();
       const auth = service(store);

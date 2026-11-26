@@ -3,6 +3,13 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 26/11/26 — Sign-in with no codes for staff (owner: "correct the login ... just the way we have agreed")
+- The agreed model (HarvestHub 25/11/26, now every app): phone, then the person's own 4-digit PIN; nothing sent, no code typed. InsurOS needed a 6-digit joining code from an administrator for a first sign-in or a forgotten PIN, so a new tester or staff member could not get in.
+- Now: sign-in page "First time here? Choose your PIN" (`chooseFirstPin`: phone + new PIN, only for a staff phone / platform owner, refused whenever a PIN exists or is locked; same answer for an unknown number and one with a PIN). Governance → Jurisdiction Access: "Clear someone's PIN" (`clearStaffPin`, same permission and region rule as the old joining-code form; never yourself); the person then chooses a new one. Signed-in devices stay signed in.
+- Kept: the platform owner's emergency recovery (`PLATFORM_OWNER_BOOTSTRAP_CODE` Fly secret, unlinked /sign-in?reset=1) — the only code left, owner-only. The service-level joining-code methods and their tests stay (unused by staff screens). Customers still use their private link, no sign-in.
+- Tests: `no-sms.test.ts` now guards the new model (no `issueJoinCode`/`redeemJoinCode` in the staff paths, Clear PIN behind Identity:Create + regions); two new contract tests (first PIN never over an existing or locked PIN; clear then choose). Risk accepted as for HarvestHub: a staff phone with no PIN can be claimed by whoever first sets one.
+- Same day: Supabase project `insuros` was paused (keep-alive failed: host not found); resumed from the dashboard (free, data kept), keep-alive rerun green.
+
 ## 26/11/26 — Seen by Google: robots.txt and sitemap.xml
 - Audit: getinsuros.com (+ *.getinsuros.com, insuros.net, www.insuros.net) certificates Issued on Fly; health ok; assetlinks live. `/robots.txt` and `/sitemap.xml` were 404: added `apps/admin/src/app/robots.ts` and `sitemap.ts` (public pages only).
 - insuros.net DNS is split: A records point to GoDaddy forwarding, AAAA to Fly. Owner to choose: forward to getinsuros.com (remove the AAAA) or serve InsurOS (A → Fly).

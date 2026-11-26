@@ -18,12 +18,13 @@ import { PLAY_REVIEW_USER_ID, isPlayReviewPhone, matchesPlayReview } from "../pl
 import { platformOwnerPhones } from "./session";
 
 /**
- * Sign-in server actions — owner 20/11/26: no SMS.
- * Step 1 the phone number (only a staff phone, a platform owner or the store
- * reviewer), step 2 the person's own 4-digit PIN — on any device. The first
- * time, a forgotten PIN or 5 wrong PINs: a one-time joining code from someone
- * who manages staff access, then a new PIN. Everything is decided on the
- * server; responses never reveal whether a phone number has an account.
+ * Sign-in server actions — owner 20/11/26: no SMS; 26/11/26: no codes.
+ * Phone number (only a staff phone, a platform owner or the store reviewer),
+ * then the person's own 4-digit PIN — on any device. The first time: choose
+ * the PIN right here. A forgotten PIN or 5 wrong PINs: someone who manages
+ * staff access clears it, then the person chooses a new one here. Nothing is
+ * sent and no code is typed. (Only the platform owner keeps a hidden
+ * emergency recovery code, a Fly secret.) Everything is decided on the server.
  */
 export type SignInResult =
   | { ok: true; next: string }
@@ -31,7 +32,8 @@ export type SignInResult =
 
 const RATE_LIMITED = "Too many attempts. Wait a few minutes and try again.";
 const NO_MATCH = "That phone number and PIN do not match.";
-const ASK_ADMIN = "Ask the person who manages your access for a joining code.";
+const ASK_ADMIN = "Ask the person who manages your access to clear your PIN, then choose a new one here.";
+const CANNOT_SET = "We could not set a PIN for that number. If you already have one, sign in with it. If you are new, ask your administrator to add you first.";
 
 const principals = new PrincipalService();
 
@@ -89,8 +91,32 @@ export async function signInWithPin(phoneInput: string, pin: string, next?: stri
   if (check.outcome === "wrong") {
     return { ok: false, error: `${NO_MATCH} ${check.remaining} ${check.remaining === 1 ? "try" : "tries"} left.` };
   }
-  // No PIN yet, or locked: same answer whether or not the number is known.
-  return { ok: false, lockedOut: true, error: check.outcome === "locked" ? `Too many wrong PINs. ${ASK_ADMIN}` : `${NO_MATCH} First time? ${ASK_ADMIN}` };
+  // No PIN yet: choose one. Locked: ask an administrator to clear it.
+  return check.outcome === "locked"
+    ? { ok: false, lockedOut: true, error: `Too many wrong PINs. ${ASK_ADMIN}` }
+    : { ok: false, error: `${NO_MATCH} First time here? Choose your PIN below.` };
+}
+
+/** First sign-in, or after an administrator cleared the PIN: phone + a new PIN, no code. */
+export async function chooseFirstPin(phoneInput: string, pin: string, confirm: string, next?: string): Promise<SignInResult> {
+  if (getAuthMode() !== "supabase") return { ok: false, error: "Sign-in is not available on this server." };
+  const phone = toE164(phoneInput);
+  if (!phone) return { ok: false, error: "Enter a valid phone number, e.g. 0712 345 678." };
+  if (!/^\d{4}$/.test(pin)) return { ok: false, error: "Choose 4 digits." };
+  if (pin !== confirm) return { ok: false, error: "The two PINs do not match." };
+  const auth = getDeviceAuth();
+  if (!(await auth.consume("pin_ip", await clientIp())) || !(await auth.consume("pin_phone", phone))) {
+    return { ok: false, error: RATE_LIMITED };
+  }
+  const userId = isPlayReviewPhone(phone) ? null : await accountFor(phone);
+  // Same answer for an unknown number and one that already has a PIN.
+  if (!userId) return { ok: false, error: CANNOT_SET };
+  const chosen = await auth.chooseFirstPin(userId, phone, pin);
+  if (!chosen.ok) {
+    return { ok: false, error: chosen.reason === "invalid" ? "Choose 4 digits that are not all the same." : CANNOT_SET };
+  }
+  await openSession(userId, phone, "pin");
+  return { ok: true, next: safeNext(next) };
 }
 
 /** Owner bootstrap: a fixed code for platform-owner phones only (Fly secret), e.g. when the only owner is locked out. */
@@ -102,30 +128,28 @@ function matchesOwnerBootstrap(phone: string, code: string): boolean {
   return timingSafeEqual(a, b);
 }
 
-/** First time, forgotten or locked PIN: phone + joining code → choose a new PIN. */
+/**
+ * Platform owner's emergency recovery only (no staff joining codes are given
+ * any more): phone + the PLATFORM_OWNER_BOOTSTRAP_CODE Fly secret, from the
+ * unlinked /sign-in?reset=1. Then choose a new PIN.
+ */
 export async function redeemJoiningCode(phoneInput: string, codeInput: string, next?: string): Promise<SignInResult> {
   if (getAuthMode() !== "supabase") return { ok: false, error: "Sign-in is not available on this server." };
   const phone = toE164(phoneInput);
   const code = codeInput.replace(/\s/g, "");
   if (!phone) return { ok: false, error: "Enter a valid phone number, e.g. 0712 345 678." };
-  if (!isJoinCode(code)) return { ok: false, error: "Enter the 6-digit joining code." };
+  if (!isJoinCode(code)) return { ok: false, error: "Enter the 6-digit recovery code." };
   const auth = getDeviceAuth();
   if (!(await auth.consume("code_verify_ip", await clientIp())) || !(await auth.consume("code_verify_phone", phone))) {
     return { ok: false, error: RATE_LIMITED };
   }
 
   const userId = await accountFor(phone);
-  const redeemed = userId && !isPlayReviewPhone(phone)
-    ? matchesOwnerBootstrap(phone, code) ? ({ ok: true } as const) : await auth.redeemJoinCode(phone, code)
-    : ({ ok: false, reason: "none" } as const);
+  const redeemed = userId && !isPlayReviewPhone(phone) && matchesOwnerBootstrap(phone, code)
+    ? ({ ok: true } as const)
+    : ({ ok: false, reason: "wrong" } as const);
   if (!redeemed.ok || !userId) {
-    const why =
-      redeemed.ok === false && redeemed.reason === "burned"
-        ? "That code has been tried too many times. Ask for a new one."
-        : redeemed.ok === false && redeemed.reason === "wrong"
-          ? "That joining code is not right. Check it and try again."
-          : "There is no open joining code for this number. Ask for a new one.";
-    return { ok: false, error: why };
+    return { ok: false, error: "That recovery code is not right." };
   }
 
   await auth.afterCodeRedeemed(userId, phone);
