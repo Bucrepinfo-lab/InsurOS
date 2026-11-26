@@ -77,7 +77,7 @@ export function SpeechLanguageChips({ lang = 'en' }: { lang?: LanguageTag }) {
           role='radio'
           aria-checked={current === l.id}
           onClick={() => saveSpeechLanguage(l.id)}
-          className={`min-h-11 rounded-full border px-4 py-2 text-sm font-semibold ${current === l.id ? 'border-seal bg-seal text-white' : 'border-line bg-sheet text-ink'}`}
+          className={`min-h-11 rounded-full border px-4 py-2 text-sm font-semibold transition duration-150 hover:-translate-y-px active:scale-[0.97] motion-reduce:transform-none motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal ${current === l.id ? 'border-seal bg-seal text-white shadow-sm' : 'border-line bg-sheet text-ink hover:border-seal hover:bg-sealsoft'}`}
         >
           {l.native}
         </button>
@@ -148,14 +148,14 @@ export function SpeakButton({ field, lang = 'en', maxLength = 2000, showLanguage
   }
 
   return (
-    <div ref={root} className='grid justify-items-start gap-1.5'>
+    <div ref={root} className='grid gap-1.5 sm:justify-items-start'>
       {showLanguages ? <SpeechLanguageChips lang={lang} /> : null}
       {!unsupported ? (
         <button
           type='button'
           aria-pressed={listening}
           onClick={() => (listening ? rec.current?.stop() : start())}
-          className={`inline-flex min-h-11 items-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal ${listening ? 'border-red-700 bg-red-700 text-white' : 'border-seal bg-sheet text-seal'}`}
+          className={`inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-semibold transition duration-150 hover:-translate-y-px hover:shadow-md active:scale-[0.97] motion-reduce:transform-none motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal sm:w-auto ${listening ? 'animate-pulse border-red-700 bg-red-700 text-white motion-reduce:animate-none' : 'border-seal bg-sheet text-seal hover:bg-sealsoft'}`}
         >
           <svg viewBox='0 0 24 24' width='18' height='18' aria-hidden='true'>
             <rect x='9' y='3' width='6' height='11' rx='3' fill='currentColor' />

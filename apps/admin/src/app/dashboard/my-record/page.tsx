@@ -52,7 +52,7 @@ export default async function MyRecordPage() {
         agency can confirm. Only you can see or download yours.
       </p>
 
-      <section aria-labelledby='profile' className='grid gap-3 rounded-2xl border border-line bg-sheet p-5'>
+      <section aria-labelledby='profile' className='grid gap-3 rounded-2xl border border-line bg-sheet p-5 transition duration-200 hover:border-seal/40 hover:shadow-md motion-reduce:transition-none'>
         <h2 id='profile' className='text-[20px] text-ink'>My profile</h2>
         <dl className='grid gap-3 text-[15px] text-ink sm:grid-cols-2'>
           <div>
@@ -75,7 +75,7 @@ export default async function MyRecordPage() {
         <h2 id='figures' className='text-[20px] text-ink'>What you have handled</h2>
         <ul className='grid gap-3 sm:grid-cols-2 lg:grid-cols-3'>
           {tiles.map(([label, value, note]) => (
-            <li key={label} className='rounded-2xl border border-line bg-sheet p-4'>
+            <li key={label} className='rounded-2xl border border-line bg-sheet p-4 transition duration-200 hover:-translate-y-0.5 hover:border-seal/40 hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none'>
               <p className='text-sm text-dim'>{label}</p>
               <p className='mt-1 font-display text-[28px] leading-none text-ink'>{value}</p>
               <p className='mt-1.5 text-xs text-dim'>{note}</p>
