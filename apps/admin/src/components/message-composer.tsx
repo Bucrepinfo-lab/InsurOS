@@ -5,6 +5,7 @@ import { AI_TASK_LABELS, MESSAGE_MAX, type AiTask } from '@insuros/domain';
 import type { ActionResult } from '@/lib/action-result';
 import { aiHelp } from '@/app/dashboard/messages/actions';
 import { ReviewBeforeSend } from '@/components/review-before-send';
+import { SpeakButton } from '@/components/speak-button';
 
 const box =
   'mt-1 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5 text-[15px] leading-relaxed text-ink outline-none transition focus:border-seal focus:ring-2 focus:ring-seal/20';
@@ -97,6 +98,7 @@ export function ReplyComposer({
         Reply
         <textarea name='body' required rows={4} maxLength={MESSAGE_MAX} value={text} onChange={(event) => setText(event.target.value)} className={box} />
       </label>
+      <SpeakButton field='body' maxLength={MESSAGE_MAX} />
       <AiHelpBar
         tasks={['draft-reply', 'improve', 'translate', 'summarise']}
         conversationId={conversationId}

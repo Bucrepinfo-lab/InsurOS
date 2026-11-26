@@ -3,6 +3,14 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 26/11/26 — Speak instead of type, and a profile block on My record (owner, 21:38)
+- Owner: profile details, language, dictation, and a personal record a person can download as their own appraisal when moving to a new job.
+- Audit: the appraisal already exists. `/dashboard/my-record` builds each person's career record from their own work (customers, policies, premium, claims, steps on time, replies within 4 hours, roles held) and `/api/my-record` downloads it as a PDF with a fingerprint the agency can confirm. Customer pages already have English and Kiswahili (`packages/domain/src/locale.ts`).
+- Added tap to speak (`apps/admin/src/components/speak-button.tsx`, rules in `packages/domain/src/speech.ts`, tested): the phone's own speech recognition, Kiswahili or English, under the message boxes: staff reply, new conversation, announcement, the customer's reply on `/c/[token]` and the public contact form (both follow the page language and show the language choice). Speaking never sends anything.
+- My record now opens with "My profile": name, sign-in number and the speaking language.
+- Judgement calls: (1) the decline-reason box in `claim-steps.tsx` was left alone because claims settlement is a protected area; (2) staff cannot edit their own name or number, because the record is trusted only if the person it describes cannot change it; the agency owner sets them at Governance; (3) Kikuyu, Dholuo, Kalenjin and Luhya are not offered because phones cannot write them down yet.
+- Checks here: typecheck all packages and admin, vitest 279 pass. `next build` could not run in this workspace (Google Fonts unreachable); CI builds it.
+
 ## 26/11/26 — Share where people are; private links stay one-to-one (owner: "come up with the most popular tools")
 - Owner saw the computer's own share box (OneNote, Outlook, Copilot). `ShareButton` now opens the phone's share sheet on phones and, on computers, a menu: WhatsApp, Facebook, X, Telegram, LinkedIn, SMS, email, "TikTok, Instagram & more" (copies with a hint) and copy. `ShareCover` ("show a friend", public join link) shows the same buttons.
 - PRIVATE links (a customer's own policies page, their conversation with the agent) use `privateLink`: WhatsApp, SMS and email only — never Facebook, X or LinkedIn (customer-link-panel, new-conversation, home-link-button).
