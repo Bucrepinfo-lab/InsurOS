@@ -1,7 +1,7 @@
 "use server";
 
 import { createHash, timingSafeEqual } from "node:crypto";
-import { isJoinCode, maskPhone, toE164 } from "@insuros/domain";
+import { DEMO_VISITOR_PHONE, DEMO_VISITOR_USER_ID, demoVisitsEnabled, isJoinCode, maskPhone, toE164 } from "@insuros/domain";
 import { PrincipalService } from "@insuros/services";
 import { getAuthMode } from "./config";
 import {
@@ -117,6 +117,19 @@ export async function chooseFirstPin(phoneInput: string, pin: string, confirm: s
   }
   await openSession(userId, phone, "pin");
   return { ok: true, next: safeNext(next) };
+}
+
+/**
+ * "Look around the demo" (owner 26/11/26): a view-only visit to the isolated
+ * demo tenant with sample data — no account, phone, PIN or code. Rate-limited
+ * per IP. Off with DEMO_VISITS=off.
+ */
+export async function startDemoVisit(): Promise<SignInResult> {
+  if (getAuthMode() !== "supabase" || !demoVisitsEnabled()) return { ok: false, error: "The demo is not available right now." };
+  const auth = getDeviceAuth();
+  if (!(await auth.consume("pin_ip", await clientIp()))) return { ok: false, error: RATE_LIMITED };
+  await openSession(DEMO_VISITOR_USER_ID, DEMO_VISITOR_PHONE, "pin");
+  return { ok: true, next: "/dashboard" };
 }
 
 /** Owner bootstrap: a fixed code for platform-owner phones only (Fly secret), e.g. when the only owner is locked out. */

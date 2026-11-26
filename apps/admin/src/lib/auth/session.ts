@@ -11,6 +11,7 @@ import {
 import { PrincipalService } from "@insuros/services";
 import { fail, type ActionResult } from "../action-result";
 import { isPlayReviewPhone } from "../play-review";
+import { DEMO_VISITOR_PERMISSIONS, isDemoVisitor } from "@insuros/domain";
 import "../tenant-context";
 import { getAuthMode } from "./config";
 import { getSessionIdentity } from "./session-user";
@@ -23,7 +24,7 @@ import { getDeviceAuth } from "./device-auth";
 export type AuthState =
   | { status: "misconfigured" }
   | { status: "signed-out" }
-  /** Signed in with a joining code, but must choose a 4-digit PIN before using the app. */
+  /** Signed in with the owner recovery code, but must choose a 4-digit PIN before using the app. */
   | { status: "needs-pin" }
   | { status: "pending"; principal: SessionPrincipal }
   | { status: "active"; principal: SessionPrincipal };
@@ -76,6 +77,23 @@ export const getAuthState = cache(async (): Promise<AuthState> => {
         name: "Store reviewer (demo data)",
         assignments: [],
         permissions: PLAY_REVIEWER_PERMISSIONS,
+        accessibleRegionIds: [],
+        isUnmapped: false
+      }
+    };
+  }
+
+  // "Look around the demo": view-only, routed to the demo tenant (owner 26/11/26).
+  if (isDemoVisitor(user.phone)) {
+    return {
+      status: "active",
+      principal: {
+        clerkUserId: user.userId,
+        email: "demo-visitor@demo.insuros",
+        phone: user.phone,
+        name: "Demo visitor (sample data, view only)",
+        assignments: [],
+        permissions: [...DEMO_VISITOR_PERMISSIONS],
         accessibleRegionIds: [],
         isUnmapped: false
       }

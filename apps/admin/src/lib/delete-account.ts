@@ -5,6 +5,7 @@ import { getAuthMode } from "@/lib/auth/config";
 import { clearDeviceCookie, clearSessionCookie, getDeviceAuth } from "@/lib/auth/device-auth";
 import { getSessionIdentity } from "@/lib/auth/session-user";
 import { deidentifyPayer } from "@/lib/payments";
+import { DEMO_VISITOR_USER_ID } from "@insuros/domain";
 import { PLAY_REVIEW_USER_ID } from "@/lib/play-review";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import "@/lib/tenant-context";
@@ -30,7 +31,7 @@ export async function deleteMyAccount(): Promise<DeleteAccountResult> {
   const identity = await getSessionIdentity();
   if (!identity) return { ok: false, reason: "unauthenticated" };
 
-  const isReviewer = identity.userId === PLAY_REVIEW_USER_ID;
+  const isReviewer = identity.userId === PLAY_REVIEW_USER_ID || identity.userId === DEMO_VISITOR_USER_ID;
   const admin = createSupabaseAdminClient();
   if (!admin && !isReviewer) return { ok: false, reason: "not_configured" };
 

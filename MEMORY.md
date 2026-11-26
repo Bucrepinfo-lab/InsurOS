@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 26/11/26 — "Look around the demo" on the sign-in page (owner: "yes, build it")
+- Testers and prospects could only see the public pages: sign-in is for staff. Now "Look around the demo" (`startDemoVisit`) opens a view-only visit to the isolated demo tenant (`DEMO_TENANT_ID`, the same sample data the Play reviewer sees). No account, phone, PIN or code; rate-limited per IP; off with `DEMO_VISITS=off`.
+- `@insuros/domain` `demo-visit.ts`: sentinel identity `demo-visitor` (not a phone number, so no real number can match), permissions View only (claims, policies, customers, marketplace, finance, operations; nothing that creates, changes, approves or pays; no Identity/Platform). Routed to the demo tenant in `tenant-context.ts`, reach in `record-scope.ts`, delete-account treats it like the reviewer. Test: `packages/domain/test/demo-visit.test.ts`.
+- Wording: comments and `docs/PLAY-LISTING.md` now say no codes (admin clears a PIN; owner recovery only).
+
 ## 26/11/26 — Sign-in with no codes for staff (owner: "correct the login ... just the way we have agreed")
 - The agreed model (HarvestHub 25/11/26, now every app): phone, then the person's own 4-digit PIN; nothing sent, no code typed. InsurOS needed a 6-digit joining code from an administrator for a first sign-in or a forgotten PIN, so a new tester or staff member could not get in.
 - Now: sign-in page "First time here? Choose your PIN" (`chooseFirstPin`: phone + new PIN, only for a staff phone / platform owner, refused whenever a PIN exists or is locked; same answer for an unknown number and one with a PIN). Governance → Jurisdiction Access: "Clear someone's PIN" (`clearStaffPin`, same permission and region rule as the old joining-code form; never yourself); the person then chooses a new one. Signed-in devices stay signed in.

@@ -12,7 +12,7 @@ export interface SessionIdentity {
 
 /**
  * The verified identity for this request — ONLY from a signed app session
- * issued after a joining code or PIN, on a still-trusted device bound to the same
+ * issued after the PIN (or the owner recovery code), on a still-trusted device bound to the same
  * user. A typed phone number, a forged/expired cookie or a revoked device
  * yields null.
  */

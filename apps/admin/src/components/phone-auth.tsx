@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { chooseFirstPin, redeemJoiningCode, signInWithPin } from "@/lib/auth/sign-in-actions";
+import { chooseFirstPin, redeemJoiningCode, signInWithPin, startDemoVisit } from "@/lib/auth/sign-in-actions";
 
 /**
  * Sign-in without SMS or codes (owner 20/11/26, 26/11/26): phone + 4-digit
@@ -41,6 +41,18 @@ export function PhoneAuth({
     const result = await signInWithPin(phoneInput, pin, next).catch(() => ({ ok: false, error: "Something went wrong. Try again." }) as const);
     setLoading(false);
     setPin("");
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    go(result.next);
+  }
+
+  async function lookAround() {
+    setError(null);
+    setLoading(true);
+    const result = await startDemoVisit().catch(() => ({ ok: false, error: "Something went wrong. Try again." }) as const);
+    setLoading(false);
     if (!result.ok) {
       setError(result.error);
       return;
@@ -198,6 +210,20 @@ export function PhoneAuth({
       <p className="text-center text-xs text-slate-500">
         Forgot your PIN? Ask the person who manages your access to clear it, then choose a new one here.
       </p>
+      <div className="border-t border-slate-200 pt-4">
+        <button
+          type="button"
+          onClick={lookAround}
+          disabled={loading}
+          className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base font-medium text-slate-900 transition hover:bg-slate-50 disabled:opacity-60"
+        >
+          Look around the demo
+        </button>
+        <p className="mt-2 text-center text-xs text-slate-500">
+          No account needed. A sample insurance office with made-up policies, customers and claims. You can look at
+          everything but change nothing.
+        </p>
+      </div>
     </form>
   );
 }

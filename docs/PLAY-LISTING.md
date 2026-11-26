@@ -104,6 +104,6 @@ v1 offers **no consumer financial features**: no payments, no premium collection
 ## Server checklist before the first build (**OWNER**)
 
 Fly app `insuros` secrets (names only): `AUTH_SECRET`, `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `PLATFORM_OWNER_PHONES`, `PLAY_REVIEW_PHONE`, `PLAY_REVIEW_PIN`, `ANDROID_CERT_FINGERPRINTS`. Leave `PAYMENTS_ENABLED` unset.
-Supabase: the Send-SMS hook is **off** (owner 20/11/26: no SMS); sign-in is phone + PIN with joining codes from admins. Email sign-in is not used.
+Supabase: the Send-SMS hook is **off** (owner 20/11/26: no SMS); sign-in is phone + PIN with no codes: a new staff member chooses a PIN at sign-in, an admin clears a forgotten one (owner 26/11/26). Anyone can "Look around the demo" (view-only, demo tenant). Email sign-in is not used.
 GitHub repo secrets for the deploy workflow: `FLY_API_TOKEN`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 Then confirm `https://getinsuros.com/api/health` returns `"status":"ok"` with `"persistence":"postgres"`.
