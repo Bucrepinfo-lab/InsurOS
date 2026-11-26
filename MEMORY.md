@@ -3,6 +3,10 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 26/11/26 — Seen by Google: robots.txt and sitemap.xml
+- Audit: getinsuros.com (+ *.getinsuros.com, insuros.net, www.insuros.net) certificates Issued on Fly; health ok; assetlinks live. `/robots.txt` and `/sitemap.xml` were 404: added `apps/admin/src/app/robots.ts` and `sitemap.ts` (public pages only).
+- insuros.net DNS is split: A records point to GoDaddy forwarding, AAAA to Fly. Owner to choose: forward to getinsuros.com (remove the AAAA) or serve InsurOS (A → Fly).
+
 ## 25/11/26 — Document reading: Tesseract 7, English + Kiswahili, self-hosted (owner standing rule: best OCR and photo tools, all projects)
 - `document-form.tsx` read photos with tesseract.js 5.1.1, English only, engine from a third-party CDN. Now 7.0.0 with English + Kiswahili compact models served from our own site (/ocr, copied at build by `apps/admin/scripts/copy-ocr-assets.mjs`, git-ignored). The photo still never leaves the browser.
 - Deliberately NOT applied to claim photos: claim evidence is kept exactly as taken (no looks, crop or editing); only the existing view copies are made for display. Editing evidence would invite fraud.
