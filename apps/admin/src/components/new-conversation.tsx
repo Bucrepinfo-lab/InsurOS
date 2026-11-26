@@ -7,6 +7,7 @@ import { startColleagueConversation, startCustomerConversation } from '@/app/das
 import { AiHelpBar } from './message-composer';
 import { ShareButton } from './value/share-button';
 import { ReviewBeforeSend } from '@/components/review-before-send';
+import { SpeakButton } from '@/components/speak-button';
 
 const field = 'mt-1 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5 text-[15px] text-ink outline-none focus:border-seal focus:ring-2 focus:ring-seal/20';
 const label = 'block text-sm font-medium text-ink';
@@ -20,6 +21,7 @@ function Body({ audience, subject, onAssisted }: { audience: 'customer' | 'colle
         Message
         <textarea name='body' required rows={5} maxLength={MESSAGE_MAX} value={text} onChange={(e) => setText(e.target.value)} className={field} />
       </label>
+      <SpeakButton field='body' maxLength={MESSAGE_MAX} />
       <AiHelpBar tasks={['draft-reply', 'improve', 'translate']} audience={audience} subject={subject} getDraft={() => text} onText={(value) => (setText(value), onAssisted())} />
     </div>
   );

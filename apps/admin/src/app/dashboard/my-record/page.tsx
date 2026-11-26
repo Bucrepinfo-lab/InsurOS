@@ -4,6 +4,7 @@ import { getAuthState } from '@/lib/auth/session';
 import { followUpViewerFor } from '@/lib/follow-up-viewer';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { requirePageAccess } from "@/lib/auth/page-access";
+import { SpeechLanguageChips } from '@/components/speak-button';
 
 export const metadata = { title: 'My career record' };
 export const dynamic = 'force-dynamic';
@@ -50,6 +51,25 @@ export default async function MyRecordPage() {
         Built automatically from your work here; nobody types it in, so an employer can trust it. Each PDF carries a fingerprint the
         agency can confirm. Only you can see or download yours.
       </p>
+
+      <section aria-labelledby='profile' className='grid gap-3 rounded-2xl border border-line bg-sheet p-5'>
+        <h2 id='profile' className='text-[20px] text-ink'>My profile</h2>
+        <dl className='grid gap-3 text-[15px] text-ink sm:grid-cols-2'>
+          <div>
+            <dt className='text-sm text-dim'>Name</dt>
+            <dd>{state.principal.name}</dd>
+          </div>
+          <div>
+            <dt className='text-sm text-dim'>Phone number you sign in with</dt>
+            <dd className='font-mono'>{state.principal.phone ?? state.principal.email}</dd>
+          </div>
+        </dl>
+        <p className='text-xs text-dim'>Your name and number are set by your agency owner at Governance, so a record cannot be edited by the person it describes.</p>
+        <div className='grid gap-1.5'>
+          <p className='text-sm text-dim'>My language for speaking messages (tap the microphone under any message box)</p>
+          <SpeechLanguageChips />
+        </div>
+      </section>
 
       <section aria-labelledby='figures' className='grid gap-3'>
         <h2 id='figures' className='text-[20px] text-ink'>What you have handled</h2>

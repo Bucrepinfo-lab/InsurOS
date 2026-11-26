@@ -3,6 +3,7 @@
 import { useActionState } from 'react';
 import { archiveAnnouncement, postAnnouncement } from '@/app/dashboard/customers/announcements/actions';
 import { ReviewBeforeSend } from '@/components/review-before-send';
+import { SpeakButton } from '@/components/speak-button';
 
 const field = 'mt-1 w-full rounded-lg border border-ink/15 bg-white px-3 py-2.5 text-[15px] text-ink outline-none focus:border-seal focus:ring-2 focus:ring-seal/20';
 const label = 'block text-sm font-medium text-ink';
@@ -19,6 +20,7 @@ export function AnnouncementForm() {
         Message
         <textarea name='body' required minLength={10} maxLength={1000} rows={4} className={field} />
       </label>
+      <SpeakButton field='body' maxLength={1000} />
       <div className='grid gap-4 sm:grid-cols-2'>
         <label className={label}>
           Link (optional)
