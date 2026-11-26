@@ -8,6 +8,7 @@ import {
   type SessionPrincipal
 } from "@insuros/domain";
 import { getAuthState } from "./auth/session";
+import { isDemoVisitor } from "@insuros/domain";
 import { isPlayReviewPhone } from "./play-review";
 
 /**
@@ -18,7 +19,7 @@ import { isPlayReviewPhone } from "./play-review";
  * view.
  */
 export function reachFor(principal: SessionPrincipal, area: RecordArea): RecordReach {
-  if (isPlayReviewPhone(principal.phone)) {
+  if (isPlayReviewPhone(principal.phone) || isDemoVisitor(principal.phone)) {
     return principal.permissions.includes(`${area}:View`) ? ALL_REACH : NO_REACH;
   }
   return recordReach(principal, area);
@@ -28,7 +29,7 @@ export function reachFor(principal: SessionPrincipal, area: RecordArea): RecordR
 export function actorIdFor(principal: SessionPrincipal): string {
   return (
     principalStaffIds(principal)[0] ??
-    (isPlayReviewPhone(principal.phone) ? "play-review" : undefined) ??
+    (isPlayReviewPhone(principal.phone) ? "play-review" : isDemoVisitor(principal.phone) ? "demo-visitor" : undefined) ??
     principal.clerkUserId ??
     principal.phone ??
     principal.email
