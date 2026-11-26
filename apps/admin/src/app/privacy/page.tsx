@@ -42,8 +42,8 @@ export default function PrivacyPage() {
           name, your role and the region you are assigned to, and who granted that access and when.
         </li>
         <li>
-          <strong>Sign-in security data:</strong> a one-time 6-digit joining code your administrator
-          gives you the first time (valid 48 hours, used once; we keep only a scrambled copy); your 4-digit PIN, stored
+          <strong>Sign-in security data:</strong> your 4-digit PIN (you choose it the first time you sign in; no code is
+          sent or typed), stored
           only as a salted, peppered hash; a random trusted-device identifier kept in a secure cookie
           on your device, with a short device label (e.g. “Android app”) and when it was last used;
           a session cookie; and, to stop abuse, the phone number or IP address and time of sign-in
@@ -130,8 +130,8 @@ export default function PrivacyPage() {
       <p>
         Data is encrypted in transit (HTTPS). Access is role-based and enforced on our servers:
         each person sees only their own department’s work; administrators have the overall view.
-        Sign-in uses your phone number and a 4-digit PIN (no SMS); 5 wrong PINs lock the PIN until
-        your administrator gives you a new joining code, and administrators can revoke a
+        Sign-in uses your phone number and a 4-digit PIN (no SMS, no codes); 5 wrong PINs lock the PIN until
+        your administrator clears it and you choose a new one, and administrators can revoke a
         staff member’s devices at any time.
       </p>
 

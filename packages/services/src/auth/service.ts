@@ -17,7 +17,10 @@ import {
 import type { AuthStore } from "./store";
 
 /**
- * Phone + PIN + joining codes (owner 20/11/26: no SMS).
+ * Phone + PIN (owner 20/11/26: no SMS; 26/11/26: no codes for staff either —
+ * a staff member with no PIN chooses one at sign-in, an administrator clears a
+ * forgotten or locked PIN). Joining codes remain only for the platform owner's
+ * own emergency recovery.
  *
  * - Identity comes ONLY from a signed app-session token, issued after the
  *   account's own PIN (phone + PIN on any device) or a joining code given by
@@ -236,6 +239,34 @@ export class DeviceAuthService {
     const { check, next } = applyPinAttempt(record, matched, this.now());
     if (next) await this.store.putPin(next);
     return check;
+  }
+
+  /**
+   * A staff member with no PIN yet (new, or cleared by an administrator)
+   * chooses it at sign-in, with no code (owner 26/11/26). Refused whenever a
+   * PIN exists or the PIN is locked, so it can never replace a working PIN.
+   */
+  async chooseFirstPin(userId: string, phone: string, pin: string): Promise<{ ok: true } | { ok: false; reason: "has_pin" | "invalid" }> {
+    const record = await this.store.getPin(userId);
+    if (record && (record.pinHash || record.lockedAt)) return { ok: false, reason: "has_pin" };
+    const saved = await this.setPin(userId, phone, pin);
+    return saved.ok ? { ok: true } : { ok: false, reason: "invalid" };
+  }
+
+  /**
+   * An administrator clears a forgotten or locked PIN after checking it is the
+   * person (owner 26/11/26: no codes). The person then chooses a new one at
+   * sign-in. Signed-in devices stay signed in.
+   */
+  async clearPin(userId: string, phone: string): Promise<void> {
+    await this.store.putPin({
+      userId,
+      phone,
+      pinHash: null,
+      failedAttempts: 0,
+      lockedAt: null,
+      updatedAt: this.now().toISOString()
+    });
   }
 
   /**

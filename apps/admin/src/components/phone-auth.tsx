@@ -2,12 +2,14 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { redeemJoiningCode, signInWithPin } from "@/lib/auth/sign-in-actions";
+import { chooseFirstPin, redeemJoiningCode, signInWithPin } from "@/lib/auth/sign-in-actions";
 
 /**
- * Sign-in without SMS (owner 20/11/26): phone + 4-digit PIN on any device.
- * The first time, a forgotten PIN or 5 wrong PINs: the joining code from the
- * person who manages your access, then a new PIN. All checks run on the server.
+ * Sign-in without SMS or codes (owner 20/11/26, 26/11/26): phone + 4-digit
+ * PIN on any device. The first time, choose the PIN here. A forgotten PIN or
+ * 5 wrong PINs: the person who manages your access clears it, then choose a
+ * new one here. The "code" step is only the platform owner's emergency
+ * recovery (unlinked /sign-in?reset=1). All checks run on the server.
  */
 export function PhoneAuth({
   phoneHint,
@@ -19,10 +21,11 @@ export function PhoneAuth({
   startWithCode?: boolean;
 }) {
   const router = useRouter();
-  const [step, setStep] = useState<"pin" | "code">(startWithCode ? "code" : "pin");
+  const [step, setStep] = useState<"pin" | "first" | "code">(startWithCode ? "code" : "pin");
   const [phoneInput, setPhoneInput] = useState("");
   const [code, setCode] = useState("");
   const [pin, setPin] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,7 +43,19 @@ export function PhoneAuth({
     setPin("");
     if (!result.ok) {
       setError(result.error);
-      if ("lockedOut" in result && result.lockedOut) setStep("code");
+      return;
+    }
+    go(result.next);
+  }
+
+  async function chooseFirst(event: FormEvent) {
+    event.preventDefault();
+    setError(null);
+    setLoading(true);
+    const result = await chooseFirstPin(phoneInput, pin, confirm, next).catch(() => ({ ok: false, error: "Something went wrong. Try again." }) as const);
+    setLoading(false);
+    if (!result.ok) {
+      setError(result.error);
       return;
     }
     go(result.next);
@@ -84,14 +99,14 @@ export function PhoneAuth({
     return (
       <form onSubmit={redeem} className="w-full max-w-sm space-y-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Use your joining code</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Owner recovery</h1>
           <p className="mt-1 text-sm text-slate-500">
-            First time, or forgot your PIN? The person who manages your access gives you a 6-digit joining code.
+            For the platform owner only. Staff: ask the person who manages your access to clear your PIN, then choose a new one.
           </p>
         </div>
         {phoneField}
         <label className="block">
-          <span className="mb-1 block text-sm text-slate-600">Joining code</span>
+          <span className="mb-1 block text-sm text-slate-600">Recovery code</span>
           <input
             type="text"
             inputMode="numeric"
@@ -108,6 +123,45 @@ export function PhoneAuth({
           {loading ? "Checking…" : "Continue"}
         </button>
         <button type="button" onClick={() => { setStep("pin"); setError(null); }} className={linkCls}>
+          I already have a PIN
+        </button>
+      </form>
+    );
+  }
+
+  if (step === "first") {
+    const pinInput = (label: string, value: string, set: (v: string) => void) => (
+      <label className="block">
+        <span className="mb-1 block text-sm text-slate-600">{label}</span>
+        <input
+          type="password"
+          inputMode="numeric"
+          autoComplete="new-password"
+          placeholder="••••"
+          maxLength={4}
+          value={value}
+          onChange={(event) => set(event.target.value.replace(/\D/g, ""))}
+          className={`${inputCls} text-center tracking-[0.6em]`}
+        />
+      </label>
+    );
+    return (
+      <form onSubmit={chooseFirst} className="w-full max-w-sm space-y-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Choose your PIN</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            First time here, or your administrator cleared your PIN? Enter the phone number you were added with and choose
+            4 digits. No code is sent and you never type one.
+          </p>
+        </div>
+        {phoneField}
+        {pinInput("New 4-digit PIN", pin, setPin)}
+        {pinInput("Repeat the PIN", confirm, setConfirm)}
+        {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+        <button type="submit" disabled={loading || pin.length !== 4 || confirm.length !== 4} className={btnCls}>
+          {loading ? "Saving…" : "Save PIN and sign in"}
+        </button>
+        <button type="button" onClick={() => { setStep("pin"); setError(null); setPin(""); setConfirm(""); }} className={linkCls}>
           I already have a PIN
         </button>
       </form>
@@ -138,9 +192,12 @@ export function PhoneAuth({
       <button type="submit" disabled={loading || pin.length !== 4} className={btnCls}>
         {loading ? "Checking…" : "Sign in"}
       </button>
-      <button type="button" onClick={() => { setStep("code"); setError(null); }} className={linkCls}>
-        First time, or forgot your PIN? Use a joining code
+      <button type="button" onClick={() => { setStep("first"); setError(null); setPin(""); setConfirm(""); }} className={linkCls}>
+        First time here? Choose your PIN
       </button>
+      <p className="text-center text-xs text-slate-500">
+        Forgot your PIN? Ask the person who manages your access to clear it, then choose a new one here.
+      </p>
     </form>
   );
 }

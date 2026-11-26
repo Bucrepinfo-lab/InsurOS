@@ -6,7 +6,7 @@ import {
   type DataTableColumn
 } from '@insuros/ui';
 import { STAFF_ROLES, isGrantableRegion } from '@insuros/domain';
-import { GrantStaffAccessForm, JoiningCodeForm, RevokeStaffAccessForm, RevokeStaffDevicesForm } from '@/components/staff-access-forms';
+import { ClearPinForm, GrantStaffAccessForm, RevokeStaffAccessForm, RevokeStaffDevicesForm } from '@/components/staff-access-forms';
 import { getAuthState, principalCan } from '@/lib/auth/session';
 import type { ScopedAccessRequest } from '@insuros/services';
 import {
@@ -164,7 +164,7 @@ export default async function JurisdictionAccessPage() {
                 .map((region) => ({ id: region.id, name: `${region.name} (${region.level})` }))}
             />
           ) : null}
-          {canGrant ? <JoiningCodeForm /> : null}
+          {canGrant ? <ClearPinForm /> : null}
           {canRevoke ? <RevokeStaffAccessForm /> : null}
           {canRevoke ? <RevokeStaffDevicesForm /> : null}
         </div>
