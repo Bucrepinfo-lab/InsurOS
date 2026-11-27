@@ -8,6 +8,16 @@ export function SetPinForm({ next, allowSkip }: { next: string; allowSkip: boole
   const router = useRouter();
   const [pin, setPin] = useState("");
   const [confirm, setConfirm] = useState("");
+  // Owner 27/11/26: a grey button with no reason. Say what is missing; let people see the PIN.
+  const [showPin, setShowPin] = useState(false);
+  const pinHint =
+    pin.length > 0 && pin.length < 4
+      ? `Your new PIN has ${pin.length} of 4 numbers. Add ${4 - pin.length} more.`
+      : pin.length === 4 && confirm.length > 0 && confirm.length < 4
+        ? `Repeat PIN has ${confirm.length} of 4 numbers.`
+        : pin.length === 4 && confirm.length === 4 && pin !== confirm
+          ? "The two PINs are different. Type the same 4 numbers in both boxes."
+          : null;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,12 +47,16 @@ export function SetPinForm({ next, allowSkip }: { next: string; allowSkip: boole
           wrong tries, your administrator clears it and you choose a new one. No code needed.
         </p>
       </div>
-      <input type="password" inputMode="numeric" autoComplete="new-password" aria-label="New PIN" placeholder="••••" maxLength={4}
+      <input type={showPin ? "text" : "password"} inputMode="numeric" autoComplete="new-password" aria-label="New PIN" placeholder="••••" maxLength={4}
         value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))} className={inputCls} autoFocus />
-      <input type="password" inputMode="numeric" autoComplete="new-password" aria-label="Confirm PIN" placeholder="••••" maxLength={4}
+      <input type={showPin ? "text" : "password"} inputMode="numeric" autoComplete="new-password" aria-label="Confirm PIN" placeholder="••••" maxLength={4}
         value={confirm} onChange={(event) => setConfirm(event.target.value.replace(/\D/g, ""))} className={inputCls} />
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button type="submit" disabled={loading || pin.length !== 4 || confirm.length !== 4}
+      <label className="flex items-center gap-2 text-sm text-slate-600">
+          <input type="checkbox" checked={showPin} onChange={(e) => setShowPin(e.target.checked)} /> Show PIN
+        </label>
+        {pinHint ? <p aria-live="polite" className="text-sm text-amber-800">{pinHint}</p> : null}
+        <button type="submit" disabled={loading || pin.length !== 4 || confirm.length !== 4}
         className="w-full rounded-xl bg-slate-900 px-4 py-3 text-lg font-medium text-white disabled:opacity-60">
         {loading ? "Saving…" : "Save PIN"}
       </button>
