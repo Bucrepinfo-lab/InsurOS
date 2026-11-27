@@ -368,3 +368,4 @@ change as the work (docs/STANDING_RULES.md §5).
 - `.github/workflows/health-audit-guard.yml` fails any `fix/health-audit-*` PR that touches premiums/payments/commissions, claims settlement, tax, auth/roles/tenancy, approvals, persistence, deploy config or secrets, or weakens a test.
 - New root `CLAUDE.md` points agents at the rules and the gate.
 - Open: the repo has no automated tests yet, and no deploy workflow (Fly deploys are manual); `validate.yml` is the only CI gate.
+- 27/11/26 PIN set-up hint (owner screenshot on HarvestHub: button grey with no reason when one PIN box had 3 digits): choose-PIN screens now say "N of 4 numbers" / "the two PINs are different" and have a Show PIN box. Same change in HarvestHub, Stawi, SellFindConnect, InsurOS.
