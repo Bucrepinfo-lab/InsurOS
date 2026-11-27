@@ -42,6 +42,7 @@ export function PhoneAuth({
     setLoading(false);
     setPin("");
     if (!result.ok) {
+      if ("needsPin" in result && result.needsPin) setStep("first");
       setError(result.error);
       return;
     }
