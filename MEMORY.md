@@ -3,6 +3,8 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 27/11/26 — Visible share row on the homepage, /why and My record (owner: sharing everywhere)
+- New `components/value/share-row.tsx`: the always-open row (WhatsApp, Facebook, X, Telegram, LinkedIn, Text message, Email in their colours, "TikTok, Instagram & more", Copy link), public pages only. On the homepage ("Tell another agency"), at the end of /why, and on My record ("Tell a colleague"). Private links keep the one-to-one `ShareButton`.
 ## 27/11/26 — Validate runs once per PR push (owner: trim the Actions bill)
 - Validate ran on push to every branch AND on pull_request, so each PR push ran it twice (96 runs in a week). Now: pull_request, plus push to main (that run gates the Fly deploy). A newer push to the same PR cancels the older run.
 

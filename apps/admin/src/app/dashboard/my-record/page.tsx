@@ -5,6 +5,8 @@ import { followUpViewerFor } from '@/lib/follow-up-viewer';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { requirePageAccess } from "@/lib/auth/page-access";
 import { SpeechLanguageChips } from '@/components/speak-button';
+import { ShareRow } from '@/components/value/share-row';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata = { title: 'My career record' };
 export const dynamic = 'force-dynamic';
@@ -94,6 +96,15 @@ export default async function MyRecordPage() {
           </ul>
         </section>
       ) : null}
+
+      <section aria-label='Share InsurOS' className='rounded-2xl border border-line bg-sheet p-5'>
+        <ShareRow
+          label='Tell a colleague'
+          title='InsurOS'
+          text='InsurOS keeps a work record you own: every policy, claim and customer reply, ready to download.'
+          url={`${SITE_URL}/?via=share`}
+        />
+      </section>
 
       <section aria-labelledby='timeline' className='grid gap-3'>
         <h2 id='timeline' className='text-[20px] text-ink'>Roles held</h2>
