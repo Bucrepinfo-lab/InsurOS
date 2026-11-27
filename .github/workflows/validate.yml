@@ -1,9 +1,16 @@
 name: Validate
 
 on:
+  # Owner audit 27/11/26 (Actions bill): every push to a PR branch ran this
+  # twice (push + pull_request). Now: pull requests, and main (whose run
+  # gates the Fly deploy). A newer push to the same PR cancels the older run.
   push:
-    branches: ["**"]
+    branches: [main]
   pull_request:
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
