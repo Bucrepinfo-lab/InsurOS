@@ -58,7 +58,7 @@ export function ShareRow({ title, text, url, label = 'Tell another agency' }: { 
         </a>
       ))}
       <button type='button' onClick={() => void more()} className={`${chip} border-line bg-sheet text-ink`}>
-        <span aria-hidden='true'>↗</span> TikTok, Instagram &amp; more
+        <svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='2.2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true' style={{ flexShrink: 0 }}><path d='M7 17 17 7M9 7h8v8' /></svg> TikTok, Instagram &amp; more
       </button>
       <button type='button' onClick={() => void copy()} className={`${chip} border-line bg-sheet text-ink`} aria-live='polite'>
         <svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' aria-hidden='true'>
