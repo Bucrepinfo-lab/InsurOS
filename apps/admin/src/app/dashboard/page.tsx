@@ -95,22 +95,22 @@ export default async function DashboardHomePage() {
         <div className='mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
           {customers ? (
             <Link href='/dashboard/customers' className='block rounded-2xl focus-visible:outline-2 focus-visible:outline-seal'>
-              <KPICard title='Customers' value={String(customers.length)} change='Open the list' />
+              <KPICard accent='seal' title='Customers' value={String(customers.length)} change='Open the list' />
             </Link>
           ) : null}
           {policies ? (
             <Link href='/dashboard/policies?status=Active' className='block rounded-2xl focus-visible:outline-2 focus-visible:outline-seal'>
-              <KPICard title='Active policies' value={String(activePolicies)} change={`${policies.length} in total`} />
+              <KPICard accent='blue' title='Active policies' value={String(activePolicies)} change={`${policies.length} in total`} />
             </Link>
           ) : null}
           {claims ? (
             <Link href='/dashboard/claims' className='block rounded-2xl focus-visible:outline-2 focus-visible:outline-seal'>
-              <KPICard title='Claims open or in review' value={String(openClaims)} change='Each needs an owner' />
+              <KPICard accent='amber' title='Claims open or in review' value={String(openClaims)} change='Each needs an owner' />
             </Link>
           ) : null}
           {claims ? (
             <Link href='/dashboard/claims' className='block rounded-2xl focus-visible:outline-2 focus-visible:outline-seal'>
-              <KPICard title='All claims' value={String(claims.length)} change='Search, filter, export' />
+              <KPICard accent='plum' title='All claims' value={String(claims.length)} change='Search, filter, export' />
             </Link>
           ) : null}
         </div>

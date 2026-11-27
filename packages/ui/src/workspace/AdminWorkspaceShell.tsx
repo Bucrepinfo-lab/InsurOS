@@ -100,7 +100,9 @@ export function AdminWorkspaceShell({
             center={<GlobalSearch items={searchItems} LinkComponent={LinkComponent} onNavigate={onNavigate} onSearch={onSearch} />}
             right={
               <>
-                <EnvironmentBadge environment={environment} />
+                <span className='hidden sm:inline-flex'>
+                  <EnvironmentBadge environment={environment} />
+                </span>
                 <NotificationBell
                   count={notificationCount}
                   href={canSeeNotifications ? '/dashboard/notifications' : undefined}
