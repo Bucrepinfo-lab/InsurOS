@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { publicStories, publicStrengths, storyShareText, storyShareUrl } from '@insuros/domain';
 import { ACCENT_GRADIENT, ACCENT_SOLID, Motif } from '@/components/value/motif';
 import { ShareButton } from '@/components/value/share-button';
+import { ShareRow } from '@/components/value/share-row';
 import { SITE_URL } from '@/lib/site';
 import { BackLink } from '@/components/back-link';
 
@@ -205,6 +206,10 @@ export default function WhyPage() {
               Ask for access for your team
             </a>
           </div>
+        </section>
+
+        <section aria-label='Share InsurOS' className='mt-10 rounded-2xl border border-line bg-sheet p-5'>
+          <ShareRow title='Why InsurOS' text={pageText} url={`${SITE_URL}/why?via=share`} />
         </section>
       </main>
 
