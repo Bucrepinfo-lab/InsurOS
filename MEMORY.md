@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 27/11/26 — Faster taps (cross-check after Stawi's slow taps)
+- Measured live (signed in): most pages 0.25–0.5 s; My record 0.9–2.7 s, Claims 1.0–1.5 s; 5 at once 3.1 s. Sign-in is already once per request (`getAuthState` is cached).
+- My record now loads career figures and the profile side by side (they ran one after another). `app/dashboard/loading.tsx`: instant outline on every tap, menu stays.
+- Left for later (noted, not changed): `CareerService.recordFor` and the claims desk load whole collections (findAll) and filter in code; fine at today's sizes, worth indexed queries as data grows.
+
 ## 27/11/26 — My record: change my own photo and work email; name and number by an approved correction (owner: "research wide and deep … insurances are very professional")
 - Research basis: Kenya Data Protection Act s.40 (a person may have inaccurate or out-of-date data corrected; regulations 2021 reg. 10) and how regulated firms split self-service from checked changes (step-up checks for legal names and sign-in contacts, decisions recorded).
 - Self-service, at once: photo (shrunk on the phone to a 512 px square JPEG, stored privately under `staff-photos/<tenant>/<user>/`, shown through a 15-minute link; old photos kept) and an optional work email (never used to sign in).
