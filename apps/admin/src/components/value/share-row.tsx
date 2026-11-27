@@ -34,11 +34,11 @@ export function ShareRow({ title, text, url, label = 'Tell another agency' }: { 
   }
 
   const chip =
-    'inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold transition duration-150 hover:-translate-y-px hover:shadow-md hover:brightness-105 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal motion-reduce:transform-none motion-reduce:transition-none';
+    'inline-flex min-h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl border px-2 py-2 text-sm font-bold transition duration-150 hover:-translate-y-px hover:shadow-md hover:brightness-105 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-seal motion-reduce:transform-none motion-reduce:transition-none';
 
   return (
-    <div role='group' aria-label={label} className='flex flex-wrap items-center gap-2'>
-      <p className='flex w-full items-center gap-2 text-[15px] font-semibold text-ink sm:w-auto sm:pr-2'>
+    <div role='group' aria-label={label} className='grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2'>
+      <p className='col-span-full flex items-center gap-2 text-[15px] font-semibold text-ink'>
         <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true' className='text-[#c9a227]'>
           <path d='M3 10v4h3l6 4V6L6 10H3Z' fill='currentColor' fillOpacity='.3' />
           <path d='M16 9a4 4 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11' />
@@ -57,7 +57,7 @@ export function ShareRow({ title, text, url, label = 'Tell another agency' }: { 
           {target.label}
         </a>
       ))}
-      <button type='button' onClick={() => void more()} className={`${chip} border-line bg-sheet text-ink`}>
+      <button type='button' onClick={() => void more()} className={`${chip} order-1 col-span-full border-line bg-sheet text-ink`}>
         <svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='2.2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true' style={{ flexShrink: 0 }}><path d='M7 17 17 7M9 7h8v8' /></svg> TikTok, Instagram &amp; more
       </button>
       <button type='button' onClick={() => void copy()} className={`${chip} border-line bg-sheet text-ink`} aria-live='polite'>
@@ -68,7 +68,7 @@ export function ShareRow({ title, text, url, label = 'Tell another agency' }: { 
         Copy link
       </button>
       {note ? (
-        <p role='status' className='w-full break-all text-xs text-dim'>
+        <p role='status' className='order-2 col-span-full break-all text-xs text-dim'>
           {note}
         </p>
       ) : null}
