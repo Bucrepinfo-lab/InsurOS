@@ -205,8 +205,15 @@ export function PhoneAuth({
       <button type="submit" disabled={loading || pin.length !== 4} className={btnCls}>
         {loading ? "Checking…" : "Sign in"}
       </button>
-      <button type="button" onClick={() => { setStep("first"); setError(null); setPin(""); setConfirm(""); }} className={linkCls}>
-        First time here? Choose your PIN
+      {/* Owner 27/11/26: the small link was easy to miss and people got stuck.
+          Now a full-width button with the words in bold. */}
+      <button
+        type="button"
+        onClick={() => { setStep("first"); setError(null); setPin(""); setConfirm(""); }}
+        className="w-full rounded-xl border-2 border-emerald-700 bg-emerald-50 px-4 py-3 text-base font-bold text-emerald-900 transition hover:-translate-y-0.5 hover:bg-emerald-100 hover:shadow-md focus-visible:outline-2 focus-visible:outline-emerald-700 active:translate-y-0"
+      >
+        First time here? Create your PIN
+        <span className="mt-0.5 block text-xs font-medium text-emerald-800">No code needed, takes a few seconds</span>
       </button>
       <p className="text-center text-xs text-slate-500">
         Forgot your PIN? Ask the person who manages your access to clear it, then choose a new one here.
