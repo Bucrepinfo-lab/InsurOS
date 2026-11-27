@@ -31,6 +31,10 @@ const nextConfig: NextConfig = {
       }
     ];
   },
+  // Tapping back to a screen seen in the last 30 s shows it at once from the
+  // phone's memory (owner 27/11/26: taps felt slow). The person's own changes
+  // refresh it at once (revalidatePath / router.refresh).
+  experimental: { staleTimes: { dynamic: 30 } },
   transpilePackages: [
     "@insuros/ui",
     "@insuros/services",

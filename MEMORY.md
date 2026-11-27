@@ -3,6 +3,11 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 27/11/26 — Instant revisit of screens (owner: taps better but not much)
+- Measured from the owner's browser after the per-request sign-in fix: network round trip alone ~0.18 s; pages 0.3–0.45 s, so the server does ~0.1–0.25 s per page now. JS ~540 KB (normal for Next + React).
+- `experimental.staleTimes.dynamic = 30`: tapping back to a screen seen in the last 30 s shows it at once from the phone's router cache. Own writes refresh at once (revalidatePath / router.refresh); Stawi also refreshes on every group event (LiveRefresh), so money figures never wait on it.
+- Found, not changed: Stawi's Supabase (database + sign-in) is in eu-west-1 (Ireland) while the Fly app runs in fra (Frankfurt), ~20 ms per query each way. Moving the Fly app to lhr (London) would cut that roughly in half; deploy config, owner decision.
+
 ## 27/11/26 — Faster taps (cross-check after Stawi's slow taps)
 - Measured live (signed in): most pages 0.25–0.5 s; My record 0.9–2.7 s, Claims 1.0–1.5 s; 5 at once 3.1 s. Sign-in is already once per request (`getAuthState` is cached).
 - My record now loads career figures and the profile side by side (they ran one after another). `app/dashboard/loading.tsx`: instant outline on every tap, menu stays.
