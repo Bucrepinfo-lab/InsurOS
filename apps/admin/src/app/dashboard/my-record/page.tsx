@@ -24,12 +24,19 @@ export default async function MyRecordPage() {
   await requirePageAccess("/dashboard/my-record");
   const state = await getAuthState();
   if (state.status !== 'active') return null;
-  const record = await new CareerService().recordFor({ name: state.principal.name, userIds: followUpViewerFor(state.principal).userIds });
+  // Career figures and my profile load side by side (owner 27/11/26: taps had become slow).
+  const phone = state.principal.phone;
+  const profilePart = (async () => {
+    // My record (owner 27/11/26): own photo and work email; name and number by an approved request.
+    const appointment = phone ? await new PrincipalService().staffAppointmentForPhone(phone) : null;
+    const myUserId = appointment?.userId ?? `owner-${(phone ?? '').replace(/\D/g, '')}`;
+    return { appointment, profile: await new StaffProfileService().view(myUserId) };
+  })();
+  const [record, { appointment, profile }] = await Promise.all([
+    new CareerService().recordFor({ name: state.principal.name, userIds: followUpViewerFor(state.principal).userIds }),
+    profilePart
+  ]);
   const f = record.figures;
-  // My record (owner 27/11/26): own photo and work email; name and number by an approved request.
-  const appointment = state.principal.phone ? await new PrincipalService().staffAppointmentForPhone(state.principal.phone) : null;
-  const myUserId = appointment?.userId ?? `owner-${(state.principal.phone ?? '').replace(/\D/g, '')}`;
-  const profile = await new StaffProfileService().view(myUserId);
   const tiles: [string, string, string][] = [
     ['Customers brought in', String(f.customers), 'Customers you added'],
     ['Policies placed', String(f.policies), f.premium > 0 ? `${kes(f.premium)} in premium` : 'No premium yet'],
