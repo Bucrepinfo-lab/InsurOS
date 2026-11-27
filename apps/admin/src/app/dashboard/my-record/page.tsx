@@ -6,6 +6,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { requirePageAccess } from "@/lib/auth/page-access";
 import { SpeechLanguageChips } from '@/components/speak-button';
 import { ShareRow } from '@/components/value/share-row';
+import { HiddenNumber } from '@/components/hidden-number';
 import { SITE_URL } from '@/lib/site';
 
 export const metadata = { title: 'My career record' };
@@ -63,7 +64,7 @@ export default async function MyRecordPage() {
           </div>
           <div>
             <dt className='text-sm text-dim'>Phone number you sign in with</dt>
-            <dd className='font-mono'>{state.principal.phone ?? state.principal.email}</dd>
+            <dd className='font-mono'><HiddenNumber value={state.principal.phone ?? state.principal.email} /></dd>
           </div>
         </dl>
         <p className='text-xs text-dim'>Your name and number are set by your agency owner at Governance, so a record cannot be edited by the person it describes.</p>

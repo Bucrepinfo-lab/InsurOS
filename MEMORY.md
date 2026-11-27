@@ -3,6 +3,10 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 27/11/26 — My record hides my number, with Show / Hide (owner rule restated 27/11/26)
+- My record showed the full sign-in number. It now shows "07•• ••• 678" with Show / Hide (`components/hidden-number.tsx`). No public InsurOS page prints a phone number.
+- Not done, needs the owner's yes: letting people edit their own name, number, photo and email here. Today the agency owner sets them at Governance ("a record cannot be edited by the person it describes"); changing that touches sign-in and roles (protected).
+
 ## 27/11/26 — Visible share row on the homepage, /why and My record (owner: sharing everywhere)
 - New `components/value/share-row.tsx`: the always-open row (WhatsApp, Facebook, X, Telegram, LinkedIn, Text message, Email in their colours, "TikTok, Instagram & more", Copy link), public pages only. On the homepage ("Tell another agency"), at the end of /why, and on My record ("Tell a colleague"). Private links keep the one-to-one `ShareButton`.
 ## 27/11/26 — Validate runs once per PR push (owner: trim the Actions bill)
