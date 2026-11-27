@@ -7,6 +7,8 @@ import {
 } from '@insuros/ui';
 import { STAFF_ROLES, isGrantableRegion } from '@insuros/domain';
 import { ClearPinForm, GrantStaffAccessForm, RevokeStaffAccessForm, RevokeStaffDevicesForm } from '@/components/staff-access-forms';
+import { CorrectionRequests } from '@/components/my-profile-editor';
+import { StaffProfileService } from '@insuros/services';
 import { getAuthState, principalCan } from '@/lib/auth/session';
 import type { ScopedAccessRequest } from '@insuros/services';
 import {
@@ -69,6 +71,11 @@ export default async function JurisdictionAccessPage() {
   const auth = await getAuthState();
   const canGrant = auth.status === 'active' && principalCan(auth.principal, 'Identity', 'Create');
   const canRevoke = auth.status === 'active' && principalCan(auth.principal, 'Identity', 'Delete');
+  // Name and number corrections people asked for on My record (owner 27/11/26).
+  const corrections =
+    canGrant && auth.status === 'active'
+      ? await new StaffProfileService().pending(auth.principal.isPlatformOwner ? 'all' : auth.principal.accessibleRegionIds)
+      : [];
 
   const decisions = await Promise.all(
     previewRequests.map(async (request) => ({
@@ -156,6 +163,7 @@ export default async function JurisdictionAccessPage() {
     >
       {canGrant || canRevoke ? (
         <div className='mb-8 grid gap-4'>
+          {canGrant ? <CorrectionRequests requests={corrections} /> : null}
           {canGrant ? (
             <GrantStaffAccessForm
               roles={STAFF_ROLES.map((role) => ({ id: role.id, name: role.name }))}

@@ -1,12 +1,12 @@
 import { formatDate } from '@insuros/ui';
-import { CareerService } from '@insuros/services';
+import { CareerService, PrincipalService, StaffProfileService } from '@insuros/services';
 import { getAuthState } from '@/lib/auth/session';
 import { followUpViewerFor } from '@/lib/follow-up-viewer';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { requirePageAccess } from "@/lib/auth/page-access";
 import { SpeechLanguageChips } from '@/components/speak-button';
 import { ShareRow } from '@/components/value/share-row';
-import { HiddenNumber } from '@/components/hidden-number';
+import { MyProfileEditor } from '@/components/my-profile-editor';
 import { SITE_URL } from '@/lib/site';
 
 export const metadata = { title: 'My career record' };
@@ -26,6 +26,10 @@ export default async function MyRecordPage() {
   if (state.status !== 'active') return null;
   const record = await new CareerService().recordFor({ name: state.principal.name, userIds: followUpViewerFor(state.principal).userIds });
   const f = record.figures;
+  // My record (owner 27/11/26): own photo and work email; name and number by an approved request.
+  const appointment = state.principal.phone ? await new PrincipalService().staffAppointmentForPhone(state.principal.phone) : null;
+  const myUserId = appointment?.userId ?? `owner-${(state.principal.phone ?? '').replace(/\D/g, '')}`;
+  const profile = await new StaffProfileService().view(myUserId);
   const tiles: [string, string, string][] = [
     ['Customers brought in', String(f.customers), 'Customers you added'],
     ['Policies placed', String(f.policies), f.premium > 0 ? `${kes(f.premium)} in premium` : 'No premium yet'],
@@ -57,17 +61,14 @@ export default async function MyRecordPage() {
 
       <section aria-labelledby='profile' className='grid gap-3 rounded-2xl border border-line bg-sheet p-5 transition duration-200 hover:border-seal/40 hover:shadow-md motion-reduce:transition-none'>
         <h2 id='profile' className='text-[20px] text-ink'>My profile</h2>
-        <dl className='grid gap-3 text-[15px] text-ink sm:grid-cols-2'>
-          <div>
-            <dt className='text-sm text-dim'>Name</dt>
-            <dd>{state.principal.name}</dd>
-          </div>
-          <div>
-            <dt className='text-sm text-dim'>Phone number you sign in with</dt>
-            <dd className='font-mono'><HiddenNumber value={state.principal.phone ?? state.principal.email} /></dd>
-          </div>
-        </dl>
-        <p className='text-xs text-dim'>Your name and number are set by your agency owner at Governance, so a record cannot be edited by the person it describes.</p>
+        <MyProfileEditor
+          name={state.principal.name}
+          phone={state.principal.phone ?? null}
+          email={profile.email}
+          photoUrl={profile.photoUrl}
+          requests={profile.requests}
+          canRequest={Boolean(appointment)}
+        />
         <div className='grid gap-1.5'>
           <p className='text-sm text-dim'>My language for speaking messages (tap the microphone under any message box)</p>
           <SpeechLanguageChips />

@@ -87,3 +87,4 @@ export * from "./navigation-trail";
 export * from "./page-access";
 export * from "./play-app";
 export * from "./speech";
+export * from "./staff-profile";
