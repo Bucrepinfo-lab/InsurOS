@@ -134,7 +134,10 @@ export const DATASETS: Record<RepositoryKey, DatasetDefinition> = {
   conversations: { collection: "conversations", kind: "sample", rows: () => mockConversations, seedVersion: 2 },
   messages: { collection: "messages", kind: "sample", rows: () => mockMessages, seedVersion: 2 },
   aiUsage: { collection: "ai_usage", kind: "reference", rows: () => [] },
-  signatures: { collection: "signatures", kind: "reference", rows: () => [] }
+  signatures: { collection: "signatures", kind: "reference", rows: () => [] },
+  // My record (owner 27/11/26): nothing seeded; each person fills their own.
+  staffProfiles: { collection: "staff_profiles", kind: "reference", rows: () => [] },
+  profileChangeRequests: { collection: "profile_change_requests", kind: "reference", rows: () => [] }
 };
 
 export const REPOSITORY_KEYS = Object.keys(DATASETS) as RepositoryKey[];

@@ -3,6 +3,13 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 27/11/26 — My record: change my own photo and work email; name and number by an approved correction (owner: "research wide and deep … insurances are very professional")
+- Research basis: Kenya Data Protection Act s.40 (a person may have inaccurate or out-of-date data corrected; regulations 2021 reg. 10) and how regulated firms split self-service from checked changes (step-up checks for legal names and sign-in contacts, decisions recorded).
+- Self-service, at once: photo (shrunk on the phone to a 512 px square JPEG, stored privately under `staff-photos/<tenant>/<user>/`, shown through a 15-minute link; old photos kept) and an optional work email (never used to sign in).
+- By request with a reason, decided at Governance → Jurisdiction Access ("Name and number corrections") by someone with Identity:Create in that region, never by the person themself: name (as on ID/licence; renames every appointment and grant) and sign-in number (moves appointments and the PIN record to the new number, same user id and record, signs out every trusted device). Declines carry a note the person sees.
+- New collections `staff_profiles`, `profile_change_requests` (JSONB documents, nothing seeded). Domain: `staff-profile.ts` (+ tests); service: `StaffProfileService` (+ tests). Every form keeps the review-before-send step; saving one's own email skips it (`data-no-review`), nothing goes to anyone.
+- Platform owners (number from the allowlist) can change photo and email only.
+
 ## 27/11/26 — My record hides my number, with Show / Hide (owner rule restated 27/11/26)
 - My record showed the full sign-in number. It now shows "07•• ••• 678" with Show / Hide (`components/hidden-number.tsx`). No public InsurOS page prints a phone number.
 - Not done, needs the owner's yes: letting people edit their own name, number, photo and email here. Today the agency owner sets them at Governance ("a record cannot be edited by the person it describes"); changing that touches sign-in and roles (protected).

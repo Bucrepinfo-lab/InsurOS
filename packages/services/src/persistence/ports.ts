@@ -15,6 +15,8 @@ import type {
   FollowUp,
   Message,
   SignatureRecord,
+  StaffProfile,
+  ProfileChangeRequest,
   KpiSnapshot,
   MarketingContent,
   MicroPayment,
@@ -127,4 +129,8 @@ export interface PersistenceAdapter {
   aiUsage: Repository<{ id: string; calls: number }>;
   /** Declarations signed on screen. Starts empty. */
   signatures: Repository<SignatureRecord>;
+  /** My record: own photo and work email (id = user id). Starts empty. */
+  staffProfiles: Repository<StaffProfile>;
+  /** Name and sign-in number corrections, decided at Governance. Starts empty. */
+  profileChangeRequests: Repository<ProfileChangeRequest>;
 }
