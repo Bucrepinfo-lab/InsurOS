@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { InsurOSLogo, LedgerSeal } from '@insuros/ui';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { ShareRow } from '@/components/value/share-row';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata = {
   title: { absolute: 'InsurOS: every insurance promise on the record' },
@@ -367,6 +369,17 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           </div>
         </section>
       </main>
+
+      {/* Tell another agency (owner 27/11/26): sharing is how word spreads. */}
+      <section aria-label='Share InsurOS' className='px-4 pb-8 sm:px-6'>
+        <div className='mx-auto max-w-6xl rounded-2xl border border-line bg-sheet p-5'>
+          <ShareRow
+            title='InsurOS'
+            text='InsurOS: policies out in a day, claims decided in two, customers answered within hours, every step on the record.'
+            url={`${SITE_URL}/?via=share`}
+          />
+        </div>
+      </section>
 
       <section aria-labelledby='help-heading' className='px-4 pb-16 sm:px-6'>
         <div className='mx-auto max-w-3xl rounded-2xl border border-line bg-sheet p-6 text-center'>
