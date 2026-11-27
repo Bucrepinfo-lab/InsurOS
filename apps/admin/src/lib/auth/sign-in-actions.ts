@@ -28,7 +28,7 @@ import { platformOwnerPhones } from "./session";
  */
 export type SignInResult =
   | { ok: true; next: string }
-  | { ok: false; error: string; lockedOut?: boolean };
+  | { ok: false; error: string; lockedOut?: boolean; needsPin?: boolean };
 
 const RATE_LIMITED = "Too many attempts. Wait a few minutes and try again.";
 const NO_MATCH = "That phone number and PIN do not match.";
@@ -94,7 +94,9 @@ export async function signInWithPin(phoneInput: string, pin: string, next?: stri
   // No PIN yet: choose one. Locked: ask an administrator to clear it.
   return check.outcome === "locked"
     ? { ok: false, lockedOut: true, error: `Too many wrong PINs. ${ASK_ADMIN}` }
-    : { ok: false, error: `${NO_MATCH} First time here? Choose your PIN below.` };
+    : // Owner 27/11/26: "do not match" confused people who simply had no PIN yet.
+      // The sign-in screen opens the choose-PIN step with the number kept.
+      { ok: false, needsPin: true, error: "This number has no PIN yet. Choose your 4-digit PIN now." };
 }
 
 /** First sign-in, or after an administrator cleared the PIN: phone + a new PIN, no code. */
