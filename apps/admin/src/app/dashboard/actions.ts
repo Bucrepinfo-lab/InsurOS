@@ -379,13 +379,6 @@ export async function recordDemoSnapshot(): Promise<ActionResult> {
   return ok('Snapshot filed', 'July KPIs recorded — combined ratio improving as automation climbs', { reference: '2026-07 · KE' });
 }
 
-export async function refreshClerkPlan(): Promise<ActionResult> {
-  const denied = await denyUnless('Identity', 'Update');
-  if (denied) return denied;
-  revalidatePath('/dashboard/identity/clerk-sync');
-  return fail('Key required to execute', 'Plan refreshed, but running it needs CLERK_SECRET_KEY — provision it and this button goes live', { reference: 'CLERK_SECRET_KEY' });
-}
-
 /* ── Steps that are not built yet ──
    These buttons used to copy a template row into shared sample data and report
    success, which added look-alike rows for every tenant. They now save nothing

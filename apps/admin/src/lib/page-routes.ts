@@ -41,7 +41,6 @@ export const PAGE_ROUTES: readonly string[] = [
   "/dashboard/governance/access",
   "/dashboard/governance/appointments",
   "/dashboard/identity",
-  "/dashboard/identity/clerk-sync",
   "/dashboard/legal",
   "/dashboard/marketplace",
   "/dashboard/marketplace/[productId]",

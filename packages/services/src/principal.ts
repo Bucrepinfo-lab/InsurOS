@@ -1,7 +1,6 @@
-import type { AdminAppointment, ClerkSyncAction, SessionPrincipal } from "@insuros/domain";
+import type { AdminAppointment, SessionPrincipal } from "@insuros/domain";
 import {
   ALL_PERMISSION_KEYS,
-  CLERK_ORG_ROLE_BY_LEVEL,
   findStaffRole,
   isGrantableRegion,
   rolePermissionKeys,
@@ -302,43 +301,5 @@ export class PrincipalService {
       accessibleRegionIds: accessibleRegions.map((region) => region.id),
       isUnmapped: false
     };
-  }
-
-  /**
-   * The plan for syncing platform grants into Clerk organization
-   * memberships: one CreateMembership per active assignment, one
-   * SuspendMembership per suspended assignment. In production each action
-   * maps to a `clerkClient.organizations.*` call.
-   */
-  async getClerkSyncPlan(): Promise<ClerkSyncAction[]> {
-    const assignments = await this.db.jurisdictionAssignments.findWhere(
-      (assignment) => assignment.status !== "Revoked"
-    );
-
-    const plan: ClerkSyncAction[] = [];
-
-    for (const assignment of assignments) {
-      const [appointment] = await this.db.appointments.findWhere(
-        (item) => item.userId === assignment.userId
-      );
-      const region = await this.db.regions.findById(assignment.regionId);
-
-      plan.push({
-        email: appointment?.email ?? `${assignment.userId}@unknown`,
-        userName: assignment.userName,
-        clerkOrgRole: region
-          ? CLERK_ORG_ROLE_BY_LEVEL[region.level]
-          : "org:member",
-        regionCode: region?.code ?? assignment.regionId,
-        regionName: region?.name ?? assignment.regionId,
-        assignmentId: assignment.id,
-        operation:
-          assignment.status === "Active"
-            ? ("CreateMembership" as const)
-            : ("SuspendMembership" as const)
-      });
-    }
-
-    return plan;
   }
 }

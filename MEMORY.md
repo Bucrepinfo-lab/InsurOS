@@ -3,6 +3,9 @@
 Dated log of shipped changes and decisions (newest first). Update it in the same
 change as the work (docs/STANDING_RULES.md §5).
 
+## 27/11/26 — Clerk sync page removed (owner "Fix it", 00:01)
+- Clerk is retired (phone + PIN). Removed the hidden "Clerk Sync" page (`dashboard/identity/clerk-sync`), its `refreshClerkPlan` action (it only said "needs CLERK_SECRET_KEY"), the menu entry and icon, `PrincipalService.getClerkSyncPlan`, `ClerkSyncAction` and `CLERK_ORG_ROLE_BY_LEVEL`. `SessionPrincipal` (named after Clerk but used by the phone sign-in) stays.
+
 ## 26/11/26 — Homepage path for non-technical visitors; audit clean-up (owner 22:29)
 - Homepage now: hero (Sign in with your phone / How it works) → service targets → "What would you like to do?" (I work at an insurer or agency → sign in; I want to see it first → the demo; I am a customer → contact; I run an agency → talk to us) → How it works (number added → phone + PIN → record policies and claims → every step timed and kept) → the existing sections → Help (email). Phones get a fixed Sign in / How it works dock.
 - Clean-up: removed `ocr-import/` (the portable OCR snippet kept on 07/11/26 as planned cross-project work; OCR has since shipped in every project with self-hosted Tesseract, and the snippet loaded Tesseract from a CDN) and the unused `@supabase/ssr` package. `.dockerignore` still lists `ocr-import` (deploy config, harmless, left alone).

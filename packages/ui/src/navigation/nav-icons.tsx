@@ -58,7 +58,6 @@ export const NAV_ICON_FOR: Record<string, NavIconName> = {
   'my-record': 'person',
   tenants: 'building',
   identity: 'key',
-  'clerk-sync': 'sync',
   governance: 'scale',
   appointments: 'calendar',
   access: 'shield',
